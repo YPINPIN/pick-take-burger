@@ -26,7 +26,6 @@ function ProductManagement() {
   const [bsDetailModal, setBsDetailModal] = useState<Modal | null>(null); // 存 Bootstrap Modal instance
 
   const handleShowDetail = (product: ProductData) => {
-    console.log('handleShowDetail', product);
     setTempProduct({ ...product, imagesUrl: [product.imageUrl, ...product.imagesUrl] });
 
     if (bsDetailModal) {
