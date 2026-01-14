@@ -10,4 +10,18 @@
       background-color: $secondary;
     }
   }
+
+  &-mobile {
+    --bs-offcanvas-width: 250px;
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      &:hover {
+        background-color: $secondary;
+      }
+    }
+  }
 }

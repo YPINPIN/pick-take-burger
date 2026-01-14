@@ -67,7 +67,7 @@ function ProductManagement() {
   return (
     <>
       {/* Header */}
-      <div className="bg-dark position-fixed top-0 z-1 w-100 border-bottom border-primary text-white px-4 py-4 shadow">
+      <div className="bg-dark position-fixed top-0 z-1 w-100 border-bottom border-primary text-white px-3 py-2 p-lg-4 shadow">
         <h3 className="fs-4 fw-bold my-1">產品管理</h3>
       </div>
       {/* Product Management */}

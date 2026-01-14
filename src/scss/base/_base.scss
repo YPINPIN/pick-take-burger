@@ -21,5 +21,9 @@ a {
 }
 
 .mt-header {
-  margin-top: 85px;
+  margin-top: 50px;
+
+  @include media-breakpoint-up(lg) {
+    margin-top: 85px;
+  }
 }
