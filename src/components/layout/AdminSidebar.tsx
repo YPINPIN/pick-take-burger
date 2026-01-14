@@ -8,7 +8,7 @@ function AdminSidebar() {
 
   const sidebarContent = (
     <>
-      <div className="d-flex justify-content-between justify-content-md-around align-items-center mb-3">
+      <div className="d-flex justify-content-between justify-content-lg-around align-items-center mb-3">
         <div className="w-25 d-none d-lg-block">
           <img src={IconBurger} alt="logo" />
         </div>
