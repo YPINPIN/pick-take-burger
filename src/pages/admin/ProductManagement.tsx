@@ -35,9 +35,8 @@ function ProductManagement() {
         setIsLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+  }, [currentPage]);
 
   return (
     <>
