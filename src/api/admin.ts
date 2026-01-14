@@ -3,7 +3,6 @@ import { getToken } from '@/utils/token';
 import { normalizeApiError } from '@/utils/error';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-// const API_PATH = import.meta.env.VITE_API_PATH;
 
 const adminApi = axios.create({
   baseURL: BASE_URL,

@@ -752,8 +752,7 @@ $table-border-color: var(--#{$prefix}border-color) !default;
 $table-striped-order: even !default;
 $table-striped-columns-order: even !default;
 
-// custom $table-group-separator-color: currentcolor !default;
-$table-group-separator-color: $primary !default;
+$table-group-separator-color: currentcolor !default;
 
 $table-caption-color: var(--#{$prefix}secondary-color) !default;
 

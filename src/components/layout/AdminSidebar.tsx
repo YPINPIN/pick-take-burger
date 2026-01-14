@@ -2,7 +2,7 @@ import IconBurger from '@/images/icon-burger.svg';
 
 function AdminSidebar() {
   return (
-    <aside className="admin-sidebar position-sticky top-0 start-0 bg-dark border-end border-primary text-white p-3 vh-100">
+    <aside className="admin-sidebar flex-shrink-0 position-sticky top-0 start-0 bg-dark border-end border-primary text-white p-3 vh-100">
       <div className="d-flex justify-content-around align-items-center mb-3">
         <div className="w-25">
           <img src={IconBurger} alt="logo" />

@@ -9,7 +9,7 @@ import { getToken } from '@/utils/token';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import LoginPage from '@/pages/admin/LoginPage';
 import AdminSidebar from '@/components/layout/AdminSidebar';
-import DashboardHeader from '@/components/layout/DashboardHeader';
+
 import ProductManagement from '@/pages/admin/ProductManagement';
 
 function AdminDashboard() {
@@ -55,12 +55,11 @@ function AdminDashboard() {
         (!isAuth ? (
           <LoginPage setIsAuth={setIsAuth} />
         ) : (
-          <div className="d-flex position-relative">
+          <div className="admin-dashboard d-flex position-relative">
             <AdminSidebar />
             {/* Main Content */}
-            <div className="flex-fill min-vh-100 position-relative d-flex flex-column">
-              <DashboardHeader title="產品管理" />
-              <main className="flex-fill text-bg-secondary p-4 ">
+            <div className="admin-dashboard-right flex-fill d-flex flex-column min-vh-100 overflow-x-auto">
+              <main className="flex-fill text-bg-secondary">
                 <ProductManagement />
               </main>
             </div>
