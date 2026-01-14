@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
+import { Modal } from 'bootstrap';
 
 import type { ApiError } from '@/types/error';
 import type { Pagination } from '@/types/pagination';
@@ -20,6 +21,24 @@ function ProductManagement() {
     has_next: false,
     category: '',
   });
+  const [tempProduct, setTempProduct] = useState<ProductData | null>(null);
+  const detailModalRef = useRef(null);
+  const [bsDetailModal, setBsDetailModal] = useState<Modal | null>(null); // 存 Bootstrap Modal instance
+
+  const handleShowDetail = (product: ProductData) => {
+    console.log('handleShowDetail', product);
+    setTempProduct({ ...product, imagesUrl: [product.imageUrl, ...product.imagesUrl] });
+
+    if (bsDetailModal) {
+      bsDetailModal.show();
+    }
+  };
+
+  const handleCloseDetail = () => {
+    if (bsDetailModal) {
+      bsDetailModal.hide();
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +56,14 @@ function ProductManagement() {
     };
     fetchData();
   }, [currentPage]);
+
+  useEffect(() => {
+    // 初始化一次
+    if (detailModalRef.current) {
+      const modal = new Modal(detailModalRef.current);
+      setBsDetailModal(modal);
+    }
+  }, []);
 
   return (
     <>
@@ -86,10 +113,12 @@ function ProductManagement() {
                           </div>
                         </td>
                         <td>
-                          <button type="button" className="btn btn-sm btn-primary rounded-3 me-2">
-                            編輯
+                          <button onClick={() => handleShowDetail(product)} type="button" className="btn btn-sm btn-primary rounded-3 me-2">
+                            <i className="bi bi-pencil-square me-1" />
+                            查看
                           </button>
                           <button type="button" className="btn btn-sm btn-danger rounded-3" disabled>
+                            <i className="bi bi-trash3-fill me-1" />
                             刪除
                           </button>
                         </td>
@@ -128,6 +157,39 @@ function ProductManagement() {
           )}
         </div>
       </section>
+
+      {/* Modal */}
+      <div ref={detailModalRef} className="modal fade" id="productInfoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex={-1} aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5 fw-bold" id="staticBackdropLabel">
+                {tempProduct?.title}
+              </h1>
+              <button type="button" className="btn-close" onClick={handleCloseDetail}></button>
+            </div>
+            <div className="modal-body">
+              <div className="row row-cols-2 row-cols-md-3 g-2">
+                {tempProduct?.imagesUrl.map((image, index) => (
+                  <div className="col" key={image}>
+                    <img src={image} className="object-fit-cover rounded" alt={`圖片${index + 1}`} />
+                  </div>
+                ))}
+              </div>
+
+              <span className="my-2 badge rounded-pill text-bg-secondary">{tempProduct?.category}</span>
+              <p>商品描述：{tempProduct?.description}</p>
+              <p>商品內容：{tempProduct?.content}</p>
+              <p className="fs-4">
+                <span>
+                  <del>原價：$ {tempProduct?.origin_price}</del>
+                </span>
+                <span className="text-danger float-end">$ {tempProduct?.price}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
