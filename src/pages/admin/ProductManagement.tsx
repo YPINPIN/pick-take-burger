@@ -23,19 +23,19 @@ function ProductManagement() {
   });
   const [tempProduct, setTempProduct] = useState<ProductData | null>(null);
   const detailModalRef = useRef(null);
-  const [bsDetailModal, setBsDetailModal] = useState<Modal | null>(null); // 存 Bootstrap Modal instance
+  const bsDetailModal = useRef<Modal | null>(null); // 存 Bootstrap Modal instance
 
   const handleShowDetail = (product: ProductData) => {
     setTempProduct({ ...product, imagesUrl: [product.imageUrl, ...product.imagesUrl] });
 
-    if (bsDetailModal) {
-      bsDetailModal.show();
+    if (bsDetailModal.current) {
+      bsDetailModal.current.show();
     }
   };
 
   const handleCloseDetail = () => {
-    if (bsDetailModal) {
-      bsDetailModal.hide();
+    if (bsDetailModal.current) {
+      bsDetailModal.current.hide();
     }
   };
 
@@ -59,8 +59,7 @@ function ProductManagement() {
   useEffect(() => {
     // 初始化一次
     if (detailModalRef.current) {
-      const modal = new Modal(detailModalRef.current);
-      setBsDetailModal(modal);
+      bsDetailModal.current = new Modal(detailModalRef.current);
     }
   }, []);
 
