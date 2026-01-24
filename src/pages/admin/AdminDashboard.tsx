@@ -6,8 +6,8 @@ import type { ApiError } from '@/types/error';
 import { apiAdminLoginCheck } from '@/api/admin.login';
 import { getToken } from '@/utils/token';
 
-import LoadingSpinner from '@/components/LoadingSpinner';
 import LoginPage from '@/pages/admin/LoginPage';
+import LoginCheckPage from '@/pages/admin/LoginCheckPage';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 
 import ProductManagement from '@/pages/admin/ProductManagement';
@@ -46,11 +46,7 @@ function AdminDashboard() {
 
   return (
     <>
-      {isProcessCheck && (
-        <div className="d-flex justify-content-center align-items-center vh-100">
-          <LoadingSpinner />
-        </div>
-      )}
+      {isProcessCheck && <LoginCheckPage />}
       {!isProcessCheck &&
         (!isAuth ? (
           <LoginPage setIsAuth={setIsAuth} />
