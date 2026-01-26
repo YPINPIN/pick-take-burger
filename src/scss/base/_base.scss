@@ -17,5 +17,17 @@ a {
 
 .table th,
 .table td {
-  padding: 1rem;
+  padding: 16px 20px;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+.min-w-50 {
+  min-width: 50%;
+}
+
+.table-image-width {
+  width: 120px;
 }

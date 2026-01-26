@@ -66,16 +66,22 @@ function ProductManagement() {
   return (
     <>
       {/* Product Management */}
-      <section className="position-relative px-4 py-5">
-        <div className="p-4 bg-white border border-dark rounded-4 shadow-lg">
-          <div className="d-flex justify-content-end align-items-center mb-4">
-            <button type="button" className="btn btn-primary rounded-lg px-4 py-2" disabled>
-              <i className="bi bi-plus-lg me-2" />
+      <section>
+        <div className="bg-white border border-light rounded-3 shadow-lg overflow-hidden">
+          <div className="p-4 d-flex flex-column flex-sm-row gap-3 align-items-stretch justify-content-sm-between align-items-sm-center">
+            <select className="form-select w-auto min-w-50">
+              <option value="" selected>
+                所有分類
+              </option>
+              <option value="美式漢堡">美式漢堡</option>
+            </select>
+            <button type="button" className="btn btn-accent text-gray-900 fw-bold px-5 py-2">
+              <i className="bi bi-plus-circle-fill me-2"></i>
               新增商品
             </button>
           </div>
           {isLoading ? (
-            <div className="d-flex justify-content-center align-items-center">
+            <div className="p-4 d-flex justify-content-center align-items-center">
               <LoadingSpinner />
             </div>
           ) : products.length > 0 ? (
@@ -84,34 +90,40 @@ function ProductManagement() {
                 <table className="table table-hover table-striped mb-0 align-middle text-nowrap">
                   <thead className="table-primary">
                     <tr>
+                      <th scope="col">商品主圖</th>
                       <th scope="col">商品名稱</th>
                       <th scope="col">分類</th>
                       <th scope="col">原價</th>
                       <th scope="col">售價</th>
                       <th scope="col" className="text-center">
-                        啟用
+                        上架
                       </th>
-                      <th scope="col"></th>
+                      <th scope="col" className="text-center">
+                        操作
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {products.map((product) => (
                       <tr key={product.id}>
+                        <td className="table-image-width">
+                          <img src={product.imageUrl} alt={product.title} className="img-fluid rounded" />
+                        </td>
                         <td>{product.title}</td>
                         <td>{product.category}</td>
-                        <td>{product.origin_price}</td>
-                        <td>{product.price}</td>
+                        <td>${product.origin_price}</td>
+                        <td>${product.price}</td>
                         <td className="text-center">
                           <div className="form-check form-switch d-flex justify-content-center align-items-center">
                             <input className="form-check-input" style={{ pointerEvents: 'none' }} type="checkbox" id="checkNativeSwitch" checked={Boolean(product.is_enabled)} readOnly={true} />
                           </div>
                         </td>
-                        <td>
-                          <button onClick={() => handleShowDetail(product)} type="button" className="btn btn-sm btn-primary rounded-3 me-2">
+                        <td className="text-center">
+                          <button onClick={() => handleShowDetail(product)} type="button" className="btn btn-sm btn-secondary rounded-2 me-2">
                             <i className="bi bi-pencil-square me-1" />
                             查看
                           </button>
-                          <button type="button" className="btn btn-sm btn-danger rounded-3" disabled>
+                          <button type="button" className="btn btn-sm btn-danger rounded-2" disabled>
                             <i className="bi bi-trash3-fill me-1" />
                             刪除
                           </button>
@@ -122,8 +134,8 @@ function ProductManagement() {
                 </table>
               </div>
               {/* 分頁 */}
-              <nav className="d-flex justify-content-center mt-4">
-                <ul className="pagination">
+              <nav className="d-flex justify-content-center p-4">
+                <ul className="pagination mb-0">
                   <li className="page-item">
                     <button onClick={() => setCurrentPage((prevPage) => prevPage - 1)} disabled={!pagination.has_pre} type="button" className={`page-link ${!pagination.has_pre ? 'disabled' : ''}`} aria-label="Previous">
                       <span aria-hidden="true">&laquo;</span>
