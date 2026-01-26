@@ -5,11 +5,11 @@ type AdminHeaderProps = {
 
 function AdminHeader({ title, toggleMobileSidebar }: AdminHeaderProps) {
   return (
-    <header className="bg-secondary text-white px-4 py-2 d-flex justify-content-between align-items-center shadow z-1">
+    <header className="bg-secondary text-white px-4 py-3 d-flex justify-content-between align-items-center shadow z-1">
       <div className="d-flex align-items-center gap-3">
         {/* 手機版 sidebar 按鈕 */}
-        <button className="btn btn-primary d-lg-none" type="button" onClick={toggleMobileSidebar}>
-          <i className="bi bi-list fs-3 lh-1 align-middle"></i>
+        <button className="btn btn-primary py-1 px-2 d-lg-none" type="button" onClick={toggleMobileSidebar}>
+          <i className="bi bi-list fs-2 lh-1 align-middle"></i>
         </button>
         <h2 className="fs-5 font-bold">{title}</h2>
       </div>
