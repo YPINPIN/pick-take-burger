@@ -66,7 +66,7 @@ function ProductManagement() {
   return (
     <>
       {/* Product Management */}
-      <section className="position-relative p-4 py-md-5">
+      <section className="position-relative px-4 py-5">
         <div className="p-4 bg-white border border-dark rounded-4 shadow-lg">
           <div className="d-flex justify-content-end align-items-center mb-4">
             <button type="button" className="btn btn-primary rounded-lg px-4 py-2" disabled>
