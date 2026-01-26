@@ -19,11 +19,3 @@ a {
 .table td {
   padding: 1rem;
 }
-
-.mt-header {
-  margin-top: 50px;
-
-  @include media-breakpoint-up(lg) {
-    margin-top: 85px;
-  }
-}

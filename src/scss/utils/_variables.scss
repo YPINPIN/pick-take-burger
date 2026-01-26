@@ -312,6 +312,8 @@ $light: #f3f4f6 !default;
 $dark: #1f2937 !default;
 // custom add accent color
 $accent: #fbbf24 !default;
+// custom add gray-500 color
+$gray-500: $gray-500 !default;
 // custom add gray-900 color
 $gray-900: $gray-900 !default;
 // scss-docs-end theme-color-variables
@@ -327,6 +329,7 @@ $theme-colors: (
   'light': $light,
   'dark': $dark,
   'accent': $accent,
+  'gray-500': $gray-500,
   'gray-900': $gray-900,
 ) !default;
 // scss-docs-end theme-colors-map
@@ -1198,9 +1201,9 @@ $nav-link-padding-x: 1rem !default;
 $nav-link-font-size: null !default;
 $nav-link-font-weight: null !default;
 // custom $nav-link-color: var(--#{$prefix}link-color) !default;
-$nav-link-color: $gray-400 !default;
+$nav-link-color: $gray-500 !default;
 // custom $nav-link-hover-color: var(--#{$prefix}link-hover-color) !default;
-$nav-link-hover-color: $gray-200 !default;
+$nav-link-hover-color: $white !default;
 $nav-link-transition:
   color 0.15s ease-in-out,
   background-color 0.15s ease-in-out,
@@ -1218,8 +1221,10 @@ $nav-tabs-link-active-bg: var(--#{$prefix}body-bg) !default;
 $nav-tabs-link-active-border-color: var(--#{$prefix}border-color) var(--#{$prefix}border-color) $nav-tabs-link-active-bg !default;
 
 $nav-pills-border-radius: var(--#{$prefix}border-radius) !default;
-$nav-pills-link-active-color: $component-active-color !default;
-$nav-pills-link-active-bg: $component-active-bg !default;
+// custom $nav-pills-link-active-color: $component-active-color !default;
+$nav-pills-link-active-color: $white !default;
+// custom $nav-pills-link-active-bg: $component-active-bg !default;
+$nav-pills-link-active-bg: $secondary !default;
 
 $nav-underline-gap: 1rem !default;
 $nav-underline-border-width: 0.125rem !default;

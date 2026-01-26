@@ -1,63 +1,58 @@
-import { useState } from 'react';
-import IconBurger from '@/images/icon-burger.svg';
+import BurgerIcon from '@/components/BurgerIcon';
 
-function AdminSidebar() {
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+type AdminSidebarProps = {
+  showMobileSidebar: boolean;
+  closeMobileSidebar: () => void;
+};
 
-  const toggleMobileSidebar = () => setShowMobileSidebar((show) => !show);
-
+function AdminSidebar({ showMobileSidebar, closeMobileSidebar }: AdminSidebarProps) {
   const sidebarContent = (
-    <>
-      <div className="d-flex justify-content-between justify-content-lg-around align-items-center mb-3">
-        <div className="w-25 d-none d-lg-block">
-          <img src={IconBurger} alt="logo" />
+    <div className="d-flex flex-column h-100">
+      <div className="d-flex align-items-center">
+        <BurgerIcon className="text-primary w-25 me-2 rounded-2 shadow-sm" style={{ maxWidth: '40px', maxHeight: '40px' }} />
+        <div>
+          <h1 className="fs-5 fw-bold">Pick & Take Burger</h1>
+          <p className="text-gray-500 fs-7">管理後台</p>
         </div>
-        <div className="fw-bold ">
-          <h1 className="fs-6 my-1">Pick & Take Burger</h1>
-          <p className="fs-6 mb-0 ">管理後台</p>
-        </div>
-        <button type="button" className="btn-close btn-close-white d-lg-none" onClick={toggleMobileSidebar}></button>
       </div>
       <hr />
-      <ul className=" nav nav-pills flex-column gap-3 fs-5">
+      <ul className="nav nav-pills flex-column gap-2 fs-5 flex-fill">
         <li className="nav-item">
           <a className="nav-link active" href="#">
-            <i className="bi bi-box-seam me-2" />
+            <i className="bi bi-box-seam me-3" />
             產品管理
           </a>
         </li>
         <li className="nav-item">
           <a className="nav-link" href="#">
-            <i className="bi bi-receipt me-2" />
+            <i className="bi bi-receipt me-3" />
             訂單管理
           </a>
         </li>
         <li className="nav-item">
           <a className="nav-link disabled" href="#">
-            <i className="bi bi-ticket-perforated me-2" />
-            未開放
+            <i className="bi bi-ticket-perforated me-3" />
+            優惠卷管理
           </a>
         </li>
       </ul>
-    </>
+      <hr className="d-lg-none" />
+      <button type="button" className="btn-close btn-close-white p-2 fs-5 d-lg-none mx-auto" onClick={closeMobileSidebar}></button>
+    </div>
   );
 
   return (
     <>
-      {/* 手機版切換按鈕 */}
-      <button className="btn btn-dark p-2 border-0 border-end border-primary rounded-0 d-lg-none" type="button" onClick={toggleMobileSidebar}>
-        <i className="bi bi-box-arrow-right" />
-      </button>
       {/* 桌面版 Sidebar */}
-      <aside className="admin-sidebar d-none d-lg-block flex-shrink-0 position-sticky top-0 start-0 bg-dark border-end border-primary text-white p-3 vh-100">{sidebarContent}</aside>
+      <aside className="admin-sidebar flex-shrink-0 position-sticky top-0 start-0 bg-primary text-white p-3 vh-100 d-none d-lg-block">{sidebarContent}</aside>
 
       {/* 手機版 Offcanvas Sidebar */}
-      <div className={`admin-sidebar-mobile d-lg-none offcanvas offcanvas-start bg-dark text-white ${showMobileSidebar ? 'show' : ''}`} style={{ visibility: showMobileSidebar ? 'visible' : 'hidden' }}>
+      <div className={`admin-sidebar-mobile d-lg-none offcanvas offcanvas-start bg-primary text-white ${showMobileSidebar ? 'show' : ''}`} style={{ visibility: showMobileSidebar ? 'visible' : 'hidden' }}>
         <div className="offcanvas-body">{sidebarContent}</div>
       </div>
 
       {/* 手機版背景遮罩 */}
-      {showMobileSidebar && <div className="offcanvas-backdrop d-lg-none fade show" onClick={toggleMobileSidebar} />}
+      {showMobileSidebar && <div className="offcanvas-backdrop d-lg-none fade show" onClick={closeMobileSidebar} />}
     </>
   );
 }

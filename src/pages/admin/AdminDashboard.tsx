@@ -9,12 +9,16 @@ import { getToken } from '@/utils/token';
 import LoginPage from '@/pages/admin/LoginPage';
 import LoginCheckPage from '@/pages/admin/LoginCheckPage';
 import AdminSidebar from '@/components/layout/AdminSidebar';
+import AdminHeader from '@/components/layout/AdminHeader';
 
 import ProductManagement from '@/pages/admin/ProductManagement';
 
 function AdminDashboard() {
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [isProcessCheck, setIsProcessCheck] = useState<boolean>(true);
+  const [showMobileSidebar, setShowMobileSidebar] = useState<boolean>(false);
+  const closeMobileSidebar = () => setShowMobileSidebar(false);
+  const toggleMobileSidebar = () => setShowMobileSidebar((show) => !show);
 
   // 檢查是否已登入
   const checkAuth = async () => {
@@ -52,10 +56,11 @@ function AdminDashboard() {
           <LoginPage setIsAuth={setIsAuth} />
         ) : (
           <div className="admin-dashboard d-flex position-relative">
-            <AdminSidebar />
-            {/* Main Content */}
+            <AdminSidebar showMobileSidebar={showMobileSidebar} closeMobileSidebar={closeMobileSidebar} />
             <div className="admin-dashboard-right flex-fill d-flex flex-column min-vh-100 overflow-x-auto">
-              <main className="flex-fill text-bg-secondary">
+              <AdminHeader title="產品管理" toggleMobileSidebar={toggleMobileSidebar} />
+              {/* 主要內容 */}
+              <main className="flex-fill bg-light">
                 <ProductManagement />
               </main>
             </div>
