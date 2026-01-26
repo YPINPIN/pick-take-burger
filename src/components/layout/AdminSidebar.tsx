@@ -19,19 +19,19 @@ function AdminSidebar({ showMobileSidebar, closeMobileSidebar }: AdminSidebarPro
       <ul className="nav nav-pills flex-column gap-2 fs-5 flex-fill">
         <li className="nav-item">
           <a className="nav-link active" href="#">
-            <i className="bi bi-box-seam me-3" />
+            <i className="bi bi-box-seam" />
             產品管理
           </a>
         </li>
         <li className="nav-item">
           <a className="nav-link" href="#">
-            <i className="bi bi-receipt me-3" />
+            <i className="bi bi-receipt" />
             訂單管理
           </a>
         </li>
         <li className="nav-item">
           <a className="nav-link disabled" href="#">
-            <i className="bi bi-ticket-perforated me-3" />
+            <i className="bi bi-ticket-perforated" />
             優惠卷管理
           </a>
         </li>
@@ -47,7 +47,7 @@ function AdminSidebar({ showMobileSidebar, closeMobileSidebar }: AdminSidebarPro
       <aside className="admin-sidebar flex-shrink-0 position-sticky top-0 start-0 bg-primary text-white p-3 vh-100 d-none d-lg-block">{sidebarContent}</aside>
 
       {/* 手機版 Offcanvas Sidebar */}
-      <div className={`admin-sidebar-mobile d-lg-none offcanvas offcanvas-start bg-primary text-white ${showMobileSidebar ? 'show' : ''}`} style={{ visibility: showMobileSidebar ? 'visible' : 'hidden' }}>
+      <div className={`admin-sidebar-mobile d-lg-none offcanvas offcanvas-start bg-primary text-white ${showMobileSidebar ? 'show' : ''}`}>
         <div className="offcanvas-body">{sidebarContent}</div>
       </div>
 
