@@ -1,5 +1,5 @@
 import adminApi from '@/api/admin';
-import type { GetProductsParams, GetProductsResponse, CreateProductParams, CreateProductResponse, UpdateProductParams, UpdateProductResponse, DeleteProductResponse } from '@/types/product';
+import type { GetProductsParams, GetProductsResponse, CreateProductData, CreateProductResponse, UpdateProductParams, UpdateProductResponse, DeleteProductResponse } from '@/types/product';
 
 const API_PATH = import.meta.env.VITE_API_PATH;
 
@@ -8,7 +8,7 @@ export const apiAdminGetProducts = async (params: GetProductsParams): Promise<Ge
   return res.data;
 };
 
-export const apiAdminCreateProduct = async (params: CreateProductParams): Promise<CreateProductResponse> => {
+export const apiAdminCreateProduct = async (params: CreateProductData): Promise<CreateProductResponse> => {
   const res = await adminApi.post<CreateProductResponse>(`/api/${API_PATH}/admin/product`, { data: params });
   return res.data;
 };

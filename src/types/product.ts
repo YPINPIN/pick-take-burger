@@ -27,11 +27,11 @@ export type GetProductsResponse = {
   messages: unknown[];
 };
 
-export type CreateProductParams = Omit<ProductData, 'id' | 'num'>;
+export type CreateProductData = Omit<ProductData, 'id' | 'num'>;
 
 export type UpdateProductParams = {
   id: string;
-  data: CreateProductParams;
+  data: CreateProductData;
 };
 
 type MessageResponse = {
