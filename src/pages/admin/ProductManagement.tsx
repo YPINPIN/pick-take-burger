@@ -22,7 +22,7 @@ function ProductManagement() {
     category: '',
   });
   const [tempProduct, setTempProduct] = useState<ProductData | null>(null);
-  const detailModalRef = useRef(null);
+  const detailModalRef = useRef<HTMLDivElement | null>(null);
   const bsDetailModal = useRef<Modal | null>(null); // 存 Bootstrap Modal instance
 
   const handleShowDetail = (product: ProductData) => {
@@ -35,6 +35,8 @@ function ProductManagement() {
 
   const handleCloseDetail = () => {
     if (bsDetailModal.current) {
+      // 解決 Modal Focus 錯誤
+      (document.activeElement as HTMLElement)?.blur();
       bsDetailModal.current.hide();
     }
   };
@@ -69,10 +71,8 @@ function ProductManagement() {
       <section>
         <div className="bg-white border border-light rounded-3 shadow-lg overflow-hidden">
           <div className="p-4 d-flex flex-column flex-sm-row gap-3 align-items-stretch justify-content-sm-between align-items-sm-center">
-            <select className="form-select w-auto min-w-50">
-              <option value="" selected>
-                所有分類
-              </option>
+            <select className="form-select w-auto min-w-50" defaultValue="">
+              <option value="">所有分類</option>
               <option value="美式漢堡">美式漢堡</option>
             </select>
             <button type="button" className="btn btn-accent text-gray-900 fw-bold px-5 py-2">
@@ -165,7 +165,7 @@ function ProductManagement() {
       </section>
 
       {/* Modal */}
-      <div ref={detailModalRef} className="modal fade" id="productInfoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex={-1} aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div ref={detailModalRef} className="modal fade" id="productInfoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex={-1} aria-labelledby="staticBackdropLabel">
         <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div className="modal-content">
             <div className="modal-header">
