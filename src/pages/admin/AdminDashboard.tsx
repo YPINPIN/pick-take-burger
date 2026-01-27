@@ -10,6 +10,7 @@ import LoginPage from '@/pages/admin/LoginPage';
 import LoginCheckPage from '@/pages/admin/LoginCheckPage';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 import AdminHeader from '@/components/layout/AdminHeader';
+import AdminFooter from '@/components/layout/AdminFooter';
 
 import ProductManagement from '@/pages/admin/ProductManagement';
 
@@ -63,6 +64,7 @@ function AdminDashboard() {
               <main className="flex-fill bg-light px-4 py-5 overflow-x-auto">
                 <ProductManagement />
               </main>
+              <AdminFooter />
             </div>
           </div>
         ))}
