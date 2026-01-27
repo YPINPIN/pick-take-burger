@@ -26,3 +26,19 @@ export type GetProductsResponse = {
   pagination: Pagination;
   messages: unknown[];
 };
+
+export type CreateProductParams = Omit<ProductData, 'id' | 'num'>;
+
+export type UpdateProductParams = {
+  id: string;
+  data: CreateProductParams;
+};
+
+type MessageResponse = {
+  success: boolean;
+  message: string;
+};
+
+export type CreateProductResponse = MessageResponse;
+export type UpdateProductResponse = MessageResponse;
+export type DeleteProductResponse = MessageResponse;
