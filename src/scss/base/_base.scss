@@ -15,6 +15,10 @@ a {
   text-decoration: none;
 }
 
+textarea {
+  resize: none;
+}
+
 .table th,
 .table td {
   padding: 16px 20px;
@@ -30,4 +34,44 @@ a {
 
 .table-image-width {
   width: 120px;
+}
+
+.modal-custom-xl {
+  --bs-modal-width: 85vw;
+  --bs-modal-margin: 2rem;
+  max-width: 85vw;
+  margin-right: auto;
+  margin-left: auto;
+
+  @include media-breakpoint-up(lg) {
+    --bs-modal-width: 900px;
+    max-width: 900px;
+  }
+
+  .modal-footer {
+    padding: 1rem 2rem;
+  }
+}
+
+.border-dashed {
+  --bs-border-style: dashed;
+}
+
+.row-custom {
+  --bs-gutter-x: 0.5rem;
+  --bs-gutter-y: 0.5rem;
+}
+
+.btn-delete-image {
+  position: absolute;
+  top: min(5%, 8px);
+  right: min(5%, 8px);
+  left: auto;
+  max-width: 25px;
+  max-height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  z-index: 1;
 }

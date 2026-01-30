@@ -915,8 +915,10 @@ $form-label-color: null !default;
 // scss-docs-end form-label-variables
 
 // scss-docs-start form-input-variables
-$input-padding-y: $input-btn-padding-y !default;
-$input-padding-x: $input-btn-padding-x !default;
+// custom $input-padding-y: $input-btn-padding-y !default;
+$input-padding-y: 0.5rem !default;
+// custom $input-padding-x: $input-btn-padding-x !default;
+$input-padding-x: 1rem !default;
 $input-font-family: $input-btn-font-family !default;
 $input-font-size: $input-btn-font-size !default;
 $input-font-weight: $font-weight-base !default;
@@ -1547,14 +1549,16 @@ $badge-border-radius: var(--#{$prefix}border-radius) !default;
 // Modals
 
 // scss-docs-start modal-variables
-$modal-inner-padding: $spacer !default;
+// custom $modal-inner-padding: $spacer !default;
+$modal-inner-padding: $spacer * 2 !default;
 
 $modal-footer-margin-between: 0.5rem !default;
 
 $modal-dialog-margin: 0.5rem !default;
 $modal-dialog-margin-y-sm-up: 1.75rem !default;
 
-$modal-title-line-height: $line-height-base !default;
+// custom $modal-title-line-height: $line-height-base !default;
+$modal-title-line-height: $line-height-sm !default;
 
 $modal-content-color: var(--#{$prefix}body-color) !default;
 $modal-content-bg: var(--#{$prefix}body-bg) !default;
@@ -1570,11 +1574,14 @@ $modal-backdrop-opacity: 0.5 !default;
 
 $modal-header-border-color: var(--#{$prefix}border-color) !default;
 $modal-header-border-width: $modal-content-border-width !default;
-$modal-header-padding-y: $modal-inner-padding !default;
-$modal-header-padding-x: $modal-inner-padding !default;
+// custom $modal-header-padding-y: $modal-inner-padding !default;
+$modal-header-padding-y: 1rem !default;
+// custom $modal-header-padding-x: $modal-inner-padding !default;
+$modal-header-padding-x: 2rem !default;
 $modal-header-padding: $modal-header-padding-y $modal-header-padding-x !default; // Keep this for backwards compatibility
 
-$modal-footer-bg: null !default;
+// custom $modal-footer-bg: null !default;
+$modal-footer-bg: $light !default;
 $modal-footer-border-color: $modal-header-border-color !default;
 $modal-footer-border-width: $modal-header-border-width !default;
 
@@ -1762,8 +1769,10 @@ $btn-close-white-filter: invert(1) grayscale(100%) brightness(200%) !default; //
 // Offcanvas
 
 // scss-docs-start offcanvas-variables
-$offcanvas-padding-y: $modal-inner-padding !default;
-$offcanvas-padding-x: $modal-inner-padding !default;
+// custom $offcanvas-padding-y: $modal-inner-padding !default;
+$offcanvas-padding-y: 1rem !default;
+// custom $offcanvas-padding-x: $modal-inner-padding !default;
+$offcanvas-padding-x: 1rem !default;
 $offcanvas-horizontal-width: 400px !default;
 $offcanvas-vertical-height: 30vh !default;
 $offcanvas-transition-duration: 0.3s !default;

@@ -1,16 +1,20 @@
 import { useEffect, useState, useRef } from 'react';
+
 import { toast } from 'react-toastify';
-import { Modal } from 'bootstrap';
 
 import type { ApiError } from '@/types/error';
 import type { Pagination } from '@/types/pagination';
 import type { ProductData } from '@/types/product';
+import type { AdminProductModalHandle, AdminDeleteModalHandle } from '@/types/modal';
 
 import { apiAdminGetProducts } from '@/api/admin.product';
 
 import LoadingSpinner from '@/components/LoadingSpinner';
+import AdminProductModal from '@/components/modals/AdminProductModal';
+import AdminDeleteModal from '@/components/modals/AdminDeleteModal';
 
 function ProductManagement() {
+  // 全部產品資料
   const [products, setProducts] = useState<ProductData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -21,24 +25,52 @@ function ProductManagement() {
     has_next: false,
     category: '',
   });
-  const [tempProduct, setTempProduct] = useState<ProductData | null>(null);
-  const detailModalRef = useRef<HTMLDivElement | null>(null);
-  const bsDetailModal = useRef<Modal | null>(null); // 存 Bootstrap Modal instance
+  // 產品新增/編輯 Modal
+  const productModalRef = useRef<AdminProductModalHandle>(null);
+  // 刪除 Modal
+  const deleteModalRef = useRef<AdminDeleteModalHandle>(null);
 
-  const handleShowDetail = (product: ProductData) => {
-    setTempProduct({ ...product, imagesUrl: [product.imageUrl, ...product.imagesUrl] });
-
-    if (bsDetailModal.current) {
-      bsDetailModal.current.show();
+  // 取得產品列表
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const data = await apiAdminGetProducts({ page: currentPage.toString() });
+      setProducts(data.products);
+      setPagination(data.pagination);
+      // 同步當前頁面狀態
+      if (currentPage !== data.pagination.current_page) {
+        setCurrentPage(data.pagination.current_page);
+      }
+    } catch (error) {
+      const err = error as ApiError;
+      toast.error(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleCloseDetail = () => {
-    if (bsDetailModal.current) {
-      // 解決 Modal Focus 錯誤
-      (document.activeElement as HTMLElement)?.blur();
-      bsDetailModal.current.hide();
-    }
+  // 新增產品
+  const handleAddProductClick = () => {
+    productModalRef.current?.open(null);
+  };
+
+  // 編輯產品
+  const handleUpdateProductClick = (product: ProductData) => {
+    productModalRef.current?.open(product);
+  };
+
+  // 刪除產品
+  const handleDeleteProductClick = (product: ProductData) => {
+    deleteModalRef.current?.open({
+      id: product.id,
+      title: product.title,
+      type: 'product',
+    });
+  };
+
+  // 更新產品成功後的回調
+  const handleUpdateProductSuccess = () => {
+    fetchData();
   };
 
   useEffect(() => {
@@ -48,6 +80,10 @@ function ProductManagement() {
         const data = await apiAdminGetProducts({ page: currentPage.toString() });
         setProducts(data.products);
         setPagination(data.pagination);
+        // 同步當前頁面狀態
+        if (currentPage !== data.pagination.current_page) {
+          setCurrentPage(data.pagination.current_page);
+        }
       } catch (error) {
         const err = error as ApiError;
         toast.error(err.message);
@@ -58,28 +94,22 @@ function ProductManagement() {
     fetchData();
   }, [currentPage]);
 
-  useEffect(() => {
-    // 初始化一次
-    if (detailModalRef.current) {
-      bsDetailModal.current = new Modal(detailModalRef.current);
-    }
-  }, []);
-
   return (
     <>
       {/* Product Management */}
       <section>
         <div className="bg-white border border-light rounded-3 shadow-lg overflow-hidden">
-          <div className="p-4 d-flex flex-column flex-sm-row gap-3 align-items-stretch justify-content-sm-between align-items-sm-center">
-            <select className="form-select w-auto min-w-50" defaultValue="">
-              <option value="">所有分類</option>
-              <option value="美式漢堡">美式漢堡</option>
-            </select>
-            <button type="button" className="btn btn-accent text-gray-900 fw-bold px-5 py-2">
-              <i className="bi bi-plus-circle-fill me-2"></i>
-              新增商品
-            </button>
-          </div>
+          {!isLoading && (
+            <div className="p-4 d-flex flex-column flex-sm-row gap-3 align-items-stretch justify-content-sm-between align-items-sm-center">
+              <select className="form-select w-auto min-w-50" defaultValue="">
+                <option value="">所有分類</option>
+              </select>
+              <button type="button" onClick={handleAddProductClick} className="btn btn-accent text-gray-900 fw-bold px-5 py-2">
+                <i className="bi bi-plus-circle-fill me-2"></i>
+                新增產品
+              </button>
+            </div>
+          )}
           {isLoading ? (
             <div className="p-4 d-flex justify-content-center align-items-center">
               <LoadingSpinner />
@@ -90,8 +120,8 @@ function ProductManagement() {
                 <table className="table table-hover table-striped mb-0 align-middle text-nowrap">
                   <thead className="table-primary">
                     <tr>
-                      <th scope="col">商品主圖</th>
-                      <th scope="col">商品名稱</th>
+                      <th scope="col">產品主圖</th>
+                      <th scope="col">產品名稱</th>
                       <th scope="col">分類</th>
                       <th scope="col">原價</th>
                       <th scope="col">售價</th>
@@ -107,7 +137,13 @@ function ProductManagement() {
                     {products.map((product) => (
                       <tr key={product.id}>
                         <td className="table-image-width">
-                          <img src={product.imageUrl} alt={product.title} className="img-fluid rounded" />
+                          {product.imageUrl ? (
+                            <img src={product.imageUrl} alt={product.title} className="img-fluid rounded" />
+                          ) : (
+                            <div className="bg-light text-secondary border rounded fs-7 d-flex align-items-center justify-content-center" style={{ width: '100%', aspectRatio: '1/1' }}>
+                              暫無產品圖
+                            </div>
+                          )}
                         </td>
                         <td>{product.title}</td>
                         <td>{product.category}</td>
@@ -119,11 +155,11 @@ function ProductManagement() {
                           </div>
                         </td>
                         <td className="text-center">
-                          <button onClick={() => handleShowDetail(product)} type="button" className="btn btn-sm btn-secondary rounded-2 me-2">
+                          <button onClick={() => handleUpdateProductClick(product)} type="button" className="btn btn-sm btn-secondary rounded-2 me-2">
                             <i className="bi bi-pencil-square me-1" />
-                            查看
+                            編輯
                           </button>
-                          <button type="button" className="btn btn-sm btn-danger rounded-2" disabled>
+                          <button type="button" className="btn btn-sm btn-danger rounded-2" onClick={() => handleDeleteProductClick(product)}>
                             <i className="bi bi-trash3-fill me-1" />
                             刪除
                           </button>
@@ -157,45 +193,17 @@ function ProductManagement() {
               </nav>
             </>
           ) : (
-            <div className="text-center">
-              <p className="fs-3 text-primary">目前沒有商品</p>
+            <div className="text-center px-4 pb-4">
+              <p className="fs-3 text-primary">目前沒有產品</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Modal */}
-      <div ref={detailModalRef} className="modal fade" id="productInfoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex={-1} aria-labelledby="staticBackdropLabel">
-        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h1 className="modal-title fs-5 fw-bold" id="staticBackdropLabel">
-                {tempProduct?.title}
-              </h1>
-              <button type="button" className="btn-close" onClick={handleCloseDetail}></button>
-            </div>
-            <div className="modal-body">
-              <div className="row row-cols-2 row-cols-md-3 g-2">
-                {tempProduct?.imagesUrl.map((image, index) => (
-                  <div className="col" key={image}>
-                    <img src={image} className="object-fit-cover rounded" alt={`圖片${index + 1}`} />
-                  </div>
-                ))}
-              </div>
-
-              <span className="my-2 badge rounded-pill text-bg-secondary">{tempProduct?.category}</span>
-              <p>商品描述：{tempProduct?.description}</p>
-              <p>商品內容：{tempProduct?.content}</p>
-              <p className="fs-4">
-                <span>
-                  <del>原價：$ {tempProduct?.origin_price}</del>
-                </span>
-                <span className="text-danger float-end">$ {tempProduct?.price}</span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Product Modal */}
+      <AdminProductModal ref={productModalRef} onSuccess={handleUpdateProductSuccess} />
+      {/* Delete Modal */}
+      <AdminDeleteModal ref={deleteModalRef} onSuccess={handleUpdateProductSuccess} />
     </>
   );
 }
