@@ -15,3 +15,8 @@ export type LoginCheckResponse = {
   success: boolean;
   uid: string;
 };
+
+export type LogoutResponse = {
+  success: boolean;
+  message: string;
+};
