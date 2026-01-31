@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 
 import { toast } from 'react-toastify';
 
@@ -31,7 +31,7 @@ function ProductManagement() {
   const deleteModalRef = useRef<AdminDeleteModalHandle>(null);
 
   // 取得產品列表
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await apiAdminGetProducts({ page: currentPage.toString() });
@@ -47,7 +47,7 @@ function ProductManagement() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage]);
 
   // 新增產品
   const handleAddProductClick = () => {
@@ -74,25 +74,8 @@ function ProductManagement() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const data = await apiAdminGetProducts({ page: currentPage.toString() });
-        setProducts(data.products);
-        setPagination(data.pagination);
-        // 同步當前頁面狀態
-        if (currentPage !== data.pagination.current_page) {
-          setCurrentPage(data.pagination.current_page);
-        }
-      } catch (error) {
-        const err = error as ApiError;
-        toast.error(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
-  }, [currentPage]);
+  }, [fetchData]);
 
   return (
     <>
