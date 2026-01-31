@@ -223,7 +223,7 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
                     </div>
                   </div>
                   <div className="col-md-7">
-                    <div className="row row-custom">
+                    <div className="row g-2">
                       <div className="col-12">
                         <label htmlFor="title" className="fw-medium mb-2">
                           產品名稱

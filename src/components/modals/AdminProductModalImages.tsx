@@ -6,7 +6,7 @@ type AdminProductModalImagesProps = {
 
 function AdminProductModalImages({ imagesUrl, maxImageNum, onImageDelete }: AdminProductModalImagesProps) {
   return (
-    <div className="row row-custom mb-3">
+    <div className="row g-2 mb-3">
       {imagesUrl.map((imageUrl, index) => {
         if (index === 0) {
           return (
