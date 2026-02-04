@@ -1,5 +1,5 @@
 import adminApi from '@/api/admin';
-import type { GetProductsParams, GetProductsResponse, CreateProductData, CreateProductResponse, UpdateProductParams, UpdateProductResponse, DeleteProductResponse } from '@/types/product';
+import type { GetProductsParams, GetProductsResponse, CreateProductData, CreateProductResponse, UpdateProductParams, UpdateProductResponse, DeleteProductResponse, GetAllProductsResponse } from '@/types/product';
 
 const API_PATH = import.meta.env.VITE_API_PATH;
 
@@ -21,5 +21,10 @@ export const apiAdminUpdateProduct = async (params: UpdateProductParams): Promis
 
 export const apiAdminDeleteProduct = async (id: string): Promise<DeleteProductResponse> => {
   const res = await adminApi.delete<DeleteProductResponse>(`/api/${API_PATH}/admin/product/${id}`);
+  return res.data;
+};
+
+export const apiAdminGetAllProducts = async (): Promise<GetAllProductsResponse> => {
+  const res = await adminApi.get<GetAllProductsResponse>(`/api/${API_PATH}/admin/products/all`);
   return res.data;
 };

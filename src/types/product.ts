@@ -48,3 +48,11 @@ type MessageResponse = {
 export type CreateProductResponse = MessageResponse;
 export type UpdateProductResponse = MessageResponse;
 export type DeleteProductResponse = MessageResponse;
+
+// 定義一次取得所有商品回應型別
+export type GetAllProductsResponse = {
+  success: boolean;
+  products: {
+    [key: string]: ProductData;
+  };
+};

@@ -7,7 +7,7 @@ import type { Pagination } from '@/types/pagination';
 import type { ProductData } from '@/types/product';
 import type { AdminProductModalHandle, AdminDeleteModalHandle } from '@/types/modal';
 
-import { apiAdminGetProducts } from '@/api/admin.product';
+import { apiAdminGetProducts, apiAdminGetAllProducts } from '@/api/admin.product';
 
 import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
 
@@ -19,8 +19,7 @@ import AdminDeleteModal from '@/components/modals/AdminDeleteModal';
 function ProductManagement() {
   // 全部產品資料
   const [products, setProducts] = useState<ProductData[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  // 分頁
   const [pagination, setPagination] = useState<Pagination>({
     total_pages: 0,
     current_page: 0,
@@ -28,21 +27,50 @@ function ProductManagement() {
     has_next: false,
     category: '',
   });
+  // 產品類別
+  const [categories, setCategories] = useState<string[]>([]);
+  // 目前頁面
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  // 目前選擇的類別
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  // fetch 狀態
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   // 產品新增/編輯 Modal
   const productModalRef = useRef<AdminProductModalHandle>(null);
   // 刪除 Modal
   const deleteModalRef = useRef<AdminDeleteModalHandle>(null);
 
-  // 取得產品列表
-  const fetchData = useCallback(async () => {
+  // 取得所有產品（主要拿 categories）
+  const fetchAllProducts = async () => {
+    try {
+      const data = await apiAdminGetAllProducts();
+      const categories = [...new Set(Object.values(data.products).map((p) => p.category))];
+      setCategories(categories);
+    } catch (error) {
+      const err = error as ApiError;
+      toast.error(err.message);
+    }
+  };
+
+  // 取得產品列表（根據 page + category）
+  const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await apiAdminGetProducts({ page: currentPage.toString() });
+      const data = await apiAdminGetProducts({
+        page: currentPage.toString(),
+        category: selectedCategory,
+      });
       setProducts(data.products);
       setPagination(data.pagination);
       // 同步當前頁面狀態
       if (currentPage !== data.pagination.current_page) {
         setCurrentPage(data.pagination.current_page);
+      }
+      // 當目前類別沒有產品時，切換到所有分類
+      if (data.products.length === 0 && selectedCategory !== '') {
+        toast.info('此分類沒有產品，將切回所有分類');
+        setSelectedCategory('');
+        setCurrentPage(1);
       }
     } catch (error) {
       const err = error as ApiError;
@@ -50,7 +78,13 @@ function ProductManagement() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage]);
+  }, [currentPage, selectedCategory]);
+
+  // 選擇分類 (會回到第一頁)
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.currentTarget.value);
+    setCurrentPage(1);
+  };
 
   // 新增產品
   const handleAddProductClick = () => {
@@ -73,12 +107,19 @@ function ProductManagement() {
 
   // 更新產品成功後的回調
   const handleUpdateProductSuccess = () => {
-    fetchData();
+    fetchAllProducts(); // 更新 categories
+    fetchProducts(); // 更新產品列表
   };
 
+  // 當 fetchProducts 因為 page 或 category 變化時觸發
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchProducts();
+  }, [fetchProducts]);
+
+  // 初始化抓 categories
+  useEffect(() => {
+    fetchAllProducts();
+  }, []);
 
   return (
     <>
@@ -87,8 +128,13 @@ function ProductManagement() {
         <div className="bg-white border border-light rounded-3 shadow-lg overflow-hidden">
           {!isLoading && (
             <div className="p-4 d-flex flex-column flex-sm-row gap-3 align-items-stretch justify-content-sm-between align-items-sm-center">
-              <select className="form-select w-auto min-w-50" defaultValue="">
+              <select className="form-select w-auto min-w-50" value={selectedCategory} onChange={handleCategoryChange}>
                 <option value="">所有分類</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </select>
               <button type="button" onClick={handleAddProductClick} className="btn btn-accent text-gray-900 fw-bold px-5 py-2">
                 <i className="bi bi-plus-circle-fill me-2"></i>
