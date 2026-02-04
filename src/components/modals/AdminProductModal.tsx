@@ -9,8 +9,10 @@ import type { ApiError } from '@/types/error';
 
 import { isValidUrl } from '@/utils/url';
 import { trimProduct, validateProduct } from '@/utils/product';
+import { validateFile } from '@/utils/upload';
 
 import { apiAdminCreateProduct, apiAdminUpdateProduct } from '@/api/admin.product';
+import { apiAdminUploadImage } from '@/api/admin.upload';
 
 import AdminProductModalImages from '@/components/modals/AdminProductModalImages';
 
@@ -44,6 +46,10 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
   const [tempProduct, setTempProduct] = useState<ProductData>(createInitProductData);
   // 圖片網址輸入框
   const [imageUrlInput, setImageUrlInput] = useState<string>('');
+  // 圖片上傳檔案
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageFile, setImageFile] = useState<File | undefined>(undefined);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   // 初始化 Modal
   useEffect(() => {
@@ -56,8 +62,17 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
     };
   }, []);
 
+  // 重置上傳檔案輸入框
+  const handleResetFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    setImageFile(undefined);
+  };
+
   const open = useCallback((product: ProductData | null = null) => {
     setImageUrlInput('');
+    handleResetFileInput();
     // 設定 Modal 類型
     if (!product) {
       product = createInitProductData();
@@ -140,6 +155,51 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
     }));
   };
 
+  // 處理圖片上傳檔案變更
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files?.[0];
+
+    // 檔案未選擇
+    if (!file) {
+      handleResetFileInput();
+      return;
+    }
+
+    // 驗證檔案
+    const error = validateFile(file);
+    if (error) {
+      handleResetFileInput();
+      toast.error(error);
+      return;
+    }
+
+    setImageFile(file);
+  };
+
+  // 處理圖片上傳
+  const handleImageUpload = async () => {
+    if (!imageFile) return;
+    setIsUploading(true);
+    try {
+      // 圖片資料
+      const formData = new FormData();
+      formData.append('file-to-upload', imageFile);
+
+      const data = await apiAdminUploadImage(formData);
+      setTempProduct((prevProduct) => ({
+        ...prevProduct,
+        imagesUrl: [...prevProduct.imagesUrl, data.imageUrl],
+      }));
+      toast.success('圖片已上傳');
+    } catch (error) {
+      const err = error as ApiError;
+      toast.error(err.message);
+    } finally {
+      handleResetFileInput();
+      setIsUploading(false);
+    }
+  };
+
   // 執行產品新增或更新
   const executeProductMutation = async (apiFn: () => Promise<{ success: boolean; message: string }>) => {
     setIsUpdating(true);
@@ -202,24 +262,41 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
               <i className="bi bi-pencil-square me-2"></i>
               {modalType === 'create' ? '新增' : '編輯'}產品
             </h3>
-            <button type="button" className="btn-close btn-close-white" onClick={close} disabled={isUpdating}></button>
+            <button type="button" className="btn-close btn-close-white" onClick={close} disabled={isUpdating || isUploading}></button>
           </div>
           <div className="modal-body">
             <form className="text-primary">
-              <fieldset disabled={isUpdating}>
+              <fieldset disabled={isUpdating || isUploading}>
                 <div className="row">
                   <div className="col-md-5 mb-3 mb-md-0">
-                    <label htmlFor="imagesUrl" className="fw-medium mb-2">
-                      產品圖片 (最多{IMAGE_MAX_NUM}張)
-                    </label>
+                    <p className="fw-medium mb-2">產品圖片 (最多{IMAGE_MAX_NUM}張)</p>
                     {/* 圖片預覽 UI */}
                     <AdminProductModalImages imagesUrl={tempProduct.imagesUrl} maxImageNum={IMAGE_MAX_NUM} onImageDelete={handleImageDelete} />
-                    <div>
+                    <div className="mb-1">
+                      <label htmlFor="imagesUrl" className="fw-medium fs-7 text-secondary mb-1">
+                        圖片連結
+                      </label>
                       <input type="text" id="imagesUrl" value={imageUrlInput} onChange={handleImageChange} className="form-control mb-2" placeholder="請輸入圖片網址..." disabled={tempProduct.imagesUrl.length >= IMAGE_MAX_NUM} />
                       <button type="button" onClick={handleImageAdd} className="btn btn-primary py-2 w-100" disabled={tempProduct.imagesUrl.length >= IMAGE_MAX_NUM}>
                         <i className="bi bi-plus-lg me-2"></i>
                         新增圖片
                       </button>
+                    </div>
+                    <div className="d-flex align-items-center gap-2 py-2">
+                      <div className="flex-fill bg-gray-500" style={{ height: '1px' }}></div>
+                      <span className="fs-7 fw-medium text-gray-500">或</span>
+                      <div className="flex-fill bg-gray-500" style={{ height: '1px' }}></div>
+                    </div>
+                    <div>
+                      <label htmlFor="fileUpload" className="fw-medium fs-7 text-secondary mb-1">
+                        從電腦上傳
+                      </label>
+                      <input ref={fileInputRef} type="file" id="fileUpload" onChange={handleFileChange} className="form-control  mb-2" accept="image/jpeg,image/png" disabled={tempProduct.imagesUrl.length >= IMAGE_MAX_NUM} />
+                      <button type="button" onClick={handleImageUpload} className="btn btn-primary py-2 w-100" disabled={!imageFile || tempProduct.imagesUrl.length >= IMAGE_MAX_NUM}>
+                        {isUploading ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-upload me-2"></i>}
+                        {isUploading ? '上傳中...' : '上傳圖片'}
+                      </button>
+                      <div className="form-text text-gray-500">請注意，僅限使用 jpg、jpeg 與 png 格式，檔案大小限制為 3MB 以下。</div>
                     </div>
                   </div>
                   <div className="col-md-7">
@@ -258,13 +335,13 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
                         <label htmlFor="description" className="fw-medium mb-2">
                           產品簡述
                         </label>
-                        <textarea rows={2} id="description" name="description" value={tempProduct.description} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入產品簡述..." />
+                        <textarea rows={3} id="description" name="description" value={tempProduct.description} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入產品簡述..." />
                       </div>
                       <div className="col-12">
                         <label htmlFor="content" className="fw-medium mb-2">
                           產品內容說明
                         </label>
-                        <textarea rows={3} id="content" name="content" value={tempProduct.content} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入產品內容說明..." />
+                        <textarea rows={4} id="content" name="content" value={tempProduct.content} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入產品內容說明..." />
                       </div>
                       <div className="col-12">
                         <div className="form-check form-switch">
@@ -281,10 +358,10 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
             </form>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-gray-500 fw-medium px-5 py-2" onClick={close} disabled={isUpdating}>
+            <button type="button" className="btn btn-gray-500 fw-medium px-5 py-2" onClick={close} disabled={isUpdating || isUploading}>
               取消
             </button>
-            <button type="button" onClick={handleSubmitProduct} className="btn btn-accent text-gray-900 fw-bold px-5 py-2" disabled={isUpdating}>
+            <button type="button" onClick={handleSubmitProduct} className="btn btn-accent text-gray-900 fw-bold px-5 py-2" disabled={isUpdating || isUploading}>
               {isUpdating ? (modalType === 'create' ? '新增中...' : '儲存中...') : `確認${modalType === 'create' ? '新增' : '儲存'}`}
             </button>
           </div>
