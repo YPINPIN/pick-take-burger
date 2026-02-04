@@ -1,4 +1,4 @@
-import type { ProductData } from '@/types/product';
+import type { ProductData, ProductTag } from '@/types/product';
 
 // 產品資料去除多餘空白
 export const trimProduct = (data: ProductData): ProductData => ({
@@ -20,3 +20,32 @@ export const validateProduct = (data: ProductData): string | null => {
 
   return null;
 };
+
+// 產品標籤相關 map 資料
+export const PRODUCT_TAG_META: Record<
+  ProductTag,
+  {
+    label: string; // 標籤label
+    badgeClass: string; // 前台標籤class
+    sortWeight: number; // 排序權重
+  }
+> = {
+  normal: {
+    label: '一般商品',
+    badgeClass: '',
+    sortWeight: 0,
+  },
+  hot: {
+    label: '熱銷推薦',
+    badgeClass: 'text-bg-danger rounded-pill',
+    sortWeight: 2,
+  },
+  new: {
+    label: '新品上市',
+    badgeClass: 'text-bg-success rounded-pill',
+    sortWeight: 1,
+  },
+};
+
+// 產品推薦
+export const PRODUCT_RECOMMEND_META = { label: '主廚推薦', badgeClass: 'bg-accent text-dark rounded-pill' };

@@ -9,6 +9,8 @@ import type { AdminProductModalHandle, AdminDeleteModalHandle } from '@/types/mo
 
 import { apiAdminGetProducts } from '@/api/admin.product';
 
+import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
+
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PaginationUI from '@/components/PaginationUI';
 import AdminProductModal from '@/components/modals/AdminProductModal';
@@ -129,7 +131,15 @@ function ProductManagement() {
                             </div>
                           )}
                         </td>
-                        <td>{product.title}</td>
+                        <td>
+                          <span className="d-flex gap-1 mb-2">
+                            {/* 主廚推薦 */}
+                            {product.is_recommend === 1 && <span className={`badge ${PRODUCT_RECOMMEND_META.badgeClass}`}>{PRODUCT_RECOMMEND_META.label}</span>}
+                            {/* Tag 標籤 */}
+                            {product.tag !== 'normal' && PRODUCT_TAG_META[product.tag] && <span className={`badge ${PRODUCT_TAG_META[product.tag].badgeClass}`}>{PRODUCT_TAG_META[product.tag].label}</span>}
+                          </span>
+                          {product.title}
+                        </td>
                         <td>{product.category}</td>
                         <td>${product.origin_price}</td>
                         <td>${product.price}</td>

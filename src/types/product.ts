@@ -1,5 +1,8 @@
 import type { Pagination } from '@/types/pagination';
 
+// 產品標籤
+export type ProductTag = 'normal' | 'hot' | 'new';
+
 export type ProductData = {
   id: string;
   title: string;
@@ -13,6 +16,9 @@ export type ProductData = {
   imageUrl: string;
   imagesUrl: string[];
   num: number; // 顯示順序
+  // 新增的欄位
+  tag: ProductTag; // 產品標籤
+  is_recommend: 0 | 1; // 是否為推薦商品
 };
 
 export type GetProductsParams = {

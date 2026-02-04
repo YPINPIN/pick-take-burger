@@ -3,12 +3,12 @@ import { toast } from 'react-toastify';
 import { Modal } from 'bootstrap';
 
 import type { ChangeEvent } from 'react';
-import type { ProductData, CreateProductData } from '@/types/product';
+import type { ProductData, ProductTag, CreateProductData } from '@/types/product';
 import type { AdminProductModalType, AdminProductModalHandle, AdminProductModalProps } from '@/types/modal';
 import type { ApiError } from '@/types/error';
 
 import { isValidUrl } from '@/utils/url';
-import { trimProduct, validateProduct } from '@/utils/product';
+import { trimProduct, validateProduct, PRODUCT_TAG_META } from '@/utils/product';
 import { validateFile } from '@/utils/upload';
 
 import { apiAdminCreateProduct, apiAdminUpdateProduct } from '@/api/admin.product';
@@ -32,6 +32,8 @@ const createInitProductData = (): ProductData => ({
   imageUrl: '',
   imagesUrl: [],
   num: 0,
+  tag: 'normal',
+  is_recommend: 0,
 });
 
 const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalProps>(function AdminProductModal({ onSuccess }, ref) {
@@ -83,7 +85,12 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
 
     // 設定暫存圖片資料
     const imagesUrl = [product.imageUrl, ...(product.imagesUrl ?? [])].filter(Boolean);
-    setTempProduct({ ...product, imagesUrl });
+    setTempProduct({
+      ...product,
+      imagesUrl,
+      tag: product.tag ?? 'normal', // 預設為 normal
+      is_recommend: product.is_recommend ?? 0, // 預設為 0
+    });
 
     bsModal.current?.show();
   }, []);
@@ -111,6 +118,15 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
     setTempProduct((prevProduct) => ({
       ...prevProduct,
       [name]: type === 'checkbox' ? ((target as HTMLInputElement).checked ? 1 : 0) : type === 'number' ? (value === '' ? 0 : Number(value)) : value,
+    }));
+  };
+
+  // 處理下拉選單(tag)變更
+  const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const value = e.currentTarget.value as ProductTag;
+    setTempProduct((prevProduct) => ({
+      ...prevProduct,
+      tag: value,
     }));
   };
 
@@ -332,6 +348,18 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
                         <input type="number" min={0} id="price" name="price" value={tempProduct.price} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入售價..." />
                       </div>
                       <div className="col-12">
+                        <label htmlFor="tag" className="fw-medium mb-2">
+                          產品標籤
+                        </label>
+                        <select id="tag" name="tag" value={tempProduct.tag} onChange={handleSelectChange} className="form-select mb-2">
+                          {Object.entries(PRODUCT_TAG_META).map(([key, meta]) => (
+                            <option key={key} value={key}>
+                              {meta.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-12">
                         <label htmlFor="description" className="fw-medium mb-2">
                           產品簡述
                         </label>
@@ -342,6 +370,14 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
                           產品內容說明
                         </label>
                         <textarea rows={4} id="content" name="content" value={tempProduct.content} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入產品內容說明..." />
+                      </div>
+                      <div className="col-12">
+                        <div className="form-check form-switch">
+                          <input id="is_recommend" name="is_recommend" checked={Boolean(tempProduct.is_recommend)} onChange={handleInputChange} className="form-check-input" type="checkbox" role="switch" />
+                          <label htmlFor="is_recommend" className="form-check-label fw-medium">
+                            是否為推薦產品 (顯示在推薦區塊)
+                          </label>
+                        </div>
                       </div>
                       <div className="col-12">
                         <div className="form-check form-switch">
