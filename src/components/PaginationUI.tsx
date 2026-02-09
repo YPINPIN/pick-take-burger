@@ -17,10 +17,10 @@ function PaginationUI({ total_pages, has_pre, has_next, currentPage, setCurrentP
             <span aria-hidden="true">&laquo;</span>
           </button>
         </li>
-        {Array.from({ length: total_pages }, (_, i) => i + 1).map((page) => (
-          <li key={page} className="page-item">
-            <button onClick={() => setCurrentPage(page)} disabled={currentPage === page} type="button" className={`page-link ${currentPage === page ? 'active' : ''}`}>
-              {page}
+        {Array.from({ length: total_pages }, (_, i) => (
+          <li key={`${i + 1}_page`} className="page-item">
+            <button onClick={() => setCurrentPage(i + 1)} disabled={currentPage === i + 1} type="button" className={`page-link ${currentPage === i + 1 ? 'active' : ''}`}>
+              {i + 1}
             </button>
           </li>
         ))}
