@@ -11,6 +11,9 @@ import OrderManagement from '@/pages/admin/OrderManagement';
 import FrontendLayout from '@/pages/frontend/FrontendLayout';
 import HomePage from '@/pages/frontend/HomePage';
 import MenuPage from '@/pages/frontend/MenuPage';
+import TrackOrder from '@/pages/frontend/TrackOrder';
+import AboutPage from '@/pages/frontend/AboutPage';
+import Cart from '@/pages/frontend/Cart';
 
 // NotFound
 import NotFound from '@/pages/NotFound';
@@ -22,7 +25,10 @@ const routes = [
     element: <FrontendLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'products', element: <MenuPage /> },
+      { path: 'menu', element: <MenuPage /> },
+      { path: 'track-order', element: <TrackOrder /> },
+      { path: 'about', element: <AboutPage /> },
+      { path: 'cart', element: <Cart /> },
     ],
   },
   // 後台相關
