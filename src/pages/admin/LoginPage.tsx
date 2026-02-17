@@ -1,22 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
-import type { Dispatch, SetStateAction, ChangeEvent, FormEvent } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 import type { LoginParams } from '@/types/login';
 import type { ApiError } from '@/types/error';
 
 import { apiAdminLogin } from '@/api/admin.login';
-import { setToken } from '@/utils/token';
+import { getToken, setToken } from '@/utils/token';
 
-import AdminLoginLayout from '@/components/layout/AdminLoginLayout';
+import FullPageCardLayout from '@/components/layout/FullPageCardLayout';
 import BurgerIcon from '@/components/BurgerIcon';
 
-type LoginPageProps = {
-  // The type of the setter function is Dispatch<SetStateAction<T>>
-  setIsAuth: Dispatch<SetStateAction<boolean>>;
-};
-
-function LoginPage({ setIsAuth }: LoginPageProps) {
+function LoginPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginParams>({
     username: '',
     password: '',
@@ -37,7 +34,8 @@ function LoginPage({ setIsAuth }: LoginPageProps) {
     try {
       const { token, expired, message } = await apiAdminLogin(formData);
       setToken(token, expired);
-      setIsAuth(true);
+      // 登入成功，跳轉到管理後台
+      navigate('/admin', { replace: true });
       toast.success(message);
     } catch (error) {
       const err = error as ApiError;
@@ -47,8 +45,16 @@ function LoginPage({ setIsAuth }: LoginPageProps) {
     }
   };
 
+  useEffect(() => {
+    const token = getToken();
+    // 有 token，直接跳轉到管理後台
+    if (token) {
+      navigate('/admin', { replace: true });
+    }
+  }, [navigate]);
+
   return (
-    <AdminLoginLayout>
+    <FullPageCardLayout>
       <div className="p-4 text-center">
         <BurgerIcon className="text-primary w-25 rounded-2 shadow-sm mb-4" style={{ maxWidth: '100px', maxHeight: '100px' }} />
         <h1 className="fs-4 fw-bold mb-1">Pick & Take Burger</h1>
@@ -86,7 +92,7 @@ function LoginPage({ setIsAuth }: LoginPageProps) {
           <i className="bi bi-arrow-left me-2"></i>返回前台首頁
         </a>
       </div>
-    </AdminLoginLayout>
+    </FullPageCardLayout>
   );
 }
 

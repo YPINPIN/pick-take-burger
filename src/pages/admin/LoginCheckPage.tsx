@@ -1,11 +1,10 @@
-import AdminLoginLayout from '@/components/layout/AdminLoginLayout';
-
+import FullPageCardLayout from '@/components/layout/FullPageCardLayout';
 import BurgerIcon from '@/components/BurgerIcon';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 function LoginCheckPage() {
   return (
-    <AdminLoginLayout>
+    <FullPageCardLayout>
       <div className="p-4 text-center">
         <BurgerIcon className="text-primary w-25 rounded-2 shadow-sm mb-4" style={{ maxWidth: '100px', maxHeight: '100px' }} />
         <h1 className="fs-4 fw-bold mb-1">Pick & Take Burger</h1>
@@ -18,7 +17,7 @@ function LoginCheckPage() {
       <div className="p-4 text-center bg-light border-top">
         <p className="text-secondary fw-bold">請稍後，正在跳轉至管理後台</p>
       </div>
-    </AdminLoginLayout>
+    </FullPageCardLayout>
   );
 }
 

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
-type AdminLoginLayoutProps = { children: ReactNode };
+type FullPageCardLayoutProps = { children: ReactNode };
 
-function AdminLoginLayout({ children }: AdminLoginLayoutProps) {
+function FullPageCardLayout({ children }: FullPageCardLayoutProps) {
   return (
     <div className="bg-dark d-flex flex-column min-vh-100">
       <div className="container-fluid container-sm flex-fill d-flex">
@@ -19,4 +19,4 @@ function AdminLoginLayout({ children }: AdminLoginLayoutProps) {
   );
 }
 
-export default AdminLoginLayout;
+export default FullPageCardLayout;

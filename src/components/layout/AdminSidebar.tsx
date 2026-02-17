@@ -1,3 +1,5 @@
+import { NavLink } from 'react-router';
+
 import BurgerIcon from '@/components/BurgerIcon';
 
 type AdminSidebarProps = {
@@ -18,22 +20,22 @@ function AdminSidebar({ showMobileSidebar, closeMobileSidebar }: AdminSidebarPro
       <hr />
       <ul className="nav nav-pills flex-column gap-2 fs-5 flex-fill">
         <li className="nav-item">
-          <a className="nav-link active" href="#">
+          <NavLink className="nav-link" to="/admin/products">
             <i className="bi bi-box-seam" />
             產品管理
-          </a>
+          </NavLink>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">
+          <NavLink className="nav-link" to="/admin/orders">
             <i className="bi bi-receipt" />
             訂單管理
-          </a>
+          </NavLink>
         </li>
         <li className="nav-item">
-          <a className="nav-link disabled" href="#">
+          <NavLink className="nav-link" to="/admin/coupons">
             <i className="bi bi-ticket-perforated" />
             優惠卷管理
-          </a>
+          </NavLink>
         </li>
       </ul>
       <hr className="d-lg-none" />
