@@ -11,6 +11,7 @@ import OrderManagement from '@/pages/admin/OrderManagement';
 import FrontendLayout from '@/pages/frontend/FrontendLayout';
 import HomePage from '@/pages/frontend/HomePage';
 import MenuPage from '@/pages/frontend/MenuPage';
+import ProductDetail from '@/pages/frontend/ProductDetail';
 import TrackOrder from '@/pages/frontend/TrackOrder';
 import AboutPage from '@/pages/frontend/AboutPage';
 import Cart from '@/pages/frontend/Cart';
@@ -26,6 +27,7 @@ const routes = [
     children: [
       { index: true, element: <HomePage /> },
       { path: 'menu', element: <MenuPage /> },
+      { path: 'menu/:productId', element: <ProductDetail /> },
       { path: 'track-order', element: <TrackOrder /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'cart', element: <Cart /> },
