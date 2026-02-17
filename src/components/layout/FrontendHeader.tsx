@@ -5,7 +5,7 @@ import BurgerIcon from '@/components/BurgerIcon';
 function FrontendHeader() {
   return (
     <header className="w-100 border-bottom position-fixed top-0 z-3">
-      <nav className="navbar navbar-expand-md fw-bold bg-primary " data-bs-theme="dark">
+      <nav className="navbar navbar-expand-md fw-bold bg-primary px-md-3" data-bs-theme="dark">
         <div className="container-fluid">
           <NavLink className="navbar-brand" to="/">
             <BurgerIcon className="text-primary w-25 me-2 rounded-2 shadow-sm" style={{ maxWidth: '40px', maxHeight: '40px' }} />
