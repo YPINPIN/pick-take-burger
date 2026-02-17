@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router';
+import { NavLink, Link } from 'react-router';
 
 import BurgerIcon from '@/components/BurgerIcon';
 
@@ -38,8 +38,13 @@ function AdminSidebar({ showMobileSidebar, closeMobileSidebar }: AdminSidebarPro
           </NavLink>
         </li>
       </ul>
-      <hr className="d-lg-none" />
-      <button type="button" className="btn-close btn-close-white p-2 fs-5 d-lg-none mx-auto" onClick={closeMobileSidebar}></button>
+
+      <hr />
+      <Link className="link-light link-opacity-50 link-opacity-100-hover mx-auto" to="/">
+        <i className="bi bi-shop me-2"></i>
+        返回前台首頁
+      </Link>
+      <button type="button" className="btn-close btn-close-white p-2 fs-5 d-lg-none mt-2 mx-auto" onClick={closeMobileSidebar}></button>
     </div>
   );
 
