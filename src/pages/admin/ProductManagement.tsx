@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-
 import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
@@ -17,6 +16,8 @@ import AdminProductModal from '@/components/modals/AdminProductModal';
 import AdminDeleteModal from '@/components/modals/AdminDeleteModal';
 
 function ProductManagement() {
+  // 用來判斷是否為最新請求
+  const requestId = useRef<number>(0);
   // 全部產品資料
   const [products, setProducts] = useState<ProductData[]>([]);
   // 分頁
@@ -54,12 +55,22 @@ function ProductManagement() {
 
   // 取得產品列表（根據 page + category）
   const fetchProducts = useCallback(async () => {
+    // 紀錄請求次數
+    const currentRequest: number = ++requestId.current;
+
     setIsLoading(true);
     try {
       const data = await apiAdminGetProducts({
         page: currentPage.toString(),
         category: selectedCategory,
       });
+
+      // 如果不是最新的請求就不更新
+      if (currentRequest !== requestId.current) {
+        // console.log('不是最新的請求', currentRequest, requestId.current);
+        return;
+      }
+
       setProducts(data.products);
       setPagination(data.pagination);
       // 同步當前頁面狀態
@@ -76,7 +87,10 @@ function ProductManagement() {
       const err = error as ApiError;
       toast.error(err.message);
     } finally {
-      setIsLoading(false);
+      if (currentRequest === requestId.current) {
+        // 如果是最新的請求就關閉 loading
+        setIsLoading(false);
+      }
     }
   }, [currentPage, selectedCategory]);
 
