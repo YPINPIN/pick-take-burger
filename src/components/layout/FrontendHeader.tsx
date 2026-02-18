@@ -24,7 +24,7 @@ function FrontendHeader() {
           <div className="offcanvas-body">
             <ul className="navbar-nav flex-fill gap-md-2">
               <li className="nav-item ms-md-auto">
-                <NavLink className="nav-link" to="/menu">
+                <NavLink className="nav-link" to="/menu" end>
                   <i className="bi bi-fork-knife"></i>
                   美味 MENU
                 </NavLink>
