@@ -62,3 +62,8 @@ export type GetClientAllProductsResponse = {
   success: boolean;
   products: ProductData[];
 };
+
+export type GetClientProductDetailResponse = {
+  success: boolean;
+  product: ProductData;
+};
