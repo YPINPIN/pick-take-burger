@@ -8,7 +8,7 @@ function FrontendLayout() {
     <div className="d-flex flex-column min-vh-100">
       <FrontendHeader />
 
-      <main className="flex-fill bg-light mt-navbar py-3">
+      <main className="flex-fill bg-light mt-navbar py-5">
         <Outlet />
       </main>
 

@@ -4,17 +4,24 @@ import BurgerIcon from '@/components/BurgerIcon';
 
 function FrontendHeader() {
   return (
-    <header className="w-100 border-bottom position-fixed top-0 z-3">
-      <nav className="navbar navbar-expand-md fw-bold bg-primary" data-bs-theme="dark">
-        <div className="container-lg">
-          <NavLink className="navbar-brand" to="/">
-            <BurgerIcon className="text-primary w-25 me-2 rounded-2 shadow-sm" style={{ maxWidth: '40px', maxHeight: '40px' }} />
-            Pick <span>&</span> Take Burger
-          </NavLink>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarContent">
+    <nav className="navbar navbar-expand-md fw-bold bg-primary w-100 border-bottom position-fixed top-0 z-10" data-bs-theme="dark">
+      <div className="container-lg">
+        <NavLink className="navbar-brand" to="/">
+          <BurgerIcon className="text-primary w-25 me-2 rounded-2 shadow-sm" style={{ maxWidth: '40px', maxHeight: '40px' }} />
+          Pick <span>&</span> Take Burger
+        </NavLink>
+        <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="offcanvas offcanvas-end" tabIndex={-1} id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+          <div className="offcanvas-header pb-0">
+            <h5 className="offcanvas-title d-flex align-items-center" id="offcanvasNavbarLabel">
+              <i className="bi bi-list fs-3 me-2"></i>
+              主選單
+            </h5>
+            <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div className="offcanvas-body">
             <ul className="navbar-nav flex-fill gap-md-2">
               <li className="nav-item ms-md-auto">
                 <NavLink className="nav-link" to="/menu">
@@ -43,8 +50,8 @@ function FrontendHeader() {
             </ul>
           </div>
         </div>
-      </nav>
-    </header>
+      </div>
+    </nav>
   );
 }
 

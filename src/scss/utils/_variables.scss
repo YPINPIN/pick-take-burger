@@ -314,6 +314,8 @@ $dark: #1f2937 !default;
 $accent: #fbbf24 !default;
 // custom add gray-500 color
 $gray-500: $gray-500 !default;
+// custom add gray-600 color
+$gray-600: $gray-600 !default;
 // custom add gray-900 color
 $gray-900: $gray-900 !default;
 // scss-docs-end theme-color-variables
@@ -328,8 +330,10 @@ $theme-colors: (
   'danger': $danger,
   'light': $light,
   'dark': $dark,
+  // custom
   'accent': $accent,
   'gray-500': $gray-500,
+  'gray-600': $gray-600,
   'gray-900': $gray-900,
 ) !default;
 // scss-docs-end theme-colors-map
@@ -1194,6 +1198,14 @@ $zindex-levels: (
   1: 1,
   2: 2,
   3: 3,
+  // custom
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+  8: 8,
+  9: 9,
+  10: 10,
 ) !default;
 // scss-docs-end zindex-levels-map
 
@@ -1408,8 +1420,11 @@ $card-title-spacer-y: $spacer * 0.5 !default;
 $card-title-color: null !default;
 $card-subtitle-color: null !default;
 $card-border-width: var(--#{$prefix}border-width) !default;
-$card-border-color: var(--#{$prefix}border-color-translucent) !default;
-$card-border-radius: var(--#{$prefix}border-radius) !default;
+// custom $card-border-color: var(--#{$prefix}border-color-translucent) !default;
+$card-border-color: transparent !default;
+// custom $card-border-radius: var(--#{$prefix}border-radius) !default;
+$card-border-radius: 1.25rem !default;
+
 $card-box-shadow: null !default;
 $card-inner-border-radius: subtract($card-border-radius, $card-border-width) !default;
 $card-cap-padding-y: $card-spacer-y * 0.5 !default;
@@ -1647,9 +1662,11 @@ $list-group-color: var(--#{$prefix}body-color) !default;
 $list-group-bg: var(--#{$prefix}body-bg) !default;
 $list-group-border-color: var(--#{$prefix}border-color) !default;
 $list-group-border-width: var(--#{$prefix}border-width) !default;
-$list-group-border-radius: var(--#{$prefix}border-radius) !default;
+// custom $list-group-border-radius: var(--#{$prefix}border-radius) !default;
+$list-group-border-radius: 1rem !default;
 
-$list-group-item-padding-y: $spacer * 0.5 !default;
+// custom $list-group-item-padding-y: $spacer * 0.5 !default;
+$list-group-item-padding-y: $spacer * 0.75 !default;
 $list-group-item-padding-x: $spacer !default;
 // fusv-disable
 $list-group-item-bg-scale: -80% !default; // Deprecated in v5.3.0
@@ -1657,18 +1674,24 @@ $list-group-item-color-scale: 40% !default; // Deprecated in v5.3.0
 // fusv-enable
 
 $list-group-hover-bg: var(--#{$prefix}tertiary-bg) !default;
-$list-group-active-color: $component-active-color !default;
-$list-group-active-bg: $component-active-bg !default;
+// custom $list-group-active-color: $component-active-color !default;
+$list-group-active-color: $dark !default;
+// custom $list-group-active-bg: $component-active-bg !default;
+$list-group-active-bg: #f9f3e5 !default;
 $list-group-active-border-color: $list-group-active-bg !default;
 
 $list-group-disabled-color: var(--#{$prefix}secondary-color) !default;
 $list-group-disabled-bg: $list-group-bg !default;
 
-$list-group-action-color: var(--#{$prefix}secondary-color) !default;
-$list-group-action-hover-color: var(--#{$prefix}emphasis-color) !default;
+// custom $list-group-action-color: var(--#{$prefix}secondary-color) !default;
+$list-group-action-color: $gray-600 !default;
+// custom $list-group-action-hover-color: var(--#{$prefix}emphasis-color) !default;
+$list-group-action-hover-color: $primary !default;
 
-$list-group-action-active-color: var(--#{$prefix}body-color) !default;
-$list-group-action-active-bg: var(--#{$prefix}secondary-bg) !default;
+// custom $list-group-action-active-color: var(--#{$prefix}body-color) !default;
+$list-group-action-active-color: $dark !default;
+// custom $list-group-action-active-bg: var(--#{$prefix}secondary-bg) !default;
+$list-group-action-active-bg: #f9f3e5 !default;
 // scss-docs-end list-group-variables
 
 // Image thumbnails

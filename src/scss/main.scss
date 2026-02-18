@@ -11,3 +11,7 @@ $bootstrap-icons-font-dir: 'bootstrap-icons/font/fonts';
 
 // layout
 @import './layout/admin-sidebar';
+
+// components
+@import './components/menu-card';
+@import './components/menu-category';

@@ -28,24 +28,52 @@ export const PRODUCT_TAG_META: Record<
     label: string; // 標籤label
     badgeClass: string; // 前台標籤class
     sortWeight: number; // 排序權重
+    iconClass: string; // icon class
   }
 > = {
   normal: {
     label: '一般商品',
     badgeClass: '',
     sortWeight: 0,
+    iconClass: 'bi bi-box me-1',
   },
   hot: {
     label: '熱銷推薦',
     badgeClass: 'text-bg-danger rounded-pill',
     sortWeight: 2,
+    iconClass: 'bi bi-hand-thumbs-up-fill me-1',
   },
   new: {
     label: '新品上市',
     badgeClass: 'text-bg-success rounded-pill',
     sortWeight: 1,
+    iconClass: 'bi bi-star-fill me-1',
   },
 };
 
 // 產品推薦
-export const PRODUCT_RECOMMEND_META = { label: '主廚推薦', badgeClass: 'bg-accent text-dark rounded-pill' };
+export const PRODUCT_RECOMMEND_META = { label: '主廚推薦', badgeClass: 'bg-accent text-dark rounded-pill', iconClass: 'bi bi-award-fill me-1' };
+
+// 產品分類
+export const PRODUCT_CATEGORY_META = [
+  {
+    category: '',
+    iconClass: 'bi bi-grid-fill',
+  },
+  {
+    category: '美式漢堡',
+    iconClass: 'bi bi-fork-knife',
+  },
+  {
+    category: '開胃炸物',
+    iconClass: 'bi bi-fire',
+  },
+  {
+    category: '沙拉與湯品',
+    iconClass: 'bi bi-leaf-fill',
+  },
+  {
+    category: '特色飲品',
+    iconClass: 'bi bi-cup-straw',
+  },
+];

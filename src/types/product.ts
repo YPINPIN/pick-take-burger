@@ -49,10 +49,16 @@ export type CreateProductResponse = MessageResponse;
 export type UpdateProductResponse = MessageResponse;
 export type DeleteProductResponse = MessageResponse;
 
-// 定義一次取得所有商品回應型別
+// 定義後台一次取得所有商品回應型別
 export type GetAllProductsResponse = {
   success: boolean;
   products: {
     [key: string]: ProductData;
   };
+};
+
+// 定義前台一次取得所有商品回應型別
+export type GetClientAllProductsResponse = {
+  success: boolean;
+  products: ProductData[];
 };

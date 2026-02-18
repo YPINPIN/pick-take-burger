@@ -1,0 +1,48 @@
+.menu-category {
+  position: sticky;
+  top: 102px;
+}
+
+.menu-category-list {
+  gap: 6px;
+  .list-group-item-action {
+    border: none;
+    border-radius: 12px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    font-weight: 500;
+
+    transition:
+      border-color 0.15s ease,
+      color 0.15s ease,
+      font-weight 0.15s ease,
+      background-color 0.15s ease;
+
+    i {
+      color: $gray-500;
+      margin-right: 12px;
+
+      transition: color 0.15s ease;
+    }
+
+    &.active {
+      font-weight: bold;
+      border-left: 4px solid $accent;
+      border-right: 4px solid $accent;
+      i {
+        color: $accent;
+      }
+    }
+
+    &:not(.active) {
+      &:hover,
+      &:focus {
+        border-left: 4px solid $gray-300;
+        border-right: 4px solid $gray-300;
+        i {
+          color: $gray-600;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+.menu-card-wrapper {
+  /* 黃色背景 */
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: $accent;
+    border-radius: 1.25rem;
+
+    // 先縮小並隱藏
+    transform: scale(0.95);
+    opacity: 0;
+    // 動畫
+    transition:
+      transform 0.35s ease,
+      opacity 0.35s ease;
+  }
+  // card wrapper hover
+  &:hover::before {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .menu-card {
+    cursor: pointer;
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2);
+      border-color: rgba($primary, 0.3);
+    }
+
+    /* 圖片區塊 */
+    .card-img-wrapper {
+      img {
+        transition:
+          transform 0.35s ease,
+          opacity 0.35s ease;
+      }
+      // 圖片上方的 overlay
+      .overlay {
+        background: rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+    }
+
+    &:hover .card-img-wrapper {
+      img {
+        transform: scale(1.05);
+        opacity: 0.85;
+      }
+      .overlay {
+        opacity: 1;
+      }
+    }
+
+    /* 如果滑到購物車按鈕，取消圖片 hover、overlay顯示 */
+    &:has(.btn-add-cart:hover) {
+      .card-img-wrapper {
+        img {
+          transform: none;
+          opacity: 1;
+        }
+        .overlay {
+          opacity: 0;
+        }
+      }
+    }
+  }
+}
