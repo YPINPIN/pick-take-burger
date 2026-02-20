@@ -6,11 +6,13 @@ import type { Pagination } from '@/types/pagination';
 import type { ProductData } from '@/types/product';
 
 import { apiClientGetAllProducts, apiClientGetProducts } from '@/api/client.product';
+import { apiClientAddCartItem } from '@/api/client.cart';
 
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PaginationUI from '@/components/PaginationUI';
 import MenuCategory from '@/components/MenuCategory';
 import MenuCard from '@/components/MenuCard';
+import GlobalOverlay from '@/components/GlobalOverlay';
 
 function MenuPage() {
   // 用來判斷是否為最新請求
@@ -33,6 +35,10 @@ function MenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   // fetch 狀態
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Overlay 顯示狀態
+  const [isOverlay, setIsOverlay] = useState<boolean>(false);
+  const [overlayMessage, setOverlayMessage] = useState<string>('');
 
   // 產品排序 (num 高到低)
   const sortedProducts = useMemo(() => {
@@ -96,38 +102,58 @@ function MenuPage() {
     setSelectedCategory(category);
   };
 
-  return (
-    <div className="container-lg">
-      <div className="row g-lg-5">
-        <div className="col-sm-4 col-md-3">
-          <MenuCategory categories={categories} selectedCategory={selectedCategory} handleCategoryClick={handleCategoryClick} />
-        </div>
-        <div className="col-sm-8 col-md-9">
-          {isLoading ? (
-            <div className="p-4 d-flex justify-content-center align-items-center">
-              <LoadingSpinner />
-            </div>
-          ) : sortedProducts.length > 0 ? (
-            <>
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {sortedProducts.map((product) => (
-                  <div className="col" key={product.id}>
-                    <MenuCard product={product} />
-                  </div>
-                ))}
-              </div>
+  // 加入購物車
+  const handleAddToCart = async (productId: string) => {
+    try {
+      setOverlayMessage('加入購物車中...');
+      setIsOverlay(true);
+      const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
+      console.log(data);
+      toast.success(data.message);
+    } catch (error) {
+      const err = error as ApiError;
+      toast.error(err.message);
+    } finally {
+      setIsOverlay(false);
+      setOverlayMessage('');
+    }
+  };
 
-              {/* 分頁 小於等於 1 不顯示 */}
-              {pagination.total_pages > 1 && <PaginationUI total_pages={pagination.total_pages} has_pre={pagination.has_pre} has_next={pagination.has_next} currentPage={currentPage} setCurrentPage={setCurrentPage} />}
-            </>
-          ) : (
-            <div className="text-center px-4 pb-4">
-              <p className="fs-3 text-primary">目前沒有任何餐點</p>
-            </div>
-          )}
+  return (
+    <>
+      <GlobalOverlay isOverlay={isOverlay} message={overlayMessage} />
+      <div className="container-lg">
+        <div className="row g-lg-5">
+          <div className="col-sm-4 col-md-3">
+            <MenuCategory categories={categories} selectedCategory={selectedCategory} handleCategoryClick={handleCategoryClick} />
+          </div>
+          <div className="col-sm-8 col-md-9">
+            {isLoading ? (
+              <div className="p-4 d-flex justify-content-center align-items-center">
+                <LoadingSpinner />
+              </div>
+            ) : sortedProducts.length > 0 ? (
+              <>
+                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                  {sortedProducts.map((product) => (
+                    <div className="col" key={product.id}>
+                      <MenuCard product={product} isOverlay={isOverlay} onAddToCart={handleAddToCart} />
+                    </div>
+                  ))}
+                </div>
+
+                {/* 分頁 小於等於 1 不顯示 */}
+                {pagination.total_pages > 1 && <PaginationUI total_pages={pagination.total_pages} has_pre={pagination.has_pre} has_next={pagination.has_next} currentPage={currentPage} setCurrentPage={setCurrentPage} />}
+              </>
+            ) : (
+              <div className="text-center px-4 pb-4">
+                <p className="fs-3 text-primary">目前沒有任何餐點</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

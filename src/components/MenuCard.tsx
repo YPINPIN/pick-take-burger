@@ -1,18 +1,27 @@
 import { useNavigate } from 'react-router';
+import { useState } from 'react';
 
+import type { MouseEvent } from 'react';
 import type { ProductData } from '@/types/product';
 
 import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
 
 type MenuCardProps = {
   product: ProductData;
+  isOverlay: boolean;
+  onAddToCart: (productId: string) => Promise<void>;
 };
 
-function MenuCard({ product }: MenuCardProps) {
+function MenuCard({ product, isOverlay, onAddToCart }: MenuCardProps) {
   const navigate = useNavigate();
 
-  const handleAddToCart = (productId: string) => {
-    console.log('handleAddToCart', productId);
+  const [isAddToCart, setIsAddToCart] = useState<boolean>(false);
+
+  const handleAdd = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsAddToCart(true);
+    await onAddToCart(product.id);
+    setIsAddToCart(false);
   };
 
   return (
@@ -52,17 +61,9 @@ function MenuCard({ product }: MenuCardProps) {
               <span className="text-gray-600">/ {product.unit}</span>
             </div>
           </div>
-          <button
-            type="button"
-            className="btn btn-accent btn-add-cart text-primary fw-bold w-100"
-            onClick={(e) => {
-              // 阻止事件冒泡
-              e.stopPropagation();
-              handleAddToCart(product.id);
-            }}
-          >
-            <i className="bi bi-cart-plus-fill lh-1 fs-5 me-2"></i>
-            加入購物車
+          <button type="button" className="btn btn-accent btn-add-cart text-primary fw-bold w-100" onClick={handleAdd} disabled={isOverlay}>
+            {isAddToCart ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-cart-plus-fill lh-1 fs-5 me-2"></i>}
+            {isAddToCart ? '加入中...' : '加入購物車'}
           </button>
         </div>
       </div>

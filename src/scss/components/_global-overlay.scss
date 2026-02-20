@@ -1,0 +1,12 @@
+.global-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* 攔截所有點擊 */
+  pointer-events: all;
+}

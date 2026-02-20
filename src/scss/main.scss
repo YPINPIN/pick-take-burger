@@ -13,6 +13,7 @@ $bootstrap-icons-font-dir: 'bootstrap-icons/font/fonts';
 @import './layout/admin-sidebar';
 
 // components
+@import './components/global-overlay';
 @import './components/menu-card';
 @import './components/menu-category';
 @import './components/product-detail-images';
