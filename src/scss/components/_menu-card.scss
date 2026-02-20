@@ -35,17 +35,6 @@
       border-color: rgba($primary, 0.3);
     }
 
-    .btn-add-cart {
-      i {
-        color: $dark;
-      }
-      &:hover {
-        i {
-          color: $primary;
-        }
-      }
-    }
-
     /* 圖片區塊 */
     .card-img-wrapper {
       img {

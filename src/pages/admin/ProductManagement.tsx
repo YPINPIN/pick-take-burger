@@ -201,8 +201,8 @@ function ProductManagement() {
                           {product.title}
                         </td>
                         <td>{product.category}</td>
-                        <td>${product.origin_price}</td>
-                        <td>${product.price}</td>
+                        <td>NT${product.origin_price}</td>
+                        <td className="text-danger">NT${product.price}</td>
                         <td className="text-center">
                           <div className="form-check form-switch d-flex justify-content-center align-items-center">
                             <input className="form-check-input" style={{ pointerEvents: 'none' }} type="checkbox" id="checkNativeSwitch" checked={Boolean(product.is_enabled)} readOnly={true} />

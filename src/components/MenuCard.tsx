@@ -45,24 +45,25 @@ function MenuCard({ product }: MenuCardProps) {
           <h5 className="card-title text-primary fw-bold">{product.title}</h5>
           <p className="card-text text-secondary line-clamp-2 mb-2">{product.description}</p>
           {/* 下方--價格、按鈕 */}
-          <div className="mt-auto d-flex justify-content-between align-items-center">
+          <div className="mt-auto d-flex justify-content-between align-items-center mb-2">
             <div className="d-flex align-items-baseline gap-2">
-              <span className="text-danger fs-5">${product.price}</span>
-              <span className="text-muted text-decoration-line-through">${product.origin_price}</span>
-              <span className="text-secondary">/ {product.unit}</span>
+              <span className="text-gray-500 text-decoration-line-through">NT${product.origin_price}</span>
+              <span className="text-danger fs-5 fw-bold">NT${product.price}</span>
+              <span className="text-gray-600">/ {product.unit}</span>
             </div>
-            <button
-              type="button"
-              className="btn btn-accent btn-add-cart text-primary px-3 py-2"
-              onClick={(e) => {
-                // 阻止事件冒泡
-                e.stopPropagation();
-                handleAddToCart(product.id);
-              }}
-            >
-              <i className="bi bi-cart-plus-fill lh-1 fs-5"></i>
-            </button>
           </div>
+          <button
+            type="button"
+            className="btn btn-accent btn-add-cart text-primary fw-bold w-100"
+            onClick={(e) => {
+              // 阻止事件冒泡
+              e.stopPropagation();
+              handleAddToCart(product.id);
+            }}
+          >
+            <i className="bi bi-cart-plus-fill lh-1 fs-5 me-2"></i>
+            加入購物車
+          </button>
         </div>
       </div>
     </div>
