@@ -10,6 +10,7 @@ import { apiClientGetProductDetail } from '@/api/client.product';
 import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
 
 import LoadingSpinner from '@/components/LoadingSpinner';
+import ProductDetailImages from '@/components/ProductDetailImages';
 
 // 單次購物車數量限制
 const MIN_QTY = 1;
@@ -80,18 +81,18 @@ function ProductDetail() {
       ) : product ? (
         <div className="row g-lg-5">
           {/* 左側 - 圖片 */}
-          <div className="col-sm-5">
-            <div className="mb-3 mb-sm-0">
-              <img src={product.imageUrl} alt={product.title} className="img-fluid rounded-4 shadow-sm" />
+          <div className="col-sm-9 col-md-6 col-lg-5 mx-auto">
+            <div className="mb-3 mb-sm-4 mb-md-0">
+              <ProductDetailImages imagesUrl={[product.imageUrl, ...product.imagesUrl]} />
             </div>
           </div>
 
           {/* 右側 - 白色資訊卡 */}
-          <div className="col-sm-7">
+          <div className="col-sm-9 col-md-6 col-lg-7 mx-auto">
             <div className="bg-white rounded-4 shadow-sm p-4 p-lg-5">
               {/* 標籤區 */}
               {(product.is_recommend === 1 || product.tag !== 'normal') && (
-                <div className="d-flex gap-2 mb-3">
+                <div className="d-flex flex-wrap gap-2 mb-3">
                   {product.is_recommend === 1 && (
                     <span className={`badge ${PRODUCT_RECOMMEND_META.badgeClass} py-2 px-3`}>
                       <i className={`${PRODUCT_RECOMMEND_META.iconClass} me-1`}></i>
@@ -111,7 +112,7 @@ function ProductDetail() {
               <h1 className="fw-bold text-dark mb-2">{product.title}</h1>
 
               {/* 價格區 */}
-              <div className="d-flex align-items-baseline gap-2 mb-4">
+              <div className="d-flex flex-wrap align-items-baseline gap-2 mb-4">
                 <span className="text-gray-500 text-decoration-line-through">NT${product.origin_price}</span>
                 <span className="text-danger fs-2 fw-bold">NT${product.price}</span>
                 <span className="text-gray-600">/ {product.unit}</span>
@@ -143,7 +144,7 @@ function ProductDetail() {
               <div className="d-flex flex-column gap-4">
                 {/* 數量控制 */}
                 <div>
-                  <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
+                  <div className="d-flex flex-wrap align-items-center justify-content-center gap-2">
                     <button type="button" className="btn btn-primary rounded-circle" style={{ width: '40px', height: '40px' }} disabled={productQty <= MIN_QTY} onClick={() => setProductQty((prev) => clamp(prev - 1))}>
                       <i className="bi bi-dash-lg"></i>
                     </button>
@@ -156,7 +157,7 @@ function ProductDetail() {
                   </div>
                   {/* 提示 */}
                   {productQty >= MAX_QTY && (
-                    <small className="text-secondary d-block text-center">
+                    <small className="text-secondary d-block text-center mt-2">
                       已達單次購買上限（{MAX_QTY} {product.unit}）
                     </small>
                   )}

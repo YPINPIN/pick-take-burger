@@ -46,7 +46,7 @@ function MenuCard({ product }: MenuCardProps) {
           <p className="card-text text-secondary line-clamp-2 mb-2">{product.description}</p>
           {/* 下方--價格、按鈕 */}
           <div className="mt-auto d-flex justify-content-between align-items-center mb-2">
-            <div className="d-flex align-items-baseline gap-2">
+            <div className="d-flex flex-wrap align-items-baseline gap-2">
               <span className="text-gray-500 text-decoration-line-through">NT${product.origin_price}</span>
               <span className="text-danger fs-5 fw-bold">NT${product.price}</span>
               <span className="text-gray-600">/ {product.unit}</span>

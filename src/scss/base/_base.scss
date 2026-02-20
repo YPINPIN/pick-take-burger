@@ -107,3 +107,11 @@ textarea {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* swiper 禁止選擇 */
+.swiper {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
