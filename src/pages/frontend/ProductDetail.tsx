@@ -91,7 +91,7 @@ function ProductDetail() {
   };
 
   return (
-    <div className="container-lg">
+    <div className="container">
       {isLoading ? (
         <div className="d-flex justify-content-center py-5">
           <LoadingSpinner />
@@ -101,14 +101,14 @@ function ProductDetail() {
           <GlobalOverlay isOverlay={isOverlay} message={overlayMessage} />
           <div className="row g-lg-5">
             {/* 左側 - 圖片 */}
-            <div className="col-sm-9 col-md-6 col-lg-5 mx-auto">
+            <div className="col-sm-10 col-md-5 mx-auto">
               <div className="mb-3 mb-sm-4 mb-md-0">
                 <ProductDetailImages imagesUrl={[product.imageUrl, ...product.imagesUrl]} />
               </div>
             </div>
 
             {/* 右側 - 白色資訊卡 */}
-            <div className="col-sm-9 col-md-6 col-lg-7 mx-auto">
+            <div className="col-sm-10 col-md-7 mx-auto">
               <div className="bg-white rounded-4 shadow-sm p-4 p-lg-5">
                 {/* 標籤區 */}
                 {(product.is_recommend === 1 || product.tag !== 'normal') && (
