@@ -9,7 +9,7 @@ function App() {
     <>
       <RouterProvider router={router} />
       {/* Toast container */}
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable={false} pauseOnHover theme="colored" transition={Bounce} />
+      <ToastContainer position="top-right" autoClose={1000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable={false} pauseOnHover theme="colored" transition={Bounce} />
     </>
   );
 }
