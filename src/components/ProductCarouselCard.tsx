@@ -1,0 +1,64 @@
+import { useNavigate } from 'react-router';
+import { useState } from 'react';
+
+import type { MouseEvent } from 'react';
+import type { ProductData } from '@/types/product';
+
+import { PRODUCT_TAG_META } from '@/utils/product';
+
+type ProductCarouselCardProps = {
+  product: ProductData;
+  isOverlay: boolean;
+  onAddToCart: (productId: string) => Promise<void>;
+};
+
+function ProductCarouselCard({ product, isOverlay, onAddToCart }: ProductCarouselCardProps) {
+  const navigate = useNavigate();
+
+  const [isAddToCart, setIsAddToCart] = useState<boolean>(false);
+
+  const handleAdd = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsAddToCart(true);
+    await onAddToCart(product.id);
+    setIsAddToCart(false);
+  };
+
+  return (
+    <div className="product-card card bg-white overflow-hidden" onClick={() => navigate(`/menu/${product.id}`)}>
+      {/* 圖片 + badge + overlay */}
+      <div className="card-img-wrapper position-relative overflow-hidden">
+        <img src={product.imageUrl} className="card-img-top" alt={product.title} />
+        <span className="d-flex gap-2 position-absolute top-0 start-0 px-2 py-3 z-2">
+          {/* Tag 標籤 */}
+          {product.tag !== 'normal' && PRODUCT_TAG_META[product.tag] && (
+            <span className={`badge ${PRODUCT_TAG_META[product.tag].badgeClass}`}>
+              <i className={PRODUCT_TAG_META[product.tag].iconClass}></i>
+              {PRODUCT_TAG_META[product.tag].label}
+            </span>
+          )}
+        </span>
+        <div className="overlay position-absolute top-0 start-0 end-0 bottom-0 d-flex justify-content-center align-items-center text-white fs-4 fw-bold pe-none">查看更多</div>
+      </div>
+
+      {/* 內容 */}
+      <div className="card-body d-flex flex-column">
+        <h5 className="card-title text-primary text-truncate fw-bold">{product.title}</h5>
+        {/* 下方--價格、按鈕 */}
+        <div className="mt-auto d-flex justify-content-between align-items-center mb-2">
+          <div className="d-flex flex-wrap align-items-baseline gap-2">
+            <span className="text-gray-500 text-decoration-line-through">NT${product.origin_price}</span>
+            <span className="text-danger fs-5 fw-bold">NT${product.price}</span>
+            <span className="text-gray-600">/ {product.unit}</span>
+          </div>
+        </div>
+        <button type="button" className="btn btn-accent btn-add-cart text-primary fw-bold w-100" onClick={handleAdd} disabled={isOverlay}>
+          {isAddToCart ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-cart-plus-fill lh-1 fs-5 me-2"></i>}
+          {isAddToCart ? '加入中...' : '加入購物車'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default ProductCarouselCard;

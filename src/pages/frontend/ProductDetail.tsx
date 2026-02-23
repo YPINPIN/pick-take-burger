@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 import type { ProductData } from '@/types/product';
 
-import { apiClientGetProductDetail } from '@/api/client.product';
+import { apiClientGetProductDetail, apiClientGetProducts } from '@/api/client.product';
 import { apiClientAddCartItem } from '@/api/client.cart';
 
 import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
@@ -13,6 +13,8 @@ import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ProductDetailImages from '@/components/ProductDetailImages';
 import GlobalOverlay from '@/components/GlobalOverlay';
+import EntityCarousel from '@/components/EntityCarousel';
+import ProductCarouselCard from '@/components/ProductCarouselCard';
 
 // 單次購物車數量限制
 const MIN_QTY = 1;
@@ -27,11 +29,19 @@ function ProductDetail() {
 
   // 產品資料
   const [product, setProduct] = useState<ProductData | null>(null);
+  // 自己的 id
+  const myId: string | undefined = useMemo(() => product?.id, [product]);
   // fetch 狀態
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // 推薦產品
+  const [list, setList] = useState<ProductData[]>([]);
+  const [isListLoading, setIsListLoading] = useState<boolean>(false);
+
   // 產品數量
   const [productQty, setProductQty] = useState<number>(1);
+  // 加入購物車
+  const [isAddToCart, setIsAddToCart] = useState<boolean>(false);
 
   // Overlay 顯示狀態
   const [isOverlay, setIsOverlay] = useState<boolean>(false);
@@ -66,39 +76,66 @@ function ProductDetail() {
       }
     };
 
-    console.log('productId', productId);
     fetchProductDetail(productId);
   }, [productId, navigate]);
+
+  useEffect(() => {
+    if (!product) return;
+    // API 抓取同 category 的所有產品去除自己
+    const fetchCategoryProducts = async () => {
+      setIsListLoading(true);
+      try {
+        const data = await apiClientGetProducts({
+          category: product.category,
+        });
+        const list = data.products.filter((p) => p.id !== product.id);
+        setList(list);
+      } catch (error) {
+        const err = error as ApiError;
+        toast.error(err.message);
+      } finally {
+        setIsListLoading(false);
+      }
+    };
+    fetchCategoryProducts();
+  }, [product]);
 
   // 產品數量限制
   const clamp = (value: number) => Math.min(Math.max(value, MIN_QTY), MAX_QTY);
 
-  // 加入購物車
-  const handleAddToCart = async (productId: string) => {
+  // 加入購物車 (與推薦列表共用)
+  const handleAddToCart = async (productId: string, qty: number = 1) => {
     try {
       setOverlayMessage('加入購物車中...');
       setIsOverlay(true);
-      const data = await apiClientAddCartItem({ product_id: productId, qty: productQty });
-      console.log(data);
+      if (myId === productId) {
+        // 為自己時顯示 loading
+        setIsAddToCart(true);
+      }
+      const data = await apiClientAddCartItem({ product_id: productId, qty });
       toast.success(data.message);
     } catch (error) {
       const err = error as ApiError;
       toast.error(err.message);
     } finally {
+      if (myId === productId) {
+        setIsAddToCart(false);
+      }
       setIsOverlay(false);
       setOverlayMessage('');
     }
   };
 
   return (
-    <div className="container">
-      {isLoading ? (
-        <div className="d-flex justify-content-center py-5">
-          <LoadingSpinner />
-        </div>
-      ) : product ? (
-        <>
-          <GlobalOverlay isOverlay={isOverlay} message={overlayMessage} />
+    <>
+      {/* 全域遮罩 */}
+      <GlobalOverlay isOverlay={isOverlay} message={overlayMessage} />
+      <div className="container">
+        {isLoading ? (
+          <div className="d-flex justify-content-center py-5">
+            <LoadingSpinner />
+          </div>
+        ) : product ? (
           <div className="row g-lg-5">
             {/* 左側 - 圖片 */}
             <div className="col-sm-10 col-md-5 mx-auto">
@@ -109,7 +146,7 @@ function ProductDetail() {
 
             {/* 右側 - 白色資訊卡 */}
             <div className="col-sm-10 col-md-7 mx-auto">
-              <div className="bg-white rounded-4 shadow-sm p-4 p-lg-5">
+              <div className="bg-white rounded-4 shadow-sm p-4 p-lg-5 mb-4 mb-md-0">
                 {/* 標籤區 */}
                 {(product.is_recommend === 1 || product.tag !== 'normal') && (
                   <div className="d-flex flex-wrap gap-2 mb-3">
@@ -184,21 +221,41 @@ function ProductDetail() {
                   </div>
 
                   {/* 加入購物車 */}
-                  <button type="button" className="btn btn-accent text-dark fs-5 fw-bold shadow-sm w-100 py-2" onClick={() => handleAddToCart(product.id)} disabled={isOverlay}>
-                    {isOverlay ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-cart-plus-fill me-2"></i>}
-                    {isOverlay ? '加入中...' : `加入購物車 (NT${(product.price * productQty).toLocaleString()})`}
+                  <button type="button" className="btn btn-accent text-dark fs-5 fw-bold shadow-sm w-100 py-2" onClick={() => handleAddToCart(product.id, productQty)} disabled={isOverlay || isAddToCart}>
+                    {isAddToCart ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-cart-plus-fill me-2"></i>}
+                    {isAddToCart ? '加入中...' : `加入購物車 (NT${(product.price * productQty).toLocaleString()})`}
                   </button>
                 </div>
               </div>
             </div>
+
+            {/* 相關推薦列表 */}
+            <div className="col-sm-10 col-md-12 mx-auto">
+              <EntityCarousel
+                items={list}
+                itemKey="id"
+                renderItem={(product) => <ProductCarouselCard product={product} isOverlay={isOverlay} onAddToCart={handleAddToCart} />}
+                isLoading={isListLoading}
+                title="您可能也會喜歡"
+                autoplay={true}
+                loop={true}
+                breakpoints={{
+                  0: { slidesPerView: 1 },
+                  576: { slidesPerView: 1 },
+                  768: { slidesPerView: 3 },
+                  992: { slidesPerView: 4 },
+                }}
+                navigation={true}
+              />
+            </div>
           </div>
-        </>
-      ) : (
-        <div className="text-center py-5">
-          <p className="fs-4 text-primary">產品不存在</p>
-        </div>
-      )}
-    </div>
+        ) : (
+          <div className="text-center py-5">
+            <p className="fs-4 text-primary">產品不存在</p>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

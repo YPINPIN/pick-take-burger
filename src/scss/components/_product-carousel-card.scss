@@ -1,0 +1,45 @@
+.product-card {
+  transition: border-color 0.25s ease;
+
+  &:hover {
+    border-color: rgba($primary, 0.3);
+  }
+
+  /* 圖片區塊 */
+  .card-img-wrapper {
+    img {
+      transition:
+        transform 0.35s ease,
+        opacity 0.35s ease;
+    }
+    // 圖片上方的 overlay
+    .overlay {
+      background: rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+  }
+
+  &:hover .card-img-wrapper {
+    img {
+      transform: scale(1.05);
+      opacity: 0.85;
+    }
+    .overlay {
+      opacity: 1;
+    }
+  }
+
+  /* 如果滑到購物車按鈕，取消圖片 hover、overlay顯示 */
+  &:has(.btn-add-cart:hover) {
+    .card-img-wrapper {
+      img {
+        transform: none;
+        opacity: 1;
+      }
+      .overlay {
+        opacity: 0;
+      }
+    }
+  }
+}
