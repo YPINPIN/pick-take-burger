@@ -7,6 +7,7 @@ import { EDIT_QTY_TYPE } from '@/types/cart';
 import type { CartInfo, CartData, EditCartParams, EditQtyType } from '@/types/cart';
 import type { ProductData } from '@/types/product';
 import type { GlobalOverlayState } from '@/types/globalOverlay';
+import type { ConfirmModalHandle, ConfirmModalData } from '@/types/modal';
 
 import { apiClientGetCartInfo, apiClientAddCartItem, apiClientEditCartItem, apiClientDeleteCartItem, apiClientClearCart } from '@/api/client.cart';
 import { apiClientGetAllProducts } from '@/api/client.product';
@@ -14,6 +15,7 @@ import { apiClientGetAllProducts } from '@/api/client.product';
 import GlobalOverlay from '@/components/GlobalOverlay';
 import EntityCarousel from '@/components/EntityCarousel';
 import ProductCarouselCard from '@/components/ProductCarouselCard';
+import ConfirmModal from '@/components/modals/ConfirmModal';
 
 function Cart() {
   // 購物車資料
@@ -24,6 +26,9 @@ function Cart() {
   // 主廚推薦產品
   const [list, setList] = useState<ProductData[]>([]);
   const [isListLoading, setIsListLoading] = useState<boolean>(false);
+
+  // 確認 Modal
+  const confirmModalRef = useRef<ConfirmModalHandle>(null);
 
   // Overlay 顯示狀態 (fetch 狀態)
   const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
@@ -78,7 +83,7 @@ function Cart() {
   const handleEditCartItem = async (type: EditQtyType, cartItem: CartData) => {
     // 如果是減少且數量為 1 就刪除
     if (type === EDIT_QTY_TYPE.MINUS && cartItem.qty <= 1) {
-      handleDeleteCartItem(cartItem.id);
+      onDeleteCartItemClick(cartItem);
       return;
     }
 
@@ -135,6 +140,29 @@ function Cart() {
     }
   };
 
+  // 開啟確認 Modal
+  const openConfirmModal = async (modalData: ConfirmModalData) => {
+    confirmModalRef.current?.open(modalData);
+  };
+
+  // 刪除購物車項目確認
+  const onDeleteCartItemClick = (cartItem: CartData) => {
+    openConfirmModal({
+      title: `刪除「 ${cartItem.product.title}」`,
+      message: '刪除後將無法恢復，請再次確認。',
+      onConfirm: () => handleDeleteCartItem(cartItem.id),
+    });
+  };
+
+  // 清空購物車確認
+  const onClearCartClick = () => {
+    openConfirmModal({
+      title: '清空購物車',
+      message: '清空後將無法恢復，請再次確認。',
+      onConfirm: () => handleClearCart(),
+    });
+  };
+
   // 推薦列表加入購物車
   const handleAddToCart = useCallback(async (productId: string) => {
     try {
@@ -158,6 +186,8 @@ function Cart() {
     <>
       {/* 全域遮罩 */}
       <GlobalOverlay overlayState={overlayState} />
+      {/* Confirm Modal */}
+      <ConfirmModal ref={confirmModalRef} />
       <div className="container-lg">
         <div className="mb-4">
           <h1 className="fs-2 fw-bold text-dark mb-2">您的購物車</h1>
@@ -190,7 +220,7 @@ function Cart() {
                           </div>
                           {/* 刪除 */}
                           <div className="d-flex align-items-start align-items-lg-center">
-                            <button type="button" className="btn btn-danger" onClick={() => handleDeleteCartItem(item.id)} disabled={overlayState.isOverlay}>
+                            <button type="button" className="btn btn-danger" onClick={() => onDeleteCartItemClick(item)} disabled={overlayState.isOverlay}>
                               <i className="bi bi-x-lg"></i>
                             </button>
                           </div>
@@ -216,7 +246,7 @@ function Cart() {
                         <i className="bi bi-arrow-left me-2"></i>
                         繼續點餐
                       </Link>
-                      <button className="btn btn-danger fw-bold" onClick={handleClearCart} disabled={overlayState.isOverlay}>
+                      <button className="btn btn-danger fw-bold" onClick={onClearCartClick} disabled={overlayState.isOverlay}>
                         <i className="bi bi-trash3-fill me-2"></i>
                         清空購物車
                       </button>

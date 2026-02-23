@@ -42,3 +42,26 @@ export type AdminDeleteModalHandle = {
 export type AdminDeleteModalProps = {
   onSuccess: () => void;
 };
+
+// ----------------------------------------
+// Confirm Modal 相關類型
+// ----------------------------------------
+
+// 定義 Confirm Modal 資料結構
+// title: 確認內容
+// message: 額外說明
+export type ConfirmModalData = {
+  title: string;
+  message?: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+};
+
+// 定義 Confirm Modal 對外暴露的 API
+export type ConfirmModalHandle = {
+  open: (data: ConfirmModalData) => void;
+  close: () => void;
+};
+
+// 定義 Confirm Modal props
+export type ConfirmModalProps = Record<never, never>;
