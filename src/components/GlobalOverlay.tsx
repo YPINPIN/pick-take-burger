@@ -1,9 +1,10 @@
+import type { GlobalOverlayState } from '@/types/globalOverlay';
+
 type GlobalOverlayProps = {
-  isOverlay: boolean;
-  message: string;
+  overlayState: GlobalOverlayState;
 };
 
-function GlobalOverlay({ isOverlay, message }: GlobalOverlayProps) {
+function GlobalOverlay({ overlayState: { isOverlay, message } }: GlobalOverlayProps) {
   return (
     isOverlay && (
       <div className="global-overlay">

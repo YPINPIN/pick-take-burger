@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 import type { ProductData } from '@/types/product';
+import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 import { apiClientGetProductDetail, apiClientGetProducts } from '@/api/client.product';
 import { apiClientAddCartItem } from '@/api/client.cart';
@@ -44,8 +45,7 @@ function ProductDetail() {
   const [isAddToCart, setIsAddToCart] = useState<boolean>(false);
 
   // Overlay 顯示狀態
-  const [isOverlay, setIsOverlay] = useState<boolean>(false);
-  const [overlayMessage, setOverlayMessage] = useState<string>('');
+  const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
 
   useEffect(() => {
     const currentRequest: number = ++requestId.current;
@@ -106,8 +106,7 @@ function ProductDetail() {
   // 加入購物車 (與推薦列表共用)
   const handleAddToCart = async (productId: string, qty: number = 1) => {
     try {
-      setOverlayMessage('加入購物車中...');
-      setIsOverlay(true);
+      setOverlayState({ isOverlay: true, message: '加入購物車中...' });
       if (myId === productId) {
         // 為自己時顯示 loading
         setIsAddToCart(true);
@@ -121,15 +120,14 @@ function ProductDetail() {
       if (myId === productId) {
         setIsAddToCart(false);
       }
-      setIsOverlay(false);
-      setOverlayMessage('');
+      setOverlayState({ isOverlay: false, message: '' });
     }
   };
 
   return (
     <>
       {/* 全域遮罩 */}
-      <GlobalOverlay isOverlay={isOverlay} message={overlayMessage} />
+      <GlobalOverlay overlayState={overlayState} />
       <div className="container">
         {isLoading ? (
           <div className="d-flex justify-content-center py-5">
@@ -221,7 +219,7 @@ function ProductDetail() {
                   </div>
 
                   {/* 加入購物車 */}
-                  <button type="button" className="btn btn-accent text-dark fs-5 fw-bold shadow-sm w-100 py-2" onClick={() => handleAddToCart(product.id, productQty)} disabled={isOverlay || isAddToCart}>
+                  <button type="button" className="btn btn-accent text-dark fs-5 fw-bold shadow-sm w-100 py-2" onClick={() => handleAddToCart(product.id, productQty)} disabled={overlayState.isOverlay || isAddToCart}>
                     {isAddToCart ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-cart-plus-fill me-2"></i>}
                     {isAddToCart ? '加入中...' : `加入購物車 (NT${(product.price * productQty).toLocaleString()})`}
                   </button>
@@ -234,7 +232,7 @@ function ProductDetail() {
               <EntityCarousel
                 items={list}
                 itemKey="id"
-                renderItem={(product) => <ProductCarouselCard product={product} isOverlay={isOverlay} onAddToCart={handleAddToCart} />}
+                renderItem={(product) => <ProductCarouselCard product={product} isOverlay={overlayState.isOverlay} onAddToCart={handleAddToCart} />}
                 isLoading={isListLoading}
                 title="您可能也會喜歡"
                 autoplay={true}

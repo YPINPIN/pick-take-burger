@@ -6,6 +6,7 @@ import type { ApiError } from '@/types/error';
 import { EDIT_QTY_TYPE } from '@/types/cart';
 import type { CartInfo, CartData, EditCartParams, EditQtyType } from '@/types/cart';
 import type { ProductData } from '@/types/product';
+import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 import { apiClientGetCartInfo, apiClientAddCartItem, apiClientEditCartItem, apiClientDeleteCartItem, apiClientClearCart } from '@/api/client.cart';
 import { apiClientGetAllProducts } from '@/api/client.product';
@@ -28,8 +29,7 @@ function Cart() {
   const [isListLoading, setIsListLoading] = useState<boolean>(false);
 
   // Overlay 顯示狀態
-  const [isOverlay, setIsOverlay] = useState<boolean>(false);
-  const [overlayMessage, setOverlayMessage] = useState<string>('');
+  const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
 
   // 取得購物車資料
   const fetchCartInfo = async () => {
@@ -86,8 +86,7 @@ function Cart() {
     }
 
     try {
-      setOverlayMessage('更新購物車中...');
-      setIsOverlay(true);
+      setOverlayState({ isOverlay: true, message: '更新購物車中...' });
       const params: EditCartParams = {
         id: cartItem.id,
         data: {
@@ -103,16 +102,14 @@ function Cart() {
       const err = error as ApiError;
       toast.error(err.message);
     } finally {
-      setIsOverlay(false);
-      setOverlayMessage('');
+      setOverlayState({ isOverlay: false, message: '' });
     }
   };
 
   // 刪除指定購物車項目
   const handleDeleteCartItem = async (cartItemId: string) => {
     try {
-      setOverlayMessage('更新購物車中...');
-      setIsOverlay(true);
+      setOverlayState({ isOverlay: true, message: '更新購物車中...' });
       const data = await apiClientDeleteCartItem(cartItemId);
       toast.success(data.message);
       // 更新購物車
@@ -121,16 +118,14 @@ function Cart() {
       const err = error as ApiError;
       toast.error(err.message);
     } finally {
-      setIsOverlay(false);
-      setOverlayMessage('');
+      setOverlayState({ isOverlay: false, message: '' });
     }
   };
 
   // 清空購物車
   const handleClearCart = async () => {
     try {
-      setOverlayMessage('清空購物車中...');
-      setIsOverlay(true);
+      setOverlayState({ isOverlay: true, message: '清空購物車中...' });
       const data = await apiClientClearCart();
       toast.success(data.message);
       // 更新購物車
@@ -139,16 +134,14 @@ function Cart() {
       const err = error as ApiError;
       toast.error(err.message);
     } finally {
-      setIsOverlay(false);
-      setOverlayMessage('');
+      setOverlayState({ isOverlay: false, message: '' });
     }
   };
 
   // 推薦列表加入購物車
   const handleAddToCart = async (productId: string) => {
     try {
-      setOverlayMessage('加入購物車中...');
-      setIsOverlay(true);
+      setOverlayState({ isOverlay: true, message: '加入購物車中...' });
       const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
       toast.success(data.message);
       // 更新購物車
@@ -157,15 +150,14 @@ function Cart() {
       const err = error as ApiError;
       toast.error(err.message);
     } finally {
-      setIsOverlay(false);
-      setOverlayMessage('');
+      setOverlayState({ isOverlay: false, message: '' });
     }
   };
 
   return (
     <>
       {/* 全域遮罩 */}
-      <GlobalOverlay isOverlay={isOverlay} message={overlayMessage} />
+      <GlobalOverlay overlayState={overlayState} />
       <div className="container-lg">
         <div className="mb-4">
           <h1 className="fs-2 fw-bold text-dark mb-2">您的購物車</h1>
@@ -202,20 +194,20 @@ function Cart() {
                           </div>
                           {/* 刪除 */}
                           <div className="d-flex align-items-start align-items-lg-center">
-                            <button type="button" className="btn btn-danger" onClick={() => handleDeleteCartItem(item.id)} disabled={isOverlay}>
+                            <button type="button" className="btn btn-danger" onClick={() => handleDeleteCartItem(item.id)} disabled={overlayState.isOverlay}>
                               <i className="bi bi-x-lg"></i>
                             </button>
                           </div>
                         </div>
                         {/* 數量控制 */}
                         <div className="d-flex justify-content-between align-items-center gap-2">
-                          <button type="button" className="btn btn-gray-500" onClick={() => handleEditCartItem(EDIT_QTY_TYPE.MINUS, item)} disabled={isOverlay}>
+                          <button type="button" className="btn btn-gray-500" onClick={() => handleEditCartItem(EDIT_QTY_TYPE.MINUS, item)} disabled={overlayState.isOverlay}>
                             <i className="bi bi-dash-lg"></i>
                           </button>
                           <span className="fs-5 fw-semibold text-center" style={{ minWidth: 80 }}>
                             {item.qty}
                           </span>
-                          <button type="button" className="btn btn-secondary" onClick={() => handleEditCartItem(EDIT_QTY_TYPE.PLUS, item)} disabled={isOverlay}>
+                          <button type="button" className="btn btn-secondary" onClick={() => handleEditCartItem(EDIT_QTY_TYPE.PLUS, item)} disabled={overlayState.isOverlay}>
                             <i className="bi bi-plus-lg"></i>
                           </button>
                         </div>
@@ -224,11 +216,11 @@ function Cart() {
 
                     {/* 底部操作區 */}
                     <div className="d-flex justify-content-between align-items-center py-3 gap-2">
-                      <Link to="/menu" className={`btn btn-primary fw-bold ${isOverlay ? 'disabled' : ''}`}>
+                      <Link to="/menu" className={`btn btn-primary fw-bold ${overlayState.isOverlay ? 'disabled' : ''}`}>
                         <i className="bi bi-arrow-left me-2"></i>
                         繼續點餐
                       </Link>
-                      <button className="btn btn-danger fw-bold" onClick={handleClearCart} disabled={isOverlay}>
+                      <button className="btn btn-danger fw-bold" onClick={handleClearCart} disabled={overlayState.isOverlay}>
                         <i className="bi bi-trash3-fill me-2"></i>
                         清空購物車
                       </button>
@@ -278,7 +270,7 @@ function Cart() {
                       <span className="text-danger">NT${cart.final_total.toLocaleString()}</span>
                     </div>
                     {/* 結帳 */}
-                    <Link to="/checkout" className={`btn btn-accent btn-lg fw-bold w-100 ${isOverlay ? 'disabled' : ''}`}>
+                    <Link to="/checkout" className={`btn btn-accent btn-lg fw-bold w-100 ${overlayState.isOverlay ? 'disabled' : ''}`}>
                       前往結帳
                       <i className="bi bi-arrow-right ms-2"></i>
                     </Link>
@@ -297,7 +289,7 @@ function Cart() {
         {!isLoading && (
           <>
             {/* 推薦列表 */}
-            <EntityCarousel items={list} itemKey="id" renderItem={(product) => <ProductCarouselCard product={product} isOverlay={isOverlay} onAddToCart={handleAddToCart} />} isLoading={isListLoading} title="主廚推薦" autoplay={true} loop={true} navigation={true} />
+            <EntityCarousel items={list} itemKey="id" renderItem={(product) => <ProductCarouselCard product={product} isOverlay={overlayState.isOverlay} onAddToCart={handleAddToCart} />} isLoading={isListLoading} title="主廚推薦" autoplay={true} loop={true} navigation={true} />
           </>
         )}
       </div>

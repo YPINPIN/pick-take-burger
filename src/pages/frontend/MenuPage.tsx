@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import type { ApiError } from '@/types/error';
 import type { Pagination } from '@/types/pagination';
 import type { ProductData } from '@/types/product';
+import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 import { apiClientGetAllProducts, apiClientGetProducts } from '@/api/client.product';
 import { apiClientAddCartItem } from '@/api/client.cart';
@@ -37,8 +38,7 @@ function MenuPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Overlay 顯示狀態
-  const [isOverlay, setIsOverlay] = useState<boolean>(false);
-  const [overlayMessage, setOverlayMessage] = useState<string>('');
+  const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
 
   // 產品排序 (num 高到低)
   const sortedProducts = useMemo(() => {
@@ -105,24 +105,21 @@ function MenuPage() {
   // 加入購物車
   const handleAddToCart = async (productId: string) => {
     try {
-      setOverlayMessage('加入購物車中...');
-      setIsOverlay(true);
+      setOverlayState({ isOverlay: true, message: '加入購物車中...' });
       const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
-      console.log(data);
       toast.success(data.message);
     } catch (error) {
       const err = error as ApiError;
       toast.error(err.message);
     } finally {
-      setIsOverlay(false);
-      setOverlayMessage('');
+      setOverlayState({ isOverlay: false, message: '' });
     }
   };
 
   return (
     <>
       {/* 全域遮罩 */}
-      <GlobalOverlay isOverlay={isOverlay} message={overlayMessage} />
+      <GlobalOverlay overlayState={overlayState} />
       <div className="container-lg">
         <div className="row g-lg-5">
           <div className="col-sm-4 col-md-3">
@@ -138,7 +135,7 @@ function MenuPage() {
                 <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                   {sortedProducts.map((product) => (
                     <div className="col" key={product.id}>
-                      <MenuCard product={product} isOverlay={isOverlay} onAddToCart={handleAddToCart} />
+                      <MenuCard product={product} isOverlay={overlayState.isOverlay} onAddToCart={handleAddToCart} />
                     </div>
                   ))}
                 </div>
