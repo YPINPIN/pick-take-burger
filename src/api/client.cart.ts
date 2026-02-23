@@ -23,13 +23,13 @@ export const apiClientEditCartItem = async (params: EditCartParams): Promise<Edi
 };
 
 // 刪除指定購物車產品項目
-export const apiClientDeleteCartItem = async (itemCartId: string): Promise<DeleteCartResponse> => {
-  const res = await clientApi.delete<DeleteCartResponse>(`api/${API_PATH}/cart/${itemCartId}`);
+export const apiClientDeleteCartItem = async (cartItemId: string): Promise<DeleteCartResponse> => {
+  const res = await clientApi.delete<DeleteCartResponse>(`api/${API_PATH}/cart/${cartItemId}`);
   return res.data;
 };
 
-// 刪除全部購物車項目
-export const apiClientDeleteCartAll = async (): Promise<DeleteCartResponse> => {
+// 清空購物車
+export const apiClientClearCart = async (): Promise<DeleteCartResponse> => {
   const res = await clientApi.delete<DeleteCartResponse>(`api/${API_PATH}/carts`);
   return res.data;
 };
