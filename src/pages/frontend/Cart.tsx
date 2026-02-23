@@ -13,6 +13,7 @@ import { apiClientGetCartInfo, apiClientAddCartItem, apiClientEditCartItem, apiC
 import { apiClientGetAllProducts } from '@/api/client.product';
 
 import CartItem from '@/components/CartItem';
+import OrderSummary from '@/components/OrderSummary';
 import GlobalOverlay from '@/components/GlobalOverlay';
 import EntityCarousel from '@/components/EntityCarousel';
 import ProductCarouselCard from '@/components/ProductCarouselCard';
@@ -222,51 +223,7 @@ function Cart() {
 
                 {/* 訂單摘要 */}
                 <div className="col-md-5 col-lg-4">
-                  <div className="custom-sticky-top bg-white p-4 rounded-4 shadow-sm overflow-hidden">
-                    <h2 className="text-dark fs-5 fw-semibold mb-4">
-                      <i className="bi bi-receipt me-2"></i>
-                      訂單摘要
-                    </h2>
-                    {cart.carts.map((item) => (
-                      <div key={`checkOutItem-${item.id}`}>
-                        {/* 商品名稱 + 數量 */}
-                        <div className="d-flex justify-content-between align-items-center gap-1 mb-1">
-                          <span>
-                            <i className="bi bi-dot me-1"></i>
-                            {item.product.title}
-                          </span>
-                          <span className="flex-shrink-0">x {item.qty}</span>
-                        </div>
-                        {/* 價格 + 折扣 */}
-                        <div className="fw-semibold d-flex justify-content-end align-items-center gap-2">
-                          {item.coupon && <span className="text-gray-500 text-decoration-line-through">NT${item.total.toLocaleString()}</span>}
-                          <span>NT${item.final_total.toLocaleString()}</span>
-                        </div>
-                        <hr className="dashed-hr" />
-                      </div>
-                    ))}
-                    {/* 小計 */}
-                    <div className="d-flex flex-wrap justify-content-between text-dark fw-semibold mb-1">
-                      <span>小計({cart.carts.length} 項)</span>
-                      <span>NT${cart.total.toLocaleString()}</span>
-                    </div>
-                    {/* 折扣 */}
-                    <div className="d-flex flex-wrap justify-content-between text-dark fw-semibold">
-                      <span>折扣</span>
-                      <span className="text-danger">- NT${(cart.total - cart.final_total).toLocaleString()}</span>
-                    </div>
-                    <hr />
-                    {/* 總計 */}
-                    <div className="d-flex flex-wrap justify-content-between fs-5 fw-semibold mb-4">
-                      <span className="text-dark">總計</span>
-                      <span className="text-danger">NT${cart.final_total.toLocaleString()}</span>
-                    </div>
-                    {/* 結帳 */}
-                    <Link to="/checkout" className={`btn btn-accent btn-lg fw-bold w-100 ${overlayState.isOverlay ? 'disabled' : ''}`}>
-                      前往結帳
-                      <i className="bi bi-arrow-right ms-2"></i>
-                    </Link>
-                  </div>
+                  <OrderSummary cart={cart} />
                 </div>
               </div>
             </>
