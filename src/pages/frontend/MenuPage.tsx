@@ -121,6 +121,7 @@ function MenuPage() {
 
   return (
     <>
+      {/* 全域遮罩 */}
       <GlobalOverlay isOverlay={isOverlay} message={overlayMessage} />
       <div className="container-lg">
         <div className="row g-lg-5">

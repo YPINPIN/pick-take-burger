@@ -8,7 +8,7 @@ type MenuCategoryProps = {
 
 function MenuCategory({ categories, selectedCategory, handleCategoryClick }: MenuCategoryProps) {
   return (
-    <aside className="menu-category mb-3 mb-sm-0">
+    <aside className="menu-category custom-sticky-top mb-3 mb-sm-0">
       <h3 className="text-gray-600 fs-5 fw-bold mb-3">
         <i className="bi bi-tags-fill me-2"></i>
         分類
