@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
@@ -104,25 +104,31 @@ function ProductDetail() {
   const clamp = (value: number) => Math.min(Math.max(value, MIN_QTY), MAX_QTY);
 
   // 加入購物車 (與推薦列表共用)
-  const handleAddToCart = async (productId: string, qty: number = 1) => {
-    try {
-      setOverlayState({ isOverlay: true, message: '加入購物車中...' });
-      if (myId === productId) {
-        // 為自己時顯示 loading
-        setIsAddToCart(true);
+  const handleAddToCart = useCallback(
+    async (productId: string, qty: number = 1) => {
+      try {
+        setOverlayState({ isOverlay: true, message: '加入購物車中...' });
+        if (myId === productId) {
+          // 為自己時顯示 loading
+          setIsAddToCart(true);
+        }
+        const data = await apiClientAddCartItem({ product_id: productId, qty });
+        toast.success(data.message);
+      } catch (error) {
+        const err = error as ApiError;
+        toast.error(err.message);
+      } finally {
+        if (myId === productId) {
+          setIsAddToCart(false);
+        }
+        setOverlayState({ isOverlay: false, message: '' });
       }
-      const data = await apiClientAddCartItem({ product_id: productId, qty });
-      toast.success(data.message);
-    } catch (error) {
-      const err = error as ApiError;
-      toast.error(err.message);
-    } finally {
-      if (myId === productId) {
-        setIsAddToCart(false);
-      }
-      setOverlayState({ isOverlay: false, message: '' });
-    }
-  };
+    },
+    [myId],
+  );
+
+  // 輪播項目 render
+  const renderCarouselItem = useCallback((product: ProductData) => <ProductCarouselCard product={product} onAddToCart={handleAddToCart} />, [handleAddToCart]);
 
   return (
     <>
@@ -232,7 +238,7 @@ function ProductDetail() {
               <EntityCarousel
                 items={list}
                 itemKey="id"
-                renderItem={(product) => <ProductCarouselCard product={product} isOverlay={overlayState.isOverlay} onAddToCart={handleAddToCart} />}
+                renderItem={renderCarouselItem}
                 isLoading={isListLoading}
                 title="您可能也會喜歡"
                 autoplay={true}

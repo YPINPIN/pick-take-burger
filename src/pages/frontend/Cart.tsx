@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'react-toastify';
 
@@ -11,7 +11,6 @@ import type { GlobalOverlayState } from '@/types/globalOverlay';
 import { apiClientGetCartInfo, apiClientAddCartItem, apiClientEditCartItem, apiClientDeleteCartItem, apiClientClearCart } from '@/api/client.cart';
 import { apiClientGetAllProducts } from '@/api/client.product';
 
-import LoadingSpinner from '@/components/LoadingSpinner';
 import GlobalOverlay from '@/components/GlobalOverlay';
 import EntityCarousel from '@/components/EntityCarousel';
 import ProductCarouselCard from '@/components/ProductCarouselCard';
@@ -19,8 +18,6 @@ import ProductCarouselCard from '@/components/ProductCarouselCard';
 function Cart() {
   // 購物車資料
   const [cart, setCart] = useState<CartInfo | null>();
-  // fetch 狀態
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   // 用來判斷是否為最新請求
   const requestId = useRef<number>(0);
 
@@ -28,12 +25,12 @@ function Cart() {
   const [list, setList] = useState<ProductData[]>([]);
   const [isListLoading, setIsListLoading] = useState<boolean>(false);
 
-  // Overlay 顯示狀態
+  // Overlay 顯示狀態 (fetch 狀態)
   const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
 
   // 取得購物車資料
   const fetchCartInfo = async () => {
-    setIsLoading(true);
+    setOverlayState({ isOverlay: true, message: '取得購物車中...' });
     const currentRequest: number = ++requestId.current;
     try {
       const data = await apiClientGetCartInfo();
@@ -49,7 +46,7 @@ function Cart() {
     } finally {
       if (currentRequest === requestId.current) {
         // 如果是最新的請求就關閉 loading
-        setIsLoading(false);
+        setOverlayState({ isOverlay: false, message: '' });
       }
     }
   };
@@ -97,7 +94,7 @@ function Cart() {
       const data = await apiClientEditCartItem(params);
       toast.success(data.message);
       // 更新購物車
-      fetchCartInfo();
+      await fetchCartInfo();
     } catch (error) {
       const err = error as ApiError;
       toast.error(err.message);
@@ -113,7 +110,7 @@ function Cart() {
       const data = await apiClientDeleteCartItem(cartItemId);
       toast.success(data.message);
       // 更新購物車
-      fetchCartInfo();
+      await fetchCartInfo();
     } catch (error) {
       const err = error as ApiError;
       toast.error(err.message);
@@ -129,7 +126,7 @@ function Cart() {
       const data = await apiClientClearCart();
       toast.success(data.message);
       // 更新購物車
-      fetchCartInfo();
+      await fetchCartInfo();
     } catch (error) {
       const err = error as ApiError;
       toast.error(err.message);
@@ -139,20 +136,23 @@ function Cart() {
   };
 
   // 推薦列表加入購物車
-  const handleAddToCart = async (productId: string) => {
+  const handleAddToCart = useCallback(async (productId: string) => {
     try {
       setOverlayState({ isOverlay: true, message: '加入購物車中...' });
       const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
       toast.success(data.message);
       // 更新購物車
-      fetchCartInfo();
+      await fetchCartInfo();
     } catch (error) {
       const err = error as ApiError;
       toast.error(err.message);
     } finally {
       setOverlayState({ isOverlay: false, message: '' });
     }
-  };
+  }, []);
+
+  // 輪播項目 render
+  const renderCarouselItem = useCallback((product: ProductData) => <ProductCarouselCard product={product} onAddToCart={handleAddToCart} />, [handleAddToCart]);
 
   return (
     <>
@@ -161,11 +161,7 @@ function Cart() {
       <div className="container-lg">
         <div className="mb-4">
           <h1 className="fs-2 fw-bold text-dark mb-2">您的購物車</h1>
-          {isLoading ? (
-            <div className="d-flex justify-content-center py-5">
-              <LoadingSpinner />
-            </div>
-          ) : cart && cart.carts.length > 0 ? (
+          {cart && cart.carts.length > 0 ? (
             <>
               <p className="fs-6 text-gray-600 mb-3">
                 準備結帳？目前已選購了 <span className="text-primary fw-bold">{cart.carts.length}</span> 項美味餐點。
@@ -286,12 +282,8 @@ function Cart() {
           )}
         </div>
 
-        {!isLoading && (
-          <>
-            {/* 推薦列表 */}
-            <EntityCarousel items={list} itemKey="id" renderItem={(product) => <ProductCarouselCard product={product} isOverlay={overlayState.isOverlay} onAddToCart={handleAddToCart} />} isLoading={isListLoading} title="主廚推薦" autoplay={true} loop={true} navigation={true} />
-          </>
-        )}
+        {/* 推薦列表 */}
+        <EntityCarousel items={list} itemKey="id" renderItem={renderCarouselItem} isLoading={isListLoading} title="主廚推薦" autoplay={true} loop={true} navigation={true} />
       </div>
     </>
   );

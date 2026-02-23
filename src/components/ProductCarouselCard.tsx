@@ -8,11 +8,10 @@ import { PRODUCT_TAG_META } from '@/utils/product';
 
 type ProductCarouselCardProps = {
   product: ProductData;
-  isOverlay: boolean;
   onAddToCart: (productId: string) => Promise<void>;
 };
 
-function ProductCarouselCard({ product, isOverlay, onAddToCart }: ProductCarouselCardProps) {
+function ProductCarouselCard({ product, onAddToCart }: ProductCarouselCardProps) {
   const navigate = useNavigate();
 
   const [isAddToCart, setIsAddToCart] = useState<boolean>(false);
@@ -52,7 +51,7 @@ function ProductCarouselCard({ product, isOverlay, onAddToCart }: ProductCarouse
             <span className="text-gray-600">/ {product.unit}</span>
           </div>
         </div>
-        <button type="button" className="btn btn-accent btn-add-cart text-primary fw-bold w-100" onClick={handleAdd} disabled={isOverlay}>
+        <button type="button" className="btn btn-accent btn-add-cart text-primary fw-bold w-100" onClick={handleAdd} disabled={isAddToCart}>
           {isAddToCart ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-cart-plus-fill lh-1 fs-5 me-2"></i>}
           {isAddToCart ? '加入中...' : '加入購物車'}
         </button>
