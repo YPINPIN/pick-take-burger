@@ -15,6 +15,7 @@ import ProductDetail from '@/pages/frontend/ProductDetail';
 import TrackOrder from '@/pages/frontend/TrackOrder';
 import AboutPage from '@/pages/frontend/AboutPage';
 import Cart from '@/pages/frontend/Cart';
+import Checkout from '@/pages/frontend/Checkout';
 
 // NotFound
 import NotFound from '@/pages/NotFound';
@@ -31,6 +32,7 @@ const routes = [
       { path: 'track-order', element: <TrackOrder /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'cart', element: <Cart /> },
+      { path: 'checkout', element: <Checkout /> },
     ],
   },
   // 後台相關
