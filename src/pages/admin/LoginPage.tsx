@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { toast } from 'react-toastify';
 
 import type { ChangeEvent, FormEvent } from 'react';
@@ -88,9 +88,9 @@ function LoginPage() {
         </form>
       </div>
       <div className="p-4 text-center bg-light border-top">
-        <a href="/" className="link-primary fw-bold ">
+        <Link to="/" className="link-primary fw-bold ">
           <i className="bi bi-arrow-left me-2"></i>返回前台首頁
-        </a>
+        </Link>
       </div>
     </FullPageCardLayout>
   );
