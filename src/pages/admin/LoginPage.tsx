@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
-import type { ChangeEvent, FormEvent } from 'react';
 import type { LoginParams } from '@/types/login';
 import type { ApiError } from '@/types/error';
+import type { SubmitHandler } from 'react-hook-form';
 
 import { apiAdminLogin } from '@/api/admin.login';
 import { getToken, setToken } from '@/utils/token';
@@ -14,24 +15,25 @@ import BurgerIcon from '@/components/BurgerIcon';
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<LoginParams>({
-    username: '',
-    password: '',
+
+  // 表單資料
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<LoginParams>({
+    mode: 'onChange',
+    defaultValues: {
+      username: '',
+      password: '',
+    },
   });
+
   const [isProcessLogin, setIsProcessLogin] = useState<boolean>(false);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsProcessLogin(true);
+  const handleLogin: SubmitHandler<LoginParams> = async (formData) => {
     try {
+      setIsProcessLogin(true);
       const { token, expired, message } = await apiAdminLogin(formData);
       setToken(token, expired);
       // 登入成功，跳轉到管理後台
@@ -59,20 +61,52 @@ function LoginPage() {
         <BurgerIcon className="text-primary w-25 rounded-2 shadow-sm mb-4" style={{ maxWidth: '100px', maxHeight: '100px' }} />
         <h1 className="fs-4 fw-bold mb-1">Pick & Take Burger</h1>
         <p className="text-secondary fs-7 fw-medium mb-4">管理後台系統</p>
-        <form onSubmit={handleLogin}>
-          <div className="form-floating mb-4">
-            <input type="email" name="username" onChange={handleInputChange} value={formData.username} className="form-control" id="floatingEmail" placeholder="name@example.com" autoComplete="off" disabled={isProcessLogin} />
+        <form onSubmit={handleSubmit(handleLogin)}>
+          <div className="form-floating mb-2">
+            <input
+              type="email"
+              className="form-control"
+              id="floatingEmail"
+              placeholder="name@example.com"
+              autoComplete="off"
+              {...register('username', {
+                required: '請輸入帳號 (Email)',
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: '帳號 (Email) 格式不正確',
+                },
+              })}
+              disabled={isProcessLogin}
+            />
             <label htmlFor="floatingEmail">
-              <i className="bi bi-person-circle me-2"></i>帳號
+              <i className="bi bi-person-circle me-2"></i>
+              帳號 (Email)
             </label>
+            <p className={`fs-7 text-danger text-start px-3 lh-1 mt-1 ${errors.username ? 'visible' : 'invisible'}`}>{errors.username ? errors.username.message : '提示'}</p>
           </div>
-          <div className="form-floating mb-4">
-            <input type="password" name="password" onChange={handleInputChange} value={formData.password} className="form-control" id="floatingPassword" placeholder="Password" autoComplete="off" disabled={isProcessLogin} />
+          <div className="form-floating mb-2">
+            <input
+              type="password"
+              className="form-control"
+              id="floatingPassword"
+              placeholder="Password"
+              autoComplete="off"
+              {...register('password', {
+                required: '請輸入密碼',
+                minLength: {
+                  value: 6,
+                  message: '密碼長度至少需 6 碼',
+                },
+              })}
+              disabled={isProcessLogin}
+            />
             <label htmlFor="floatingPassword">
-              <i className="bi bi-lock-fill me-2"></i>密碼
+              <i className="bi bi-lock-fill me-2"></i>
+              密碼
             </label>
+            <p className={`fs-7 text-danger text-start px-3 lh-1 mt-1 ${errors.password ? 'visible' : 'invisible'}`}>{errors.password ? errors.password.message : '提示'}</p>
           </div>
-          <button type="submit" className="btn btn-accent text-gray-900 d-flex justify-content-center align-items-center py-2 fs-5 fw-bold w-100" disabled={isProcessLogin || !formData.username || !formData.password}>
+          <button type="submit" className="btn btn-accent text-gray-900 d-flex justify-content-center align-items-center py-2 fs-5 fw-bold w-100" disabled={isProcessLogin || !isValid}>
             {!isProcessLogin ? (
               <>
                 <i className="bi bi-box-arrow-in-right me-2"></i>
