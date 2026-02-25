@@ -10,7 +10,7 @@ function GlobalOverlay({ overlayState: { isOverlay, message } }: GlobalOverlayPr
       <div className="global-overlay">
         <div className="text-center text-accent">
           <div className="spinner-border mb-3" style={{ width: '5rem', height: '5rem', borderWidth: '10px' }} role="status" />
-          <div className="fs-4 fw-bold">{message || '處理中...'}</div>
+          {message && <div className="fs-4 fw-bold">{message}</div>}
         </div>
       </div>
     )

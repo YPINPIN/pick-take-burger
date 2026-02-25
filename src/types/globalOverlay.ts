@@ -1,1 +1,1 @@
-export type GlobalOverlayState = { isOverlay: boolean; message: string };
+export type GlobalOverlayState = { isOverlay: boolean; message?: string };
