@@ -43,7 +43,7 @@ function FrontendHeader() {
               </li>
               <li className="nav-item ms-md-auto">
                 <NavLink className="nav-link" to="/cart">
-                  <i className="bi bi-cart3"></i>
+                  <i className="bi bi-cart"></i>
                   購物車
                 </NavLink>
               </li>
