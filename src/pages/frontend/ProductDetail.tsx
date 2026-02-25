@@ -227,7 +227,7 @@ function ProductDetail() {
                   {/* 加入購物車 */}
                   <button type="button" className="btn btn-accent text-dark fs-5 fw-bold shadow-sm w-100 py-2" onClick={() => handleAddToCart(product.id, productQty)} disabled={overlayState.isOverlay || isAddToCart}>
                     {isAddToCart ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-cart-plus-fill me-2"></i>}
-                    {isAddToCart ? '加入中...' : `加入購物車 (NT${(product.price * productQty).toLocaleString()})`}
+                    {isAddToCart ? '加入中...' : `加入購物車 (NT$${(product.price * productQty).toLocaleString()})`}
                   </button>
                 </div>
               </div>
