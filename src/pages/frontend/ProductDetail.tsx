@@ -219,7 +219,7 @@ function ProductDetail() {
                     {/* 提示 */}
                     {productQty >= MAX_QTY && (
                       <small className="text-secondary d-block text-center mt-2">
-                        已達單次購買上限（{MAX_QTY} {product.unit}）
+                        已達單次加入上限（{MAX_QTY} {product.unit}）
                       </small>
                     )}
                   </div>
