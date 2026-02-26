@@ -1,14 +1,14 @@
-import { Link } from 'react-router';
-
+import type { ReactNode } from 'react';
 import type { CartInfo } from '@/types/cart';
 
 import OrderSummaryItem from '@/components/OrderSummaryItem';
 
 type OrderSummaryProps = {
   cart: CartInfo;
+  children?: ReactNode;
 };
 
-function OrderSummary({ cart }: OrderSummaryProps) {
+function OrderSummary({ cart, children }: OrderSummaryProps) {
   return (
     <div className="custom-sticky-top bg-white p-4 rounded-4 shadow-sm overflow-hidden">
       <h2 className="text-dark fs-5 fw-semibold mb-4">
@@ -34,11 +34,7 @@ function OrderSummary({ cart }: OrderSummaryProps) {
         <span className="text-dark">總計</span>
         <span className="text-danger">NT${cart.final_total.toLocaleString()}</span>
       </div>
-      {/* 結帳 */}
-      <Link to="/checkout" className="btn btn-accent btn-lg fw-bold w-100">
-        前往結帳
-        <i className="bi bi-arrow-right ms-2"></i>
-      </Link>
+      {children}
     </div>
   );
 }

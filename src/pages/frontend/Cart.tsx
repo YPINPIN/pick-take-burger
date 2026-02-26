@@ -223,7 +223,13 @@ function Cart() {
 
                 {/* 訂單摘要 */}
                 <div className="col-md-5 col-lg-4">
-                  <OrderSummary cart={cart} />
+                  <OrderSummary cart={cart}>
+                    {/* 結帳 */}
+                    <Link to="/checkout" className="btn btn-accent btn-lg fw-bold w-100">
+                      前往結帳
+                      <i className="bi bi-arrow-right ms-2"></i>
+                    </Link>
+                  </OrderSummary>
                 </div>
               </div>
             </>

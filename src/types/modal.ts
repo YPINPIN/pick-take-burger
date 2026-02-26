@@ -65,3 +65,24 @@ export type ConfirmModalHandle = {
 
 // 定義 Confirm Modal props
 export type ConfirmModalProps = Record<never, never>;
+
+// ----------------------------------------
+// CheckoutSuccess Modal 相關類型
+// ----------------------------------------
+
+// 定義 CheckoutSuccess Modal 資料結構
+// orderId: 訂單編號
+// total: 總金額
+export type CheckoutSuccessModalData = {
+  orderId: string;
+  total: number;
+};
+
+// 定義 CheckoutSuccess Modal 對外暴露的 API
+export type CheckoutSuccessModalHandle = {
+  open: (data: CheckoutSuccessModalData) => void;
+  close: () => void;
+};
+
+// 定義 CheckoutSuccess Modal props
+export type CheckoutSuccessModalProps = Record<never, never>;

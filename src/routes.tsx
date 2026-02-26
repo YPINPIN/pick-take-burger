@@ -13,6 +13,8 @@ import HomePage from '@/pages/frontend/HomePage';
 import MenuPage from '@/pages/frontend/MenuPage';
 import ProductDetail from '@/pages/frontend/ProductDetail';
 import TrackOrder from '@/pages/frontend/TrackOrder';
+import TrackOrderIndex from '@/pages/frontend/TrackOrderIndex';
+import TrackOrderDetail from '@/pages/frontend/TrackOrderDetail';
 import AboutPage from '@/pages/frontend/AboutPage';
 import Cart from '@/pages/frontend/Cart';
 import Checkout from '@/pages/frontend/Checkout';
@@ -29,7 +31,14 @@ const routes = [
       { index: true, element: <HomePage /> },
       { path: 'menu', element: <MenuPage /> },
       { path: 'menu/:productId', element: <ProductDetail /> },
-      { path: 'track-order', element: <TrackOrder /> },
+      {
+        path: 'track-order',
+        element: <TrackOrder />,
+        children: [
+          { index: true, element: <TrackOrderIndex /> },
+          { path: ':orderId', element: <TrackOrderDetail /> },
+        ],
+      },
       { path: 'about', element: <AboutPage /> },
       { path: 'cart', element: <Cart /> },
       { path: 'checkout', element: <Checkout /> },
