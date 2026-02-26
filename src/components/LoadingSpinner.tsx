@@ -1,9 +1,7 @@
+import { ColorRing } from 'react-loader-spinner';
+
 function LoadingSpinner() {
-  return (
-    <div className="spinner-border text-accent" style={{ width: '3rem', height: '3rem' }} role="status">
-      <span className="visually-hidden">Loading...</span>
-    </div>
-  );
+  return <ColorRing visible={true} height="5rem" width="5rem" ariaLabel="color-ring-loading" wrapperStyle={{}} wrapperClass="color-ring-wrapper" colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']} />;
 }
 
 export default LoadingSpinner;

@@ -1,3 +1,5 @@
+import { ColorRing } from 'react-loader-spinner';
+
 import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 type GlobalOverlayProps = {
@@ -8,9 +10,9 @@ function GlobalOverlay({ overlayState: { isOverlay, message } }: GlobalOverlayPr
   return (
     isOverlay && (
       <div className="global-overlay">
-        <div className="text-center text-accent">
-          <div className="spinner-border mb-3" style={{ width: '5rem', height: '5rem', borderWidth: '10px' }} role="status" />
-          {message && <div className="fs-4 fw-bold">{message}</div>}
+        <div className="text-center">
+          <ColorRing visible={true} height="8rem" width="8rem" ariaLabel="color-ring-loading" wrapperStyle={{}} wrapperClass="color-ring-wrapper" colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']} />
+          {message && <div className="fs-4 fw-bold text-white">{message}</div>}
         </div>
       </div>
     )
