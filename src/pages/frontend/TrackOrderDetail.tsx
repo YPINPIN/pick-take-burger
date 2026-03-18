@@ -10,6 +10,7 @@ import type { GlobalOverlayState } from '@/types/globalOverlay';
 import { apiClientGetOrder } from '@/api/client.order';
 import { apiClientPay } from '@/api/client.pay';
 
+import CopyButton from '@/components/CopyButton';
 import TrackOrderItem from '@/components/TrackOrderItem';
 import GlobalOverlay from '@/components/GlobalOverlay';
 
@@ -120,7 +121,8 @@ function TrackOrderDetail() {
                       <span className="bg-accent d-flex align-items-center justify-content-center rounded-circle me-2" style={{ width: 36, height: 36 }}>
                         <i className="bi bi-bag-check-fill"></i>
                       </span>
-                      訂單內容
+                      <span className="me-2">訂單內容</span>
+                      <CopyButton copyText={order.id} btnText="訂單編號" />
                     </h3>
                   </div>
                   <div className="col-12">

@@ -3,8 +3,10 @@ import { Modal } from 'bootstrap';
 
 import type { CheckoutSuccessModalData, CheckoutSuccessModalHandle, CheckoutSuccessModalProps } from '@/types/modal';
 
-import BurgerIcon from '../BurgerIcon';
 import { useNavigate } from 'react-router';
+
+import BurgerIcon from '@/components/BurgerIcon';
+import CopyButton from '@/components/CopyButton';
 
 const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSuccessModalProps>(function CheckoutSuccessModal(_, ref) {
   // Modal
@@ -14,8 +16,6 @@ const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSucc
   const [modalData, setModalData] = useState<CheckoutSuccessModalData>({ orderId: '', total: 0 });
 
   const navigate = useNavigate();
-  // 複製狀態
-  const [copied, setCopied] = useState(false);
 
   // 初始化 Modal
   useEffect(() => {
@@ -41,13 +41,6 @@ const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSucc
     }),
     [open],
   );
-
-  // 複製
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(modalData.orderId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   // 關閉 Modal（回傳 Promise，確保動畫結束後才繼續）
   const close = () =>
@@ -107,11 +100,8 @@ const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSucc
                 應付金額：<span className="text-danger">NT${modalData.total.toLocaleString()}</span>
               </h3>
               <p className="text-dark text-break fs-5 fw-bold mb-1">{modalData.orderId}</p>
-              <button type="button" className="btn btn-secondary btn-sm mb-2" onClick={handleCopy}>
-                {copied ? <i className="bi bi-clipboard-check me-2"></i> : <i className="bi bi-clipboard me-2"></i>}
-                {copied ? '已複製' : '複製'}訂單編號
-              </button>
-              <p className="text-muted fs-7">
+              <CopyButton copyText={modalData.orderId} btnText="訂單編號" />
+              <p className="text-muted fs-7 mt-2">
                 <i className="bi bi-info-circle-fill me-2 "></i>請務必保存此<strong>訂單編號</strong>，以便後續查詢與追蹤訂單。
               </p>
             </div>
