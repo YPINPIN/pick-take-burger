@@ -33,20 +33,13 @@ const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSucc
     bsModal.current?.show();
   }, []);
 
-  const close = useCallback(() => {
-    // 解決 Modal Focus 錯誤
-    (document.activeElement as HTMLElement)?.blur();
-    bsModal.current?.hide();
-  }, []);
-
   // 將 open、close 方法傳出
   useImperativeHandle(
     ref,
     () => ({
       open,
-      close,
     }),
-    [open, close],
+    [open],
   );
 
   // 複製
@@ -56,24 +49,29 @@ const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSucc
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const close2 = () =>
+  // 關閉 Modal（回傳 Promise，確保動畫結束後才繼續）
+  const close = () =>
     new Promise<void>((resolve) => {
       if (!modalRef.current || !bsModal.current) return resolve();
 
+      // 監聽 Modal 完全關閉（含動畫）
       const handler = () => {
         modalRef.current?.removeEventListener('hidden.bs.modal', handler);
         resolve();
       };
-
       modalRef.current.addEventListener('hidden.bs.modal', handler);
 
       // 解決 Modal Focus 錯誤
       (document.activeElement as HTMLElement)?.blur();
+
+      // 觸發關閉（非同步，會有動畫）
       bsModal.current?.hide();
     });
 
+  // 點擊付款：先關閉 Modal，再跳轉頁面
   const handlePayment = async () => {
-    await close2();
+    // 等 Modal 完全關閉
+    await close();
     // 跳轉到訂單追蹤頁面 (付款步驟)
     navigate(`/track-order/${modalData.orderId}?stepPay=true`, { replace: true });
   };
@@ -97,10 +95,10 @@ const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSucc
               </div>
               <h2 className="text-dark fs-3 fw-bold mb-3">Nice! 您的訂單已成立！</h2>
               <p className="text-gray-600">
-                我們已收到您的訂單，廚房準備就緒 <i className="bi bi-egg-fried"></i>
-                <i className="bi bi-fire"></i>
+                我們已收到您的訂單，廚房準備就緒 <i className="bi bi-egg-fried text-accent"></i>
+                <i className="bi bi-fire text-accent"></i>
                 <br />
-                <strong>完成付款</strong>，我們就會立即開始製作！
+                <strong className="text-danger">完成付款</strong>，我們就會立即開始製作！
               </p>
             </div>
 

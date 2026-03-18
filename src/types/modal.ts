@@ -81,7 +81,6 @@ export type CheckoutSuccessModalData = {
 // 定義 CheckoutSuccess Modal 對外暴露的 API
 export type CheckoutSuccessModalHandle = {
   open: (data: CheckoutSuccessModalData) => void;
-  close: () => void;
 };
 
 // 定義 CheckoutSuccess Modal props
