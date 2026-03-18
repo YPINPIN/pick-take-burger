@@ -1,5 +1,6 @@
 .product-card {
   transition: border-color 0.25s ease;
+  cursor: pointer;
 
   &:hover {
     border-color: rgba($primary, 0.3);
