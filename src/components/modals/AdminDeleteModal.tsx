@@ -6,13 +6,16 @@ import type { AdminDeleteModalType, AdminDeleteModalData, AdminDeleteModalHandle
 import type { ApiError } from '@/types/error';
 
 import { apiAdminDeleteProduct } from '@/api/admin.product';
+import { apiAdminDeleteOrder } from '@/api/admin.order';
 
 const typeLabelMap: Record<AdminDeleteModalType, string> = {
   product: '產品',
+  order: '訂單',
 };
 
 const deleteApiMap: Record<AdminDeleteModalType, (id: string) => Promise<{ success: boolean; message: string }>> = {
   product: apiAdminDeleteProduct,
+  order: apiAdminDeleteOrder,
 };
 
 const AdminDeleteModal = forwardRef<AdminDeleteModalHandle, AdminDeleteModalProps>(function AdminDeleteModal({ onSuccess }, ref) {

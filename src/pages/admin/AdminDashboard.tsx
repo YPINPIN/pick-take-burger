@@ -41,7 +41,7 @@ function AdminDashboard() {
     <div className="admin-dashboard d-flex position-relative">
       <AdminSidebar showMobileSidebar={showMobileSidebar} closeMobileSidebar={closeMobileSidebar} />
       <div className="admin-dashboard-right flex-fill d-flex flex-column min-w-0 min-vh-100">
-        <AdminHeader title="產品管理" toggleMobileSidebar={toggleMobileSidebar} isProcessLogout={isProcessLogout} onLogoutClick={handleLogout} />
+        <AdminHeader toggleMobileSidebar={toggleMobileSidebar} isProcessLogout={isProcessLogout} onLogoutClick={handleLogout} />
         {/* 主要內容 */}
         <main className="flex-fill bg-light px-4 py-5 overflow-x-auto">
           <Outlet />

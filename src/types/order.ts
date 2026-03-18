@@ -1,4 +1,5 @@
 import type { CartData } from './cart';
+import type { Pagination } from '@/types/pagination';
 
 export type OrderUser = {
   name: string;
@@ -41,4 +42,23 @@ export type CreateOrderResponse = {
 export type GetOrderResponse = {
   success: boolean;
   order: OrderData;
+};
+
+// 定義後台一次取得所有訂單請求型別
+export type GetOrdersParams = {
+  page?: string;
+};
+
+// 定義後台一次取得所有訂單回應型別
+export type GetOrdersResponse = {
+  success: boolean;
+  orders: OrderData[];
+  pagination: Pagination;
+  messages: unknown[];
+};
+
+// 定義後台刪除指定訂單回應型別
+export type DeleteOrderResponse = {
+  success: boolean;
+  message: string;
 };

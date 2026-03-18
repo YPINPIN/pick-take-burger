@@ -23,7 +23,7 @@ export type AdminProductModalProps = {
 // ----------------------------------------
 
 // 定義可刪除的類型
-export type AdminDeleteModalType = 'product';
+export type AdminDeleteModalType = 'product' | 'order';
 
 // 定義 Delete Modal 資料結構
 export type AdminDeleteModalData = {

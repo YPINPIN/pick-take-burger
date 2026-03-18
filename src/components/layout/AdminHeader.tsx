@@ -1,11 +1,17 @@
+import { useLocation } from 'react-router';
+
+import { sidebarData } from '@/utils/sidebar';
+
 type AdminHeaderProps = {
-  title: string;
   toggleMobileSidebar: () => void;
   isProcessLogout: boolean;
   onLogoutClick: () => void;
 };
 
-function AdminHeader({ title, toggleMobileSidebar, isProcessLogout, onLogoutClick }: AdminHeaderProps) {
+function AdminHeader({ toggleMobileSidebar, isProcessLogout, onLogoutClick }: AdminHeaderProps) {
+  const location = useLocation();
+  const title = sidebarData.find((item) => item.path === location.pathname)?.name || '';
+
   return (
     <header className="bg-secondary text-white px-4 py-3 d-flex justify-content-between align-items-center shadow z-1">
       <div className="d-flex align-items-center gap-3">
