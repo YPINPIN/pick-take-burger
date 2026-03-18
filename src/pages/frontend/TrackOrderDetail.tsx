@@ -241,13 +241,14 @@ function TrackOrderDetail() {
                       {/* 立即付款 */}
                       <button type="button" className="btn btn-accent btn-lg fw-bold w-100 mb-2" onClick={() => handlePayment(order.id)} disabled={order.is_paid || !payment}>
                         立即付款
+                        <i className="bi bi-emoji-smile ms-2"></i>
                       </button>
                     </div>
                     <div className="col-12">
                       {/* 立即付款 */}
                       <button type="button" className="btn btn-outline-gray-600 btn-lg fw-bold w-100" onClick={goToOrder}>
                         <i className="bi bi-arrow-left me-2"></i>
-                        取消
+                        訂購資訊
                       </button>
                     </div>
                   </div>
