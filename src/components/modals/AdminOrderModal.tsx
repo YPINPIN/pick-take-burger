@@ -6,6 +6,8 @@ import type { AdminOrderModalHandle, AdminOrderModalProps } from '@/types/modal'
 import type { ApiError } from '@/types/error';
 import type { OrderData } from '@/types/order';
 
+import { formatDate } from '@/utils/date';
+
 import TrackOrderPanel from '@/components/TrackOrderPanel';
 
 const AdminOrderModal = forwardRef<AdminOrderModalHandle, AdminOrderModalProps>(function AdminOrderModal({ onSuccess }, ref) {
@@ -103,6 +105,14 @@ const AdminOrderModal = forwardRef<AdminOrderModalHandle, AdminOrderModalProps>(
                           訂購資訊
                           <span className={`badge fs-6 px-3 py-2 text-bg-${tempOrder.is_paid ? 'success' : 'danger'}`}>{tempOrder.is_paid ? '已付款' : '未付款'}</span>
                         </h3>
+                      </div>
+                      {/* 下單日期 */}
+                      <div className="col-12">
+                        <label htmlFor="orderDate" className="fw-medium mb-1">
+                          <i className="bi bi-calendar-check me-2"></i>
+                          下單日期
+                        </label>
+                        <input disabled readOnly type="text" id="orderDate" className="form-control mb-2" value={formatDate(tempOrder.create_at)} />
                       </div>
                       {/* 姓名 */}
                       <div className="col-12">

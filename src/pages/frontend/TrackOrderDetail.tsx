@@ -8,6 +8,7 @@ import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 import { apiClientGetOrder } from '@/api/client.order';
 import { apiClientPay } from '@/api/client.pay';
+import { formatDate } from '@/utils/date';
 
 import TrackOrderPanel from '@/components/TrackOrderPanel';
 import GlobalOverlay from '@/components/GlobalOverlay';
@@ -129,6 +130,14 @@ function TrackOrderDetail() {
                         訂購資訊
                         <span className={`badge fs-6 px-3 py-2 text-bg-${order.is_paid ? 'success' : 'danger'}`}>{order.is_paid ? '已付款' : '未付款'}</span>
                       </h3>
+                    </div>
+                    {/* 下單日期 */}
+                    <div className="col-12">
+                      <label htmlFor="orderDate" className="fw-medium mb-1">
+                        <i className="bi bi-calendar-check me-2"></i>
+                        下單日期
+                      </label>
+                      <input disabled readOnly type="text" id="orderDate" className="form-control mb-2" value={formatDate(order.create_at)} />
                     </div>
                     {/* 姓名 */}
                     <div className="col-12">
