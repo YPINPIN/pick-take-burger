@@ -5,7 +5,7 @@ import type { ChangeEvent } from 'react';
 import type { ApiError } from '@/types/error';
 import type { Pagination } from '@/types/pagination';
 import type { OrderData } from '@/types/order';
-import type { AdminDeleteModalHandle } from '@/types/modal';
+import type { AdminOrderModalHandle, AdminDeleteModalHandle } from '@/types/modal';
 
 import { apiAdminGetOrders } from '@/api/admin.order';
 import { apiClientGetOrder } from '@/api/client.order';
@@ -13,6 +13,7 @@ import { apiClientGetOrder } from '@/api/client.order';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PaginationUI from '@/components/PaginationUI';
 import AdminOrderTable from '@/components/AdminOrderTable';
+import AdminOrderModal from '@/components/modals/AdminOrderModal';
 import AdminDeleteModal from '@/components/modals/AdminDeleteModal';
 
 function OrderManagement() {
@@ -40,6 +41,8 @@ function OrderManagement() {
   // 搜尋到的訂單結果
   const [searchOrder, setSearchOrder] = useState<OrderData | null>(null);
 
+  // 訂單詳情 Modal
+  const orderModalRef = useRef<AdminOrderModalHandle>(null);
   // 刪除 Modal
   const deleteModalRef = useRef<AdminDeleteModalHandle>(null);
 
@@ -94,6 +97,7 @@ function OrderManagement() {
   // 查看訂單
   const handleViewOrderClick = (order: OrderData) => {
     console.log('view', order);
+    orderModalRef.current?.open(order);
   };
 
   // 刪除訂單
@@ -187,6 +191,8 @@ function OrderManagement() {
           )}
         </div>
       </section>
+      {/* Order Modal */}
+      <AdminOrderModal ref={orderModalRef} onSuccess={handleUpdateOrderSuccess} />
       {/* Delete Modal */}
       <AdminDeleteModal ref={deleteModalRef} onSuccess={handleUpdateOrderSuccess} />
     </>

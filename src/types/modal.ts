@@ -1,4 +1,5 @@
 import type { ProductData } from '@/types/product';
+import type { OrderData } from '@/types/order';
 
 // ----------------------------------------
 // Product Modal 相關類型
@@ -15,6 +16,21 @@ export type AdminProductModalHandle = {
 
 // 定義 Product Modal props
 export type AdminProductModalProps = {
+  onSuccess: () => void;
+};
+
+// ----------------------------------------
+// Order Modal 相關類型
+// ----------------------------------------
+
+// 定義 Order Modal 對外暴露的 API
+export type AdminOrderModalHandle = {
+  open: (data: OrderData) => void;
+  close: () => void;
+};
+
+// 定義 Order Modal props
+export type AdminOrderModalProps = {
   onSuccess: () => void;
 };
 

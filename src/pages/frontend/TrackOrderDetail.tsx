@@ -1,17 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 import type { OrderData } from '@/types/order';
-import type { CartData } from '@/types/cart';
 import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 import { apiClientGetOrder } from '@/api/client.order';
 import { apiClientPay } from '@/api/client.pay';
 
-import CopyButton from '@/components/CopyButton';
-import TrackOrderItem from '@/components/TrackOrderItem';
+import TrackOrderPanel from '@/components/TrackOrderPanel';
 import GlobalOverlay from '@/components/GlobalOverlay';
 
 function TrackOrderDetail() {
@@ -23,8 +21,7 @@ function TrackOrderDetail() {
 
   // 訂單資料
   const [order, setOrder] = useState<OrderData | null>(null);
-  // 訂單商品列表
-  const products: CartData[] = useMemo(() => Object.values(order?.products ?? {}), [order]);
+
   // 用來判斷是否為最新請求
   const requestId = useRef<number>(0);
 
@@ -111,51 +108,16 @@ function TrackOrderDetail() {
       <GlobalOverlay overlayState={overlayState} />
       <section className="py-3">
         {order && (
-          <div className="row g-4">
+          <div className="row">
             {/* 訂單內容 */}
-            <div className="col-md-7">
+            <div className="col-md-7 mb-4 mb-md-0">
               <div className="bg-white rounded-4 shadow-sm px-4 py-4 text-primary">
-                <div className="row">
-                  <div className="col-12">
-                    <h3 className="fs-5 fw-bold text-dark d-flex align-items-center mb-3">
-                      <span className="bg-accent d-flex align-items-center justify-content-center rounded-circle me-2" style={{ width: 36, height: 36 }}>
-                        <i className="bi bi-bag-check-fill"></i>
-                      </span>
-                      <span className="me-2">訂單內容</span>
-                      <CopyButton copyText={order.id} btnText="訂單編號" />
-                    </h3>
-                  </div>
-                  <div className="col-12">
-                    <p className="fs-6 fw-bold text-primary mb-3">
-                      訂單編號：<span className="text-success">{order.id}</span>
-                    </p>
-                    <hr className="my-2" />
-                  </div>
-                  {/* 訂單列表 */}
-                  <div className="col-12">
-                    <div className="py-3">
-                      {products.map((product, index) => (
-                        <div key={`trackOrderItem-${product.id}`}>
-                          {index !== 0 && <hr className="dashed-hr my-2" />}
-                          <TrackOrderItem item={product} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {/* 總計 */}
-                  <div className="col-12">
-                    <hr className="my-2" />
-                    <div className="d-flex flex-wrap justify-content-between fs-5 fw-semibold">
-                      <span className="text-dark">總計</span>
-                      <span className="text-danger">NT${order.total.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
+                <TrackOrderPanel order={order} />
               </div>
             </div>
 
             <div className="col-md-5">
-              <div className="custom-sticky-top bg-white rounded-4 shadow-sm px-4 py-4 mb-4 text-primary">
+              <div className="custom-sticky-top bg-white rounded-4 shadow-sm px-4 py-4 text-primary">
                 {/* 1.訂購資訊 */}
                 {!stepPay && (
                   <div className="row">
@@ -165,7 +127,7 @@ function TrackOrderDetail() {
                           <i className="bi bi-person-lines-fill"></i>
                         </span>
                         訂購資訊
-                        <span className={`badge fs-6 px-3 py-2 text-bg-${order.is_paid ? 'success' : 'danger'}`}>{order.is_paid ? '已付款' : '尚未付款'}</span>
+                        <span className={`badge fs-6 px-3 py-2 text-bg-${order.is_paid ? 'success' : 'danger'}`}>{order.is_paid ? '已付款' : '未付款'}</span>
                       </h3>
                     </div>
                     {/* 姓名 */}
