@@ -212,14 +212,18 @@ function Checkout() {
                         <label htmlFor="address" className="fw-medium mb-1">
                           <i className="bi bi-geo-alt me-2"></i>
                           地址
+                          <span className="text-muted small ms-2">(目前僅提供台北市外送服務)</span>
                         </label>
                         <input
                           type="text"
                           id="address"
                           className="form-control mb-2"
-                          placeholder="請輸入地址"
+                          placeholder="例如：台北市信義區松仁路100號"
                           {...register('address', {
                             required: '請輸入地址',
+                            validate: {
+                              isTaipei: (value) => value.includes('台北市') || '目前僅提供台北市外送服務',
+                            },
                           })}
                         />
                         <p className={`fs-7 text-danger text-start px-3 lh-1 mt-1 ${errors.address ? 'visible' : 'invisible'}`}>{errors.address ? errors.address.message : '提示'}</p>
