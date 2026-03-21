@@ -318,6 +318,14 @@ $gray-500: $gray-500 !default;
 $gray-600: $gray-600 !default;
 // custom add gray-900 color
 $gray-900: $gray-900 !default;
+// custom for order progress bar
+$payment-pending: #6b7280;
+$payment-done: #4b5563;
+$pending: #37329f;
+$preparing: #f97316;
+$delivering: #1c80ae;
+$delivered: #16a34a;
+$canceled: #d23e3e;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start theme-colors-map
@@ -335,6 +343,14 @@ $theme-colors: (
   'gray-500': $gray-500,
   'gray-600': $gray-600,
   'gray-900': $gray-900,
+  // custom for order progress bar
+  'payment-pending': $payment-pending,
+  'payment-done': $payment-done,
+  'pending': $pending,
+  'preparing': $preparing,
+  'delivering': $delivering,
+  'delivered': $delivered,
+  'canceled': $canceled,
 ) !default;
 // scss-docs-end theme-colors-map
 

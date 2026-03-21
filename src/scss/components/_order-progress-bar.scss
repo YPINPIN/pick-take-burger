@@ -1,0 +1,123 @@
+// Layout
+.order-progress {
+  padding: 16px 0px;
+}
+
+.order-progress-inner {
+  padding: 6px 0px;
+  display: flex;
+  align-items: flex-start;
+  overflow-x: auto;
+}
+
+.order-step {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+
+  &:not(:last-child) {
+    flex-grow: 1;
+    min-width: 90px;
+  }
+}
+
+.order-step-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+// DOT
+.step-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: 2px solid currentColor;
+  transition: all 0.2s ease;
+
+  // 基礎： 填色，icon 白色
+  opacity: 0;
+  background: currentColor;
+  i {
+    color: white;
+  }
+
+  // upcoming：變空心，icon 用 currentColor，透明度 0.6
+  &--upcoming {
+    background: transparent;
+    opacity: 0.4;
+    i {
+      color: currentColor;
+    }
+  }
+
+  // done、 cancelled：填色，icon 白色，透明度 1
+  &--done,
+  &--cancelled {
+    opacity: 1;
+  }
+
+  // active：填色 + ring，icon 白色，透明度 1
+  &--active {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    opacity: 1;
+  }
+
+  // done-cancelled：填色，icon 白色，透明度 0.4
+  &--done-cancelled {
+    opacity: 0.3;
+  }
+}
+
+// LABEL
+.step-label {
+  margin-top: 6px;
+  font-size: 16px;
+  text-align: center;
+  color: currentColor;
+  white-space: nowrap;
+
+  &--upcoming {
+    opacity: 0.4;
+  }
+
+  &--active {
+    font-weight: bold;
+  }
+
+  &--done-cancelled {
+    opacity: 0.3;
+  }
+}
+
+// Connector
+.step-connector {
+  flex-shrink: 0;
+  flex-grow: 1;
+  height: 2px;
+  // 對齊 dot
+  margin-top: 19px;
+  // connector 顏色跟著左側 step 的 currentColor
+  background: currentColor;
+  opacity: 0.2;
+  transition: opacity 0.2s ease;
+
+  &--active {
+    opacity: 0.35;
+  }
+
+  &--done {
+    opacity: 0.65;
+  }
+
+  &--done-cancelled {
+    opacity: 0.18;
+  }
+}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router';
+import { useParams, useSearchParams, useOutletContext } from 'react-router';
 import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
@@ -10,12 +10,15 @@ import { apiClientGetOrder } from '@/api/client.order';
 import { apiClientPay } from '@/api/client.pay';
 import { formatDate } from '@/utils/date';
 
+import TrackOrderProgressPanel from '@/components/TrackOrderProgressPanel';
 import TrackOrderPanel from '@/components/TrackOrderPanel';
 import GlobalOverlay from '@/components/GlobalOverlay';
 
 function TrackOrderDetail() {
   // url 參數
   const { orderId } = useParams();
+  // 刷新
+  const { refreshKey } = useOutletContext<{ refreshKey: number }>();
   // SearchParams 參數判斷是否為付款步驟
   const [searchParams, setSearchParams] = useSearchParams();
   const queryStepPay = searchParams.get('stepPay');
@@ -91,7 +94,7 @@ function TrackOrderDetail() {
     if (!orderId) return;
 
     fetchOrderDetail(orderId);
-  }, [orderId]);
+  }, [orderId, refreshKey]);
 
   // 判斷是否為付款步驟
   useEffect(() => {
@@ -110,13 +113,29 @@ function TrackOrderDetail() {
       <section className="py-3">
         {order && (
           <div className="row">
+            {/* 訂單狀態追蹤 */}
+            <div className="col-12 mb-4">
+              <div className="bg-white rounded-4 shadow-sm px-4 py-4 text-primary">
+                <TrackOrderProgressPanel order={order} />
+                {!order.is_paid && (
+                  <div className="row">
+                    <div className="col-12">
+                      <p className="text-secondary small">
+                        <i className="bi bi-info-circle me-1" />
+                        訂單將於
+                        <strong className="text-danger">完成付款</strong>後， 立即為您安排製作 <i className="bi bi-egg-fried text-accent"></i>
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
             {/* 訂單內容 */}
             <div className="col-md-7 mb-4 mb-md-0">
               <div className="bg-white rounded-4 shadow-sm px-4 py-4 text-primary">
                 <TrackOrderPanel order={order} />
               </div>
             </div>
-
             <div className="col-md-5">
               <div className="custom-sticky-top bg-white rounded-4 shadow-sm px-4 py-4 text-primary">
                 {/* 1.訂購資訊 */}
@@ -128,7 +147,6 @@ function TrackOrderDetail() {
                           <i className="bi bi-person-lines-fill"></i>
                         </span>
                         訂購資訊
-                        <span className={`badge fs-6 px-3 py-2 text-bg-${order.is_paid ? 'success' : 'danger'}`}>{order.is_paid ? '已付款' : '未付款'}</span>
                       </h3>
                     </div>
                     {/* 下單日期 */}
@@ -139,6 +157,16 @@ function TrackOrderDetail() {
                       </label>
                       <input disabled readOnly type="text" id="orderDate" className="form-control mb-2" value={formatDate(order.create_at)} />
                     </div>
+                    {/* 付款日期 */}
+                    {order.paid_date && (
+                      <div className="col-12">
+                        <label htmlFor="paidDate" className="fw-medium mb-1">
+                          <i className="bi bi-wallet-fill me-2"></i>
+                          付款日期
+                        </label>
+                        <input disabled readOnly type="text" id="paidDate" className="form-control mb-2" value={formatDate(order.paid_date)} />
+                      </div>
+                    )}
                     {/* 姓名 */}
                     <div className="col-12">
                       <label htmlFor="fullname" className="fw-medium mb-1">
@@ -177,7 +205,7 @@ function TrackOrderDetail() {
                         <i className="bi bi-chat-square-text me-2"></i>
                         備註訊息
                       </label>
-                      <textarea disabled readOnly rows={2} id="message" className="form-control mb-3" value={order.message} />
+                      <textarea disabled readOnly rows={2} id="message" className="form-control mb-3" value={order.message ?? ''} />
                     </div>
                     {!order.is_paid && (
                       <div className="col-12">

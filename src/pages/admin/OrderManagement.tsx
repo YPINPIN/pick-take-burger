@@ -96,7 +96,6 @@ function OrderManagement() {
 
   // 查看訂單
   const handleViewOrderClick = (order: OrderData) => {
-    console.log('view', order);
     orderModalRef.current?.open(order);
   };
 
@@ -109,8 +108,24 @@ function OrderManagement() {
     });
   };
 
-  // 更新訂單成功後的回調
+  // 更新訂單成功後的回調 (Modal 不關閉)
   const handleUpdateOrderSuccess = () => {
+    // 如果有搜尋
+    if (searchOrderId) {
+      fetchOrderById(searchOrderId);
+      fetchOrders();
+    } else {
+      // 清空搜尋
+      setSearchOrderId('');
+      setSearchOrder(null);
+      // 回到列表模式
+      setHasSearched(false);
+      fetchOrders(); // 更新產品列表
+    }
+  };
+
+  // 刪除訂單成功後的回調
+  const handleDeleteOrderSuccess = () => {
     // 清空搜尋
     setSearchOrderId('');
     setSearchOrder(null);
@@ -194,7 +209,7 @@ function OrderManagement() {
       {/* Order Modal */}
       <AdminOrderModal ref={orderModalRef} onSuccess={handleUpdateOrderSuccess} />
       {/* Delete Modal */}
-      <AdminDeleteModal ref={deleteModalRef} onSuccess={handleUpdateOrderSuccess} />
+      <AdminDeleteModal ref={deleteModalRef} onSuccess={handleDeleteOrderSuccess} />
     </>
   );
 }

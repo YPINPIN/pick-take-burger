@@ -17,11 +17,11 @@ function TrackOrderPanel({ order }: TrackOrderPanelProps) {
   return (
     <div className="row">
       <div className="col-12">
-        <h3 className="fs-5 fw-bold text-dark d-flex align-items-center mb-3">
-          <span className="bg-accent d-flex align-items-center justify-content-center rounded-circle me-2" style={{ width: 36, height: 36 }}>
+        <h3 className="fs-5 fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+          <span className="bg-accent d-flex align-items-center justify-content-center rounded-circle" style={{ width: 36, height: 36 }}>
             <i className="bi bi-bag-check-fill"></i>
           </span>
-          <span className="me-2">訂單內容</span>
+          訂單內容
           <CopyButton copyText={order.id} btnText="訂單編號" />
         </h3>
       </div>

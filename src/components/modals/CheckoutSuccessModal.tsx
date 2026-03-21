@@ -86,12 +86,10 @@ const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSucc
                   </div>
                 </div>
               </div>
-              <h2 className="text-dark fs-3 fw-bold mb-3">Nice! 您的訂單已成立！</h2>
+              <h2 className="text-dark fs-3 fw-bold mb-3">Nice! 您的訂單已送出！</h2>
               <p className="text-gray-600">
-                我們已收到您的訂單，廚房準備就緒 <i className="bi bi-egg-fried text-accent"></i>
-                <i className="bi bi-fire text-accent"></i>
-                <br />
-                <strong className="text-danger">完成付款</strong>，我們就會立即開始製作！
+                訂單將於
+                <strong className="text-danger">完成付款</strong>後， 立即為您安排製作 <i className="bi bi-egg-fried text-accent"></i>
               </p>
             </div>
 

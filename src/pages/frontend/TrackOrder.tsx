@@ -6,6 +6,8 @@ function TrackOrder() {
   // url 參數
   const { orderId } = useParams();
   const [searchOrderId, setSearchOrderId] = useState<string>('');
+  // 刷新訂單資料
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // 初始化 searchOrderId
   useEffect(() => {
@@ -18,11 +20,17 @@ function TrackOrder() {
 
   // 訂單查詢
   const handleSearch = () => {
-    if (searchOrderId) {
-      navigate(`/track-order/${searchOrderId}`, {
-        replace: true,
-      });
+    if (!searchOrderId) return;
+
+    // 如果是同一個 id → 強制刷新
+    if (searchOrderId === orderId) {
+      setRefreshKey((prev) => prev + 1);
+      return;
     }
+
+    navigate(`/track-order/${searchOrderId}`, {
+      replace: true,
+    });
   };
 
   return (
@@ -32,7 +40,7 @@ function TrackOrder() {
       <div className="row g-2">
         <div className="col col-md-7 col-lg-6 justify-content-md-center">
           <div className="form-floating">
-            <input type="text" className="form-control" id="floatingOrderId" placeholder="請輸入訂單編號..." autoComplete="off" value={searchOrderId} onChange={(e) => setSearchOrderId(e.target.value)} />
+            <input type="search" className="form-control" id="floatingOrderId" placeholder="請輸入訂單編號..." autoComplete="off" value={searchOrderId} onChange={(e) => setSearchOrderId(e.target.value)} />
             <label htmlFor="floatingOrderId">
               <i className="bi bi-receipt me-2"></i>
               訂單編號
@@ -47,7 +55,7 @@ function TrackOrder() {
           </div>
         </div>
       </div>
-      <Outlet />
+      <Outlet context={{ refreshKey }} />
     </div>
   );
 }

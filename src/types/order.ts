@@ -8,6 +8,25 @@ export type OrderUser = {
   address: string;
 };
 
+// ---- UI 層付款狀態（純顯示用）----
+export const UI_ORDER_STATUS = {
+  PAYMENT_PENDING: 'payment_pending',
+  PAYMENT_DONE: 'payment_done',
+} as const;
+// ---- 後端訂單狀態機 ----
+export const ORDER_STATUS = {
+  PENDING: 'pending',
+  PREPARING: 'preparing',
+  DELIVERING: 'delivering',
+  DELIVERED: 'delivered',
+  CANCELED: 'canceled',
+} as const;
+// ---- 型別 ----
+export type UiOrderStatus = (typeof UI_ORDER_STATUS)[keyof typeof UI_ORDER_STATUS];
+export type OrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
+// UI 顯示狀態型別(付款 + 後端狀態)
+export type DisplayStatus = UiOrderStatus | OrderStatus;
+
 export type OrderData = {
   id: string;
   create_at: number;
@@ -20,6 +39,9 @@ export type OrderData = {
   total: number;
   user: OrderUser;
   num: number;
+  // custom
+  status?: OrderStatus; // 訂單狀態
+  cancelledAt?: DisplayStatus; // 紀錄取消前的最後狀態
 };
 
 export type CheckoutFormData = OrderUser & {
@@ -59,6 +81,18 @@ export type GetOrdersResponse = {
 
 // 定義後台刪除指定訂單回應型別
 export type DeleteOrderResponse = {
+  success: boolean;
+  message: string;
+};
+
+// 定義後台更新指定訂單請求型別
+export type UpdateOrderParams = {
+  id: string;
+  data: OrderData;
+};
+
+// 定義後台更新指定訂單回應型別
+export type UpdateOrderResponse = {
   success: boolean;
   message: string;
 };
