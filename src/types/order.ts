@@ -26,6 +26,8 @@ export type UiOrderStatus = (typeof UI_ORDER_STATUS)[keyof typeof UI_ORDER_STATU
 export type OrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
 // UI 顯示狀態型別(付款 + 後端狀態)
 export type DisplayStatus = UiOrderStatus | OrderStatus;
+// 每個狀態更新的時間
+export type StatusTimestamps = Partial<Record<OrderStatus, number>>;
 
 export type OrderData = {
   id: string;
@@ -41,6 +43,7 @@ export type OrderData = {
   num: number;
   // custom
   status?: OrderStatus; // 訂單狀態
+  statusTimestamps?: StatusTimestamps; // 每個狀態更新的時間
   cancelledAt?: DisplayStatus; // 紀錄取消前的最後狀態
 };
 

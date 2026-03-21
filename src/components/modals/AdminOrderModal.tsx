@@ -7,7 +7,7 @@ import type { ApiError } from '@/types/error';
 import type { OrderData, OrderStatus } from '@/types/order';
 
 import { ORDER_STATUS, UI_ORDER_STATUS } from '@/types/order';
-import { ORDER_STATUS_META, resolveDisplayStatus, getAvailableNextStatuses } from '@/utils/orderStatus';
+import { ORDER_STATUS_META, resolveDisplayStatus, getAvailableNextStatuses, getStatusTimestamps } from '@/utils/orderStatus';
 
 import { apiAdminUpdateOrder } from '@/api/admin.order';
 import { formatDate } from '@/utils/date';
@@ -73,8 +73,10 @@ const AdminOrderModal = forwardRef<AdminOrderModalHandle, AdminOrderModalProps>(
 
     setIsUpdating(true);
     try {
+      const now = Math.floor(Date.now() / 1000);
+
       if (status === ORDER_STATUS.CANCELED) {
-        const updataData = { ...tempOrder, status, cancelledAt: displayStatus };
+        const updataData: OrderData = { ...tempOrder, status, statusTimestamps: getStatusTimestamps(tempOrder, status, now), cancelledAt: displayStatus };
         await apiAdminUpdateOrder({
           id: tempOrder.id,
           data: updataData,
@@ -82,7 +84,7 @@ const AdminOrderModal = forwardRef<AdminOrderModalHandle, AdminOrderModalProps>(
         setTempOrder(updataData);
         toast.success('訂單已取消');
       } else {
-        const updataData = { ...tempOrder, status };
+        const updataData: OrderData = { ...tempOrder, status, statusTimestamps: getStatusTimestamps(tempOrder, status, now) };
         await apiAdminUpdateOrder({
           id: tempOrder.id,
           data: updataData,
