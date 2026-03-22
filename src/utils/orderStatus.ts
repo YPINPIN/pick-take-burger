@@ -101,3 +101,8 @@ export const getStatusTimestamps = (order: OrderData, newStatus: OrderStatus, no
 
   return timestamps;
 };
+
+export const isOrderStatusDone = (order: OrderData): boolean => {
+  const status = resolveDisplayStatus(order);
+  return status === ORDER_STATUS.DELIVERED || status === ORDER_STATUS.CANCELED;
+};

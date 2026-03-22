@@ -12,6 +12,7 @@ import type { ConfirmModalHandle, ConfirmModalData } from '@/types/modal';
 import { apiClientGetCartInfo, apiClientAddCartItem, apiClientEditCartItem, apiClientDeleteCartItem, apiClientClearCart } from '@/api/client.cart';
 import { apiClientGetAllProducts } from '@/api/client.product';
 
+import ShopStatusBanner from '@/components/ShopStatusBanner';
 import CartItem from '@/components/CartItem';
 import OrderSummary from '@/components/OrderSummary';
 import GlobalOverlay from '@/components/GlobalOverlay';
@@ -150,7 +151,7 @@ function Cart() {
   // 刪除購物車項目確認
   const onDeleteCartItemClick = (cartItem: CartData) => {
     openConfirmModal({
-      title: `刪除「 ${cartItem.product.title}」`,
+      title: `刪除「 ${cartItem.product.title} 」`,
       message: '刪除後將無法恢復，請再次確認。',
       onConfirm: () => handleDeleteCartItem(cartItem.id),
     });
@@ -191,6 +192,10 @@ function Cart() {
       {/* Confirm Modal */}
       <ConfirmModal ref={confirmModalRef} />
       <div className="container-lg">
+        <div className="mb-3">
+          {/* 商店狀態 */}
+          <ShopStatusBanner type="banner" />
+        </div>
         <div className="mb-4">
           <h1 className="fs-2 fw-bold text-dark mb-2">您的購物車</h1>
           {cart && cart.carts.length > 0 ? (

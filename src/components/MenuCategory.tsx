@@ -1,5 +1,7 @@
 import { PRODUCT_CATEGORY_META } from '@/utils/product';
 
+import ShopStatusBanner from './ShopStatusBanner';
+
 type MenuCategoryProps = {
   categories: string[];
   selectedCategory: string;
@@ -9,6 +11,9 @@ type MenuCategoryProps = {
 function MenuCategory({ categories, selectedCategory, handleCategoryClick }: MenuCategoryProps) {
   return (
     <aside className="menu-category custom-sticky-top mb-3 mb-sm-0">
+      <div className="mb-3">
+        <ShopStatusBanner type="badge" />
+      </div>
       <h3 className="text-gray-600 fs-5 fw-bold mb-3">
         <i className="bi bi-tags-fill me-2"></i>
         分類

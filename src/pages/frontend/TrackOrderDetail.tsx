@@ -9,7 +9,9 @@ import type { GlobalOverlayState } from '@/types/globalOverlay';
 import { apiClientGetOrder } from '@/api/client.order';
 import { apiClientPay } from '@/api/client.pay';
 import { formatDate } from '@/utils/date';
+import { isOrderStatusDone } from '@/utils/orderStatus';
 
+import ShopStatusBanner from '@/components/ShopStatusBanner';
 import TrackOrderProgressPanel from '@/components/TrackOrderProgressPanel';
 import TrackOrderPanel from '@/components/TrackOrderPanel';
 import GlobalOverlay from '@/components/GlobalOverlay';
@@ -118,13 +120,21 @@ function TrackOrderDetail() {
               <div className="bg-white rounded-4 shadow-sm px-4 py-4 text-primary">
                 <TrackOrderProgressPanel order={order} />
                 {!order.is_paid && (
-                  <div className="row">
+                  <div className="row mb-2">
                     <div className="col-12">
                       <p className="text-secondary small">
                         <i className="bi bi-info-circle me-1" />
                         訂單將於
                         <strong className="text-danger">完成付款</strong>後， 立即為您安排製作 <i className="bi bi-egg-fried text-accent"></i>
                       </p>
+                    </div>
+                  </div>
+                )}
+                {/* 訂單未完成時，顯示提示 */}
+                {!isOrderStatusDone(order) && (
+                  <div className="row">
+                    <div className="col-12">
+                      <ShopStatusBanner type={!order.is_paid ? 'badge' : 'payment_done'} />
                     </div>
                   </div>
                 )}
@@ -229,7 +239,7 @@ function TrackOrderDetail() {
                         選擇付款方式
                       </h3>
                     </div>
-                    <div className="col-6">
+                    <div className="col-sm-6">
                       <div className="mb-3">
                         <input type="radio" className="btn-check" name="payment" id="payment-burgerPay" value="burgerPay" checked={payment === 'burgerPay'} onChange={(e) => setPayment(e.target.value)} />
                         <label className="btn btn-outline-dark border-2 d-flex flex-column" htmlFor="payment-burgerPay">
@@ -246,7 +256,7 @@ function TrackOrderDetail() {
                       </button>
                     </div>
                     <div className="col-12">
-                      {/* 立即付款 */}
+                      {/* 訂購資訊 */}
                       <button type="button" className="btn btn-outline-gray-600 btn-lg fw-bold w-100" onClick={goToOrder}>
                         <i className="bi bi-arrow-left me-2"></i>
                         訂購資訊

@@ -13,7 +13,7 @@ function FullPageCardLayout({ children }: FullPageCardLayoutProps) {
         </div>
       </div>
       <footer className="text-center p-3">
-        <p className="text-secondary">Copyright &copy; 2026 Pick & Take Burger. All rights reserved.</p>
+        <p className="text-secondary">Copyright &copy; 2026 Pick & Take Burger All rights reserved.</p>
       </footer>
     </div>
   );

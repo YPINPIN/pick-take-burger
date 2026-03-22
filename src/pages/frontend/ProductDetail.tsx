@@ -12,6 +12,7 @@ import { apiClientAddCartItem } from '@/api/client.cart';
 import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
 
 import LoadingSpinner from '@/components/LoadingSpinner';
+import ShopStatusBanner from '@/components/ShopStatusBanner';
 import ProductDetailImages from '@/components/ProductDetailImages';
 import GlobalOverlay from '@/components/GlobalOverlay';
 import EntityCarousel from '@/components/EntityCarousel';
@@ -75,7 +76,7 @@ function ProductDetail() {
         }
       }
     };
-
+    setProductQty(1);
     fetchProductDetail(productId);
   }, [productId, navigate]);
 
@@ -140,17 +141,18 @@ function ProductDetail() {
             <LoadingSpinner />
           </div>
         ) : product ? (
-          <div className="row g-lg-5">
+          <div className="row g-3 g-sm-4">
+            <div className="col-sm-10 col-md-12 mx-auto">
+              <ShopStatusBanner type="banner" />
+            </div>
             {/* 左側 - 圖片 */}
             <div className="col-sm-10 col-md-5 mx-auto">
-              <div className="mb-3 mb-sm-4 mb-md-0">
-                <ProductDetailImages imagesUrl={[product.imageUrl, ...product.imagesUrl]} />
-              </div>
+              <ProductDetailImages imagesUrl={[product.imageUrl, ...product.imagesUrl]} />
             </div>
 
             {/* 右側 - 白色資訊卡 */}
             <div className="col-sm-10 col-md-7 mx-auto">
-              <div className="bg-white rounded-4 shadow-sm p-4 p-lg-5 mb-4 mb-md-0">
+              <div className="bg-white rounded-4 shadow-sm p-4 p-lg-5">
                 {/* 標籤區 */}
                 {(product.is_recommend === 1 || product.tag !== 'normal') && (
                   <div className="d-flex flex-wrap gap-2 mb-3">

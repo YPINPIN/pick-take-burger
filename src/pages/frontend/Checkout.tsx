@@ -13,6 +13,7 @@ import type { CheckoutSuccessModalHandle, CheckoutSuccessModalData } from '@/typ
 import { apiClientGetCartInfo } from '@/api/client.cart';
 import { apiClientCreateOrder } from '@/api/client.order';
 
+import ShopStatusBanner from '@/components/ShopStatusBanner';
 import OrderSummary from '@/components/OrderSummary';
 import CheckoutSuccessModal from '@/components/modals/CheckoutSuccessModal';
 import GlobalOverlay from '@/components/GlobalOverlay';
@@ -113,7 +114,12 @@ function Checkout() {
       <GlobalOverlay overlayState={overlayState} />
       {/* Checkout Success Modal */}
       <CheckoutSuccessModal ref={checkoutSuccessModalRef} />
+
       <div className="container-lg">
+        <div className="mb-3">
+          {/* 商店狀態 */}
+          <ShopStatusBanner type="banner" />
+        </div>
         <h1 className="fs-2 fw-bold text-dark mb-2">準備完成訂單</h1>
         {cart && cart.carts.length > 0 && (
           <>

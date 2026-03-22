@@ -1,0 +1,9 @@
+:root {
+  --bs-accent-text-emphasis: #{shade-color($accent, 60%)};
+  --bs-accent-bg-subtle: #{tint-color($accent, 80%)};
+  --bs-accent-border-subtle: #{tint-color($accent, 60%)};
+
+  --bs-secondary-text-emphasis: #{shade-color($secondary, 60%)};
+  --bs-secondary-bg-subtle: #{tint-color($secondary, 80%)};
+  --bs-secondary-border-subtle: #{tint-color($secondary, 60%)};
+}
