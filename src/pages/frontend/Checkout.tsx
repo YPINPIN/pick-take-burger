@@ -44,7 +44,7 @@ function Checkout() {
   const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
 
   // 取得購物車資料
-  const fetchCartInfo = async () => {
+  const fetchCartInfo = useCallback(async () => {
     setOverlayState({ isOverlay: true });
     const currentRequest: number = ++requestId.current;
     try {
@@ -64,7 +64,7 @@ function Checkout() {
         setOverlayState({ isOverlay: false, message: '' });
       }
     }
-  };
+  }, [toastError]);
 
   // 送出訂單
   const handleCheckout: SubmitHandler<CheckoutFormData> = async (formData) => {
@@ -91,7 +91,7 @@ function Checkout() {
   useEffect(() => {
     // 取得購物車
     fetchCartInfo();
-  }, []);
+  }, [fetchCartInfo]);
 
   useEffect(() => {
     // 當購物車為空時回到購物車頁面
