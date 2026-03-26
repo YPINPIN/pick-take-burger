@@ -1,5 +1,4 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
 import { Modal } from 'bootstrap';
 
 import type { AdminOrderModalHandle, AdminOrderModalProps } from '@/types/modal';
@@ -10,6 +9,7 @@ import type { ConfirmModalHandle, ConfirmModalData } from '@/types/modal';
 import { ORDER_STATUS, UI_ORDER_STATUS } from '@/types/order';
 import { ORDER_STATUS_META, resolveDisplayStatus, getAvailableNextStatuses, getStatusTimestamps } from '@/utils/orderStatus';
 
+import useToast from '@/hooks/useToast';
 import { apiAdminUpdateOrder } from '@/api/admin.order';
 import { formatDate } from '@/utils/date';
 
@@ -18,6 +18,8 @@ import TrackOrderPanel from '@/components/TrackOrderPanel';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 
 const AdminOrderModal = forwardRef<AdminOrderModalHandle, AdminOrderModalProps>(function AdminOrderModal({ onSuccess }, ref) {
+  const { toastSuccess, toastError } = useToast();
+
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   // Modal
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -106,7 +108,7 @@ const AdminOrderModal = forwardRef<AdminOrderModalHandle, AdminOrderModalProps>(
           data: updataData,
         });
         setTempOrder(updataData);
-        toast.success('訂單已取消');
+        toastSuccess('訂單已取消');
       } else {
         const updataData: OrderData = { ...tempOrder, status, statusTimestamps: getStatusTimestamps(tempOrder, status, now) };
         await apiAdminUpdateOrder({
@@ -114,7 +116,7 @@ const AdminOrderModal = forwardRef<AdminOrderModalHandle, AdminOrderModalProps>(
           data: updataData,
         });
         setTempOrder(updataData);
-        toast.success('訂單狀態已更新');
+        toastSuccess('訂單狀態已更新');
       }
       //更新成功後重置狀態選擇
       setStatus(null);
@@ -122,7 +124,7 @@ const AdminOrderModal = forwardRef<AdminOrderModalHandle, AdminOrderModalProps>(
       onSuccess();
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setIsUpdating(false);
     }

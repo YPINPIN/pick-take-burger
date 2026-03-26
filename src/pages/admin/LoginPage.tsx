@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 
 import type { LoginParams } from '@/types/login';
 import type { ApiError } from '@/types/error';
 import type { SubmitHandler } from 'react-hook-form';
 
+import useToast from '@/hooks/useToast';
 import { apiAdminLogin } from '@/api/admin.login';
 import { getToken, setToken } from '@/utils/token';
 
@@ -15,6 +15,7 @@ import BurgerIcon from '@/components/BurgerIcon';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { toastSuccess, toastError } = useToast();
 
   // 表單資料
   const {
@@ -38,10 +39,10 @@ function LoginPage() {
       setToken(token, expired);
       // 登入成功，跳轉到管理後台
       navigate('/admin', { replace: true });
-      toast.success(message);
+      toastSuccess(message);
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setIsProcessLogin(false);
     }

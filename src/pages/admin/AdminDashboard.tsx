@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router';
-import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 
+import useToast from '@/hooks/useToast';
 import { apiAdminLogout } from '@/api/admin.login';
 import { clearToken } from '@/utils/token';
 
@@ -13,6 +13,7 @@ import AdminFooter from '@/components/layout/AdminFooter';
 
 function AdminDashboard() {
   const navigate = useNavigate();
+  const { toastSuccess } = useToast();
 
   const [isProcessLogout, setIsProcessLogout] = useState<boolean>(false);
   // 手機版 sidebar 狀態
@@ -25,7 +26,7 @@ function AdminDashboard() {
     setIsProcessLogout(true);
     try {
       const data = await apiAdminLogout();
-      toast.success(data.message);
+      toastSuccess(data.message);
     } catch (error) {
       const err = error as ApiError;
       console.error(err);

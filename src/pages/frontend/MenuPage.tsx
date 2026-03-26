@@ -1,11 +1,11 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
-import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 import type { Pagination } from '@/types/pagination';
 import type { ProductData } from '@/types/product';
 import type { GlobalOverlayState } from '@/types/globalOverlay';
 
+import useToast from '@/hooks/useToast';
 import { apiClientGetAllProducts, apiClientGetProducts } from '@/api/client.product';
 import { apiClientAddCartItem } from '@/api/client.cart';
 
@@ -16,6 +16,8 @@ import MenuCard from '@/components/MenuCard';
 import GlobalOverlay from '@/components/GlobalOverlay';
 
 function MenuPage() {
+  const { toastSuccess, toastError } = useToast();
+
   // 用來判斷是否為最新請求
   const requestId = useRef<number>(0);
   // 全部產品資料
@@ -68,7 +70,7 @@ function MenuPage() {
         setPagination(data.pagination);
       } catch (error) {
         const err = error as ApiError;
-        toast.error(err.message);
+        toastError(err.message);
       } finally {
         if (currentRequest === requestId.current) {
           // 如果是最新的請求就關閉 loading
@@ -77,7 +79,7 @@ function MenuPage() {
       }
     };
     fetchProducts();
-  }, [currentPage, selectedCategory]);
+  }, [currentPage, selectedCategory, toastError]);
 
   // 初始化抓 categories
   useEffect(() => {
@@ -89,12 +91,12 @@ function MenuPage() {
         setCategories(categories);
       } catch (error) {
         const err = error as ApiError;
-        toast.error(err.message);
+        toastError(err.message);
       }
     };
 
     fetchAllProducts();
-  }, []);
+  }, [toastError]);
 
   // 選擇分類 (會回到第一頁)
   const handleCategoryClick = (category: string) => {
@@ -107,10 +109,10 @@ function MenuPage() {
     try {
       setOverlayState({ isOverlay: true, message: '加入購物車中...' });
       const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
-      toast.success(data.message);
+      toastSuccess(data.message);
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setOverlayState({ isOverlay: false, message: '' });
     }

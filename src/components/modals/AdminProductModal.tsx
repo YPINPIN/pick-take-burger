@@ -1,5 +1,4 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
 import { Modal } from 'bootstrap';
 
 import type { ChangeEvent } from 'react';
@@ -11,6 +10,7 @@ import { isValidUrl } from '@/utils/url';
 import { trimProduct, validateProduct, PRODUCT_TAG_META } from '@/utils/product';
 import { validateFile } from '@/utils/upload';
 
+import useToast from '@/hooks/useToast';
 import { apiAdminCreateProduct, apiAdminUpdateProduct } from '@/api/admin.product';
 import { apiAdminUploadImage } from '@/api/admin.upload';
 
@@ -37,6 +37,8 @@ const createInitProductData = (): ProductData => ({
 });
 
 const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalProps>(function AdminProductModal({ onSuccess }, ref) {
+  const { toastSuccess, toastError } = useToast();
+
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   // Modal
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -141,17 +143,17 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
     if (!url) return;
 
     if (tempProduct.imagesUrl.length >= IMAGE_MAX_NUM) {
-      toast.error(`最多只能上傳 ${IMAGE_MAX_NUM} 張圖片`);
+      toastError(`最多只能上傳 ${IMAGE_MAX_NUM} 張圖片`);
       return;
     }
 
     if (!isValidUrl(url)) {
-      toast.error('請輸入有效的圖片 URL 格式 (需包含 http:// 或 https://)');
+      toastError('請輸入有效的圖片 URL 格式 (需包含 http:// 或 https://)');
       return;
     }
 
     if (tempProduct.imagesUrl.includes(url)) {
-      toast.error('圖片已存在');
+      toastError('圖片已存在');
       return;
     }
 
@@ -185,7 +187,7 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
     const error = validateFile(file);
     if (error) {
       handleResetFileInput();
-      toast.error(error);
+      toastError(error);
       return;
     }
 
@@ -206,10 +208,10 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
         ...prevProduct,
         imagesUrl: [...prevProduct.imagesUrl, data.imageUrl],
       }));
-      toast.success('圖片已上傳');
+      toastSuccess('圖片已上傳');
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       handleResetFileInput();
       setIsUploading(false);
@@ -221,14 +223,14 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
     setIsUpdating(true);
     try {
       const data = await apiFn();
-      toast.success(data.message);
+      toastSuccess(data.message);
       // 關閉 Modal
       close();
       // 通知父層刪除成功
       onSuccess();
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setIsUpdating(false);
     }
@@ -247,7 +249,7 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
     // 驗證資料
     const error = validateProduct(trimmedProduct);
     if (error) {
-      toast.error(error);
+      toastError(error);
       return;
     }
 

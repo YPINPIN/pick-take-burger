@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 import type { Pagination } from '@/types/pagination';
 import type { ProductData } from '@/types/product';
 import type { AdminProductModalHandle, AdminDeleteModalHandle } from '@/types/modal';
 
+import useToast from '@/hooks/useToast';
 import { apiAdminGetProducts, apiAdminGetAllProducts } from '@/api/admin.product';
 
 import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
@@ -16,6 +16,8 @@ import AdminProductModal from '@/components/modals/AdminProductModal';
 import AdminDeleteModal from '@/components/modals/AdminDeleteModal';
 
 function ProductManagement() {
+  const { toastInfo, toastError } = useToast();
+
   // 用來判斷是否為最新請求
   const requestId = useRef<number>(0);
   // 全部產品資料
@@ -42,16 +44,16 @@ function ProductManagement() {
   const deleteModalRef = useRef<AdminDeleteModalHandle>(null);
 
   // 取得所有產品（主要拿 categories）
-  const fetchAllProducts = async () => {
+  const fetchAllProducts = useCallback(async () => {
     try {
       const data = await apiAdminGetAllProducts();
       const categories = [...new Set(Object.values(data.products).map((p) => p.category))];
       setCategories(categories);
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     }
-  };
+  }, [toastError]);
 
   // 取得產品列表（根據 page + category）
   const fetchProducts = useCallback(async () => {
@@ -79,20 +81,20 @@ function ProductManagement() {
       }
       // 當目前類別沒有產品時，切換到所有分類
       if (data.products.length === 0 && selectedCategory !== '') {
-        toast.info('此分類沒有產品，將切回所有分類');
+        toastInfo('此分類沒有產品，將切回所有分類');
         setSelectedCategory('');
         setCurrentPage(1);
       }
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       if (currentRequest === requestId.current) {
         // 如果是最新的請求就關閉 loading
         setIsLoading(false);
       }
     }
-  }, [currentPage, selectedCategory]);
+  }, [currentPage, selectedCategory, toastInfo, toastError]);
 
   // 選擇分類 (會回到第一頁)
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -133,7 +135,7 @@ function ProductManagement() {
   // 初始化抓 categories
   useEffect(() => {
     fetchAllProducts();
-  }, []);
+  }, [fetchAllProducts]);
 
   return (
     <>

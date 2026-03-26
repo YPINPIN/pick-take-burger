@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useSearchParams, useOutletContext } from 'react-router';
-import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 import type { OrderData } from '@/types/order';
 import type { GlobalOverlayState } from '@/types/globalOverlay';
 
+import useToast from '@/hooks/useToast';
 import { apiClientGetOrder } from '@/api/client.order';
 import { apiClientPay } from '@/api/client.pay';
 import { formatDate } from '@/utils/date';
@@ -17,6 +17,8 @@ import TrackOrderPanel from '@/components/TrackOrderPanel';
 import GlobalOverlay from '@/components/GlobalOverlay';
 
 function TrackOrderDetail() {
+  const { toastSuccess, toastError } = useToast();
+
   // url 參數
   const { orderId } = useParams();
   // 刷新
@@ -40,27 +42,30 @@ function TrackOrderDetail() {
   const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: true });
 
   // 取得 Order 資料
-  const fetchOrderDetail = async (orderId: string) => {
-    setOverlayState({ isOverlay: true });
-    const currentRequest: number = ++requestId.current;
-    try {
-      const data = await apiClientGetOrder(orderId);
-      // 如果不是最新的請求就不更新
-      if (currentRequest !== requestId.current) {
-        // console.log('不是最新的請求', currentRequest, requestId.current);
-        return;
+  const fetchOrderDetail = useCallback(
+    async (orderId: string) => {
+      setOverlayState({ isOverlay: true });
+      const currentRequest: number = ++requestId.current;
+      try {
+        const data = await apiClientGetOrder(orderId);
+        // 如果不是最新的請求就不更新
+        if (currentRequest !== requestId.current) {
+          // console.log('不是最新的請求', currentRequest, requestId.current);
+          return;
+        }
+        setOrder(data.order);
+      } catch (error) {
+        const err = error as ApiError;
+        toastError(err.message);
+      } finally {
+        if (currentRequest === requestId.current) {
+          // 如果是最新的請求就關閉 loading
+          setOverlayState({ isOverlay: false, message: '' });
+        }
       }
-      setOrder(data.order);
-    } catch (error) {
-      const err = error as ApiError;
-      toast.error(err.message);
-    } finally {
-      if (currentRequest === requestId.current) {
-        // 如果是最新的請求就關閉 loading
-        setOverlayState({ isOverlay: false, message: '' });
-      }
-    }
-  };
+    },
+    [toastError],
+  );
 
   // 前往付款
   const goToPayment = () => {
@@ -81,11 +86,11 @@ function TrackOrderDetail() {
     try {
       setOverlayState({ isOverlay: true });
       const data = await apiClientPay(orderId);
-      toast.success(data.message);
+      toastSuccess(data.message);
       await fetchOrderDetail(orderId);
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setOverlayState({ isOverlay: false, message: '' });
     }
@@ -96,7 +101,7 @@ function TrackOrderDetail() {
     if (!orderId) return;
 
     fetchOrderDetail(orderId);
-  }, [orderId, refreshKey]);
+  }, [orderId, refreshKey, fetchOrderDetail]);
 
   // 判斷是否為付款步驟
   useEffect(() => {

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 import { EDIT_QTY_TYPE } from '@/types/cart';
@@ -9,6 +8,7 @@ import type { ProductData } from '@/types/product';
 import type { GlobalOverlayState } from '@/types/globalOverlay';
 import type { ConfirmModalHandle, ConfirmModalData } from '@/types/modal';
 
+import useToast from '@/hooks/useToast';
 import { apiClientGetCartInfo, apiClientAddCartItem, apiClientEditCartItem, apiClientDeleteCartItem, apiClientClearCart } from '@/api/client.cart';
 import { apiClientGetAllProducts } from '@/api/client.product';
 
@@ -21,6 +21,8 @@ import ProductCarouselCard from '@/components/ProductCarouselCard';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 
 function Cart() {
+  const { toastSuccess, toastError } = useToast();
+
   // 購物車資料
   const [cart, setCart] = useState<CartInfo | null>();
   // 用來判斷是否為最新請求
@@ -37,7 +39,7 @@ function Cart() {
   const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
 
   // 取得購物車資料
-  const fetchCartInfo = async () => {
+  const fetchCartInfo = useCallback(async () => {
     setOverlayState({ isOverlay: true, message: '取得購物車中...' });
     const currentRequest: number = ++requestId.current;
     try {
@@ -50,14 +52,14 @@ function Cart() {
       setCart(data.data);
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       if (currentRequest === requestId.current) {
         // 如果是最新的請求就關閉 loading
         setOverlayState({ isOverlay: false, message: '' });
       }
     }
-  };
+  }, [toastError]);
 
   // 初始化資料
   useEffect(() => {
@@ -70,7 +72,7 @@ function Cart() {
         setList(list);
       } catch (error) {
         const err = error as ApiError;
-        toast.error(err.message);
+        toastError(err.message);
       } finally {
         setIsListLoading(false);
       }
@@ -80,7 +82,7 @@ function Cart() {
     fetchCartInfo();
     // 取得所有產品（for list 推薦列表）
     fetchAllProducts();
-  }, []);
+  }, [fetchCartInfo, toastError]);
 
   // 編輯購物車
   const handleEditCartItem = async (type: EditQtyType, cartItem: CartData) => {
@@ -100,12 +102,12 @@ function Cart() {
         },
       };
       const data = await apiClientEditCartItem(params);
-      toast.success(data.message);
+      toastSuccess(data.message);
       // 更新購物車
       await fetchCartInfo();
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setOverlayState({ isOverlay: false, message: '' });
     }
@@ -116,12 +118,12 @@ function Cart() {
     try {
       setOverlayState({ isOverlay: true, message: '更新購物車中...' });
       const data = await apiClientDeleteCartItem(cartItemId);
-      toast.success(data.message);
+      toastSuccess(data.message);
       // 更新購物車
       await fetchCartInfo();
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setOverlayState({ isOverlay: false, message: '' });
     }
@@ -132,12 +134,12 @@ function Cart() {
     try {
       setOverlayState({ isOverlay: true, message: '清空購物車中...' });
       const data = await apiClientClearCart();
-      toast.success(data.message);
+      toastSuccess(data.message);
       // 更新購物車
       await fetchCartInfo();
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setOverlayState({ isOverlay: false, message: '' });
     }
@@ -167,20 +169,23 @@ function Cart() {
   };
 
   // 推薦列表加入購物車
-  const handleAddToCart = useCallback(async (productId: string) => {
-    try {
-      setOverlayState({ isOverlay: true, message: '加入購物車中...' });
-      const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
-      toast.success(data.message);
-      // 更新購物車
-      await fetchCartInfo();
-    } catch (error) {
-      const err = error as ApiError;
-      toast.error(err.message);
-    } finally {
-      setOverlayState({ isOverlay: false, message: '' });
-    }
-  }, []);
+  const handleAddToCart = useCallback(
+    async (productId: string) => {
+      try {
+        setOverlayState({ isOverlay: true, message: '加入購物車中...' });
+        const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
+        toastSuccess(data.message);
+        // 更新購物車
+        await fetchCartInfo();
+      } catch (error) {
+        const err = error as ApiError;
+        toastError(err.message);
+      } finally {
+        setOverlayState({ isOverlay: false, message: '' });
+      }
+    },
+    [fetchCartInfo, toastError, toastSuccess],
+  );
 
   // 輪播項目 render
   const renderCarouselItem = useCallback((product: ProductData) => <ProductCarouselCard product={product} onAddToCart={handleAddToCart} />, [handleAddToCart]);

@@ -1,10 +1,10 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
 import { Modal } from 'bootstrap';
 
 import type { AdminDeleteModalType, AdminDeleteModalData, AdminDeleteModalHandle, AdminDeleteModalProps } from '@/types/modal';
 import type { ApiError } from '@/types/error';
 
+import useToast from '@/hooks/useToast';
 import { apiAdminDeleteProduct } from '@/api/admin.product';
 import { apiAdminDeleteOrder } from '@/api/admin.order';
 
@@ -19,6 +19,8 @@ const deleteApiMap: Record<AdminDeleteModalType, (id: string) => Promise<{ succe
 };
 
 const AdminDeleteModal = forwardRef<AdminDeleteModalHandle, AdminDeleteModalProps>(function AdminDeleteModal({ onSuccess }, ref) {
+  const { toastSuccess, toastError } = useToast();
+
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   // Modal
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -64,13 +66,13 @@ const AdminDeleteModal = forwardRef<AdminDeleteModalHandle, AdminDeleteModalProp
       const { id, type } = tempDeleteData;
       // 根據 type 呼叫不同的刪除 API
       const data = await deleteApiMap[type](id);
-      toast.success(data.message);
+      toastSuccess(data.message);
       close();
       // 通知父層刪除成功
       onSuccess();
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setIsUpdating(false);
     }

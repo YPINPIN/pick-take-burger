@@ -1,4 +1,4 @@
-import { ToastContainer, Bounce } from 'react-toastify';
+import ToastContainer from '@/components/ToastContainer';
 // router
 import { createHashRouter, RouterProvider } from 'react-router';
 import routes from './routes';
@@ -9,7 +9,7 @@ function App() {
     <>
       <RouterProvider router={router} />
       {/* Toast container */}
-      <ToastContainer position="top-right" autoClose={1000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss={false} draggable={false} pauseOnHover={false} theme="colored" transition={Bounce} />
+      <ToastContainer />
     </>
   );
 }

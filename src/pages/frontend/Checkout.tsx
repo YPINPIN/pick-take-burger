@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 import type { CartInfo } from '@/types/cart';
@@ -10,6 +9,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import type { GlobalOverlayState } from '@/types/globalOverlay';
 import type { CheckoutSuccessModalHandle, CheckoutSuccessModalData } from '@/types/modal';
 
+import useToast from '@/hooks/useToast';
 import { apiClientGetCartInfo } from '@/api/client.cart';
 import { apiClientCreateOrder } from '@/api/client.order';
 
@@ -20,6 +20,8 @@ import GlobalOverlay from '@/components/GlobalOverlay';
 
 function Checkout() {
   const navigate = useNavigate();
+  const { toastSuccess, toastError } = useToast();
+
   // 購物車資料
   const [cart, setCart] = useState<CartInfo | null>();
   // 用來判斷是否為最新請求
@@ -55,7 +57,7 @@ function Checkout() {
       setCart(data.data);
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       if (currentRequest === requestId.current) {
         // 如果是最新的請求就關閉 loading
@@ -74,12 +76,12 @@ function Checkout() {
         message,
       };
       const data = await apiClientCreateOrder(apiParams);
-      toast.success(data.message);
+      toastSuccess(data.message);
       // 開啟 Checkout Success Modal
       openCheckoutSuccessModal({ orderId: data.orderId, total: data.total });
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setOverlayState({ isOverlay: false, message: '' });
     }

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 import type { ProductData } from '@/types/product';
 import type { GlobalOverlayState } from '@/types/globalOverlay';
 
+import useToast from '@/hooks/useToast';
 import { apiClientGetProductDetail, apiClientGetProducts } from '@/api/client.product';
 import { apiClientAddCartItem } from '@/api/client.cart';
 
@@ -24,6 +24,8 @@ const MAX_QTY = 10;
 
 function ProductDetail() {
   const navigate = useNavigate();
+  const { toastSuccess, toastError } = useToast();
+
   // url 參數
   const { productId } = useParams();
 
@@ -66,7 +68,7 @@ function ProductDetail() {
         setProduct(data.product);
       } catch (error) {
         const err = error as ApiError;
-        toast.error(err.message);
+        toastError(err.message);
         // 跳轉到 menu 頁面
         navigate('/menu', { replace: true });
       } finally {
@@ -78,7 +80,7 @@ function ProductDetail() {
     };
     setProductQty(1);
     fetchProductDetail(productId);
-  }, [productId, navigate]);
+  }, [productId, navigate, toastError]);
 
   useEffect(() => {
     if (!product) return;
@@ -93,13 +95,13 @@ function ProductDetail() {
         setList(list);
       } catch (error) {
         const err = error as ApiError;
-        toast.error(err.message);
+        toastError(err.message);
       } finally {
         setIsListLoading(false);
       }
     };
     fetchCategoryProducts();
-  }, [product]);
+  }, [product, toastError]);
 
   // 產品數量限制
   const clamp = (value: number) => Math.min(Math.max(value, MIN_QTY), MAX_QTY);
@@ -114,10 +116,10 @@ function ProductDetail() {
           setIsAddToCart(true);
         }
         const data = await apiClientAddCartItem({ product_id: productId, qty });
-        toast.success(data.message);
+        toastSuccess(data.message);
       } catch (error) {
         const err = error as ApiError;
-        toast.error(err.message);
+        toastError(err.message);
       } finally {
         if (myId === productId) {
           setIsAddToCart(false);
@@ -125,7 +127,7 @@ function ProductDetail() {
         setOverlayState({ isOverlay: false, message: '' });
       }
     },
-    [myId],
+    [myId, toastError, toastSuccess],
   );
 
   // 輪播項目 render

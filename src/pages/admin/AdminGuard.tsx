@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router';
-import { toast } from 'react-toastify';
 
 import type { ApiError } from '@/types/error';
 
+import useToast from '@/hooks/useToast';
 import { apiAdminLoginCheck } from '@/api/admin.login';
 import { getToken, clearToken } from '@/utils/token';
 
@@ -12,6 +12,7 @@ import LoginCheckPage from '@/pages/admin/LoginCheckPage';
 // 後台權限檢查
 function AdminGuard() {
   const navigate = useNavigate();
+  const { toastInfo, toastError } = useToast();
 
   // 檢查登入中狀態
   const [isProcessCheck, setIsProcessCheck] = useState<boolean>(true);
@@ -26,7 +27,7 @@ function AdminGuard() {
       // 沒有 token 就跳轉到登入頁
       if (!token) {
         navigate('/login', { replace: true });
-        toast.info('請先登入');
+        toastInfo('請先登入');
         return;
       }
 
@@ -39,12 +40,12 @@ function AdminGuard() {
         // 清除 token
         clearToken();
         navigate('/login', { replace: true });
-        toast.error(err.message);
+        toastError(err.message);
       }
     };
 
     checkAuth();
-  }, [navigate]);
+  }, [navigate, toastInfo, toastError]);
 
   return isProcessCheck ? <LoginCheckPage /> : <Outlet />;
 }

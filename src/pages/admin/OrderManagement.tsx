@@ -1,5 +1,4 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
 
 import type { ChangeEvent } from 'react';
 import type { ApiError } from '@/types/error';
@@ -7,6 +6,7 @@ import type { Pagination } from '@/types/pagination';
 import type { OrderData } from '@/types/order';
 import type { AdminOrderModalHandle, AdminDeleteModalHandle } from '@/types/modal';
 
+import useToast from '@/hooks/useToast';
 import { apiAdminGetOrders } from '@/api/admin.order';
 import { apiClientGetOrder } from '@/api/client.order';
 
@@ -17,6 +17,8 @@ import AdminOrderModal from '@/components/modals/AdminOrderModal';
 import AdminDeleteModal from '@/components/modals/AdminDeleteModal';
 
 function OrderManagement() {
+  const { toastError } = useToast();
+
   // 用來判斷是否為最新請求
   const requestId = useRef<number>(0);
   // 全部訂單資料
@@ -71,14 +73,14 @@ function OrderManagement() {
       }
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       if (currentRequest === requestId.current) {
         // 如果是最新的請求就關閉 loading
         setIsLoading(false);
       }
     }
-  }, [currentPage]);
+  }, [currentPage, toastError]);
 
   // 搜尋指定 Order 資料
   const fetchOrderById = async (orderId: string) => {
@@ -88,7 +90,7 @@ function OrderManagement() {
       setSearchOrder(data.order);
     } catch (error) {
       const err = error as ApiError;
-      toast.error(err.message);
+      toastError(err.message);
     } finally {
       setIsLoading(false);
     }
