@@ -1,0 +1,76 @@
+.cta-bg-text {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.rotate-wrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  width: 200%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.layer {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-track {
+  display: inline-flex;
+  flex-shrink: 0;
+  will-change: transform;
+
+  span {
+    display: inline-block;
+    font-size: 120px;
+    font-weight: 900;
+    color: $primary;
+    letter-spacing: 12px;
+    flex-shrink: 0;
+    user-select: none;
+  }
+}
+
+.layer-1 {
+  top: 10%;
+  opacity: 0.15;
+
+  .marquee-track {
+    animation: marquee-left 130s linear infinite;
+  }
+}
+
+.layer-2 {
+  top: 65%;
+  opacity: 0.1;
+
+  .marquee-track {
+    animation: marquee-right 110s linear infinite;
+  }
+}
+
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

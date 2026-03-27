@@ -134,3 +134,12 @@ textarea {
 .toast-body {
   padding: var(--bs-toast-padding-y) var(--bs-toast-padding-x);
 }
+
+.banner-logo {
+  width: 50%;
+  max-width: 250px;
+
+  @include media-breakpoint-up(lg) {
+    width: 25%;
+  }
+}
