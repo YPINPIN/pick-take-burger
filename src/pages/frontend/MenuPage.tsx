@@ -122,7 +122,7 @@ function MenuPage() {
     <>
       {/* 全域遮罩 */}
       <GlobalOverlay overlayState={overlayState} />
-      <div className="container-lg">
+      <div className="container-lg py-5">
         <div className="row g-lg-5">
           <div className="col-sm-4 col-md-3">
             <MenuCategory categories={categories} selectedCategory={selectedCategory} handleCategoryClick={handleCategoryClick} />

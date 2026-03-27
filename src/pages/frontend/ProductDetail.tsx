@@ -137,7 +137,7 @@ function ProductDetail() {
     <>
       {/* 全域遮罩 */}
       <GlobalOverlay overlayState={overlayState} />
-      <div className="container">
+      <div className="container py-5">
         {isLoading ? (
           <div className="d-flex justify-content-center py-3">
             <LoadingSpinner />

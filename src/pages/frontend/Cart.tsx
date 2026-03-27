@@ -196,7 +196,7 @@ function Cart() {
       <GlobalOverlay overlayState={overlayState} />
       {/* Confirm Modal */}
       <ConfirmModal ref={confirmModalRef} />
-      <div className="container-lg">
+      <div className="container-lg py-5">
         <div className="mb-3">
           {/* 商店狀態 */}
           <ShopStatusBanner type="banner" />
