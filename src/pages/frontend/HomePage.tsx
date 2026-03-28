@@ -153,7 +153,7 @@ function HomePage() {
             手工肉排 X 酥脆炸物，每口都是滿足
           </motion.p>
 
-          <motion.button className="btn btn-dark btn-lg fs-3 fw-bold px-7 mt-4" initial={{ opacity: 0 }} whileHover={{ scale: 1.1, transition: { duration: 0.1 } }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.1 }} onClick={handleClick}>
+          <motion.button className="btn btn-dark btn-lg fs-3 fw-bold px-7 mt-4" initial={{ opacity: 0 }} whileHover={{ scale: 1.05, y: -2, transition: { duration: 0.1 } }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.1 }} onClick={handleClick}>
             探索菜單
           </motion.button>
         </div>

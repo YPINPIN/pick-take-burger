@@ -25,15 +25,15 @@ function VideoBanner() {
 
       {/* content */}
       <div className="position-absolute w-100 top-50 start-50 translate-middle">
-        <motion.h1 initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.8 }} className="display-3 fw-bold">
+        <motion.h1 initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3, duration: 0.8 }} className="display-3 fw-bold">
           手作美味，即刻送達
         </motion.h1>
 
-        <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }} className="lead mt-2">
+        <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6, duration: 0.5 }} className="lead mt-2">
           新鮮漢堡與經典美式小食
         </motion.p>
 
-        <motion.button className="btn btn-accent btn-lg fs-3 fw-bold px-7 mt-4" initial={{ opacity: 0 }} whileHover={{ scale: 1.1, transition: { duration: 0.1 } }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.1 }} onClick={handleClick}>
+        <motion.button className="btn btn-accent btn-lg fs-3 fw-bold px-7 mt-4" initial={{ opacity: 0 }} whileHover={{ scale: 1.05, y: -2, transition: { duration: 0.1 } }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.1 }} onClick={handleClick}>
           立即訂購
         </motion.button>
       </div>
