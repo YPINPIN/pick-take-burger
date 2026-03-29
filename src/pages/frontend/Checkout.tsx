@@ -6,21 +6,21 @@ import type { ApiError } from '@/types/error';
 import type { CartInfo } from '@/types/cart';
 import type { CheckoutFormData, CreateOrderParams } from '@/types/order';
 import type { SubmitHandler } from 'react-hook-form';
-import type { GlobalOverlayState } from '@/types/globalOverlay';
 import type { CheckoutSuccessModalHandle, CheckoutSuccessModalData } from '@/types/modal';
 
 import useToast from '@/hooks/useToast';
+import useGlobalOverlay from '@/hooks/useGlobalOverlay';
 import { apiClientGetCartInfo } from '@/api/client.cart';
 import { apiClientCreateOrder } from '@/api/client.order';
 
 import ShopStatusBanner from '@/components/ShopStatusBanner';
 import OrderSummary from '@/components/OrderSummary';
 import CheckoutSuccessModal from '@/components/modals/CheckoutSuccessModal';
-import GlobalOverlay from '@/components/GlobalOverlay';
 
 function Checkout() {
   const navigate = useNavigate();
   const { toastSuccess, toastError } = useToast();
+  const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
 
   // 購物車資料
   const [cart, setCart] = useState<CartInfo | null>();
@@ -40,12 +40,9 @@ function Checkout() {
   // Checkout Success Modal
   const checkoutSuccessModalRef = useRef<CheckoutSuccessModalHandle>(null);
 
-  // Overlay 顯示狀態 (fetch 狀態)
-  const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
-
   // 取得購物車資料
   const fetchCartInfo = useCallback(async () => {
-    setOverlayState({ isOverlay: true });
+    showGlobalOverlay();
     const currentRequest: number = ++requestId.current;
     try {
       const data = await apiClientGetCartInfo();
@@ -61,15 +58,15 @@ function Checkout() {
     } finally {
       if (currentRequest === requestId.current) {
         // 如果是最新的請求就關閉 loading
-        setOverlayState({ isOverlay: false, message: '' });
+        hideGlobalOverlay();
       }
     }
-  }, [toastError]);
+  }, [toastError, showGlobalOverlay, hideGlobalOverlay]);
 
   // 送出訂單
   const handleCheckout: SubmitHandler<CheckoutFormData> = async (formData) => {
     try {
-      setOverlayState({ isOverlay: true, message: '送出訂單中...' });
+      showGlobalOverlay('送出訂單中...');
       const { message, ...user } = formData;
       const apiParams: CreateOrderParams = {
         user,
@@ -83,7 +80,7 @@ function Checkout() {
       const err = error as ApiError;
       toastError(err.message);
     } finally {
-      setOverlayState({ isOverlay: false, message: '' });
+      hideGlobalOverlay();
     }
   };
 
@@ -112,8 +109,6 @@ function Checkout() {
 
   return (
     <>
-      {/* 全域遮罩 */}
-      <GlobalOverlay overlayState={overlayState} />
       {/* Checkout Success Modal */}
       <CheckoutSuccessModal ref={checkoutSuccessModalRef} />
 

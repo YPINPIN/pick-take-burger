@@ -4,15 +4,14 @@ import { useNavigate } from 'react-router';
 
 import type { ApiError } from '@/types/error';
 import type { ProductData } from '@/types/product';
-import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 import useToast from '@/hooks/useToast';
+import useGlobalOverlay from '@/hooks/useGlobalOverlay';
 import { apiClientGetAllProducts } from '@/api/client.product';
 import { apiClientAddCartItem } from '@/api/client.cart';
 
 import VideoBanner from '@/components/VideoBanner';
 import CtaBgText from '@/components/CtaBgText';
-import GlobalOverlay from '@/components/GlobalOverlay';
 import EntityCarousel from '@/components/EntityCarousel';
 import ProductCarouselCard from '@/components/ProductCarouselCard';
 
@@ -47,14 +46,12 @@ function HomePage() {
   ];
 
   const { toastSuccess, toastError } = useToast();
+  const { showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
   const navigate = useNavigate();
 
   // 主廚推薦產品
   const [list, setList] = useState<ProductData[]>([]);
   const [isListLoading, setIsListLoading] = useState<boolean>(false);
-
-  // Overlay 顯示狀態 (fetch 狀態)
-  const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
 
   const handleClick = () => {
     navigate('/menu');
@@ -64,17 +61,17 @@ function HomePage() {
   const handleAddToCart = useCallback(
     async (productId: string) => {
       try {
-        setOverlayState({ isOverlay: true, message: '加入購物車中...' });
+        showGlobalOverlay('加入購物車中...');
         const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
         toastSuccess(data.message);
       } catch (error) {
         const err = error as ApiError;
         toastError(err.message);
       } finally {
-        setOverlayState({ isOverlay: false, message: '' });
+        hideGlobalOverlay();
       }
     },
-    [toastError, toastSuccess],
+    [toastError, toastSuccess, showGlobalOverlay, hideGlobalOverlay],
   );
 
   // 輪播項目 render
@@ -103,8 +100,6 @@ function HomePage() {
 
   return (
     <div className="overflow-hidden">
-      {/* 全域遮罩 */}
-      <GlobalOverlay overlayState={overlayState} />
       <VideoBanner />
 
       {/* 品牌特色 */}

@@ -3,9 +3,9 @@ import { useParams, useSearchParams, useOutletContext } from 'react-router';
 
 import type { ApiError } from '@/types/error';
 import type { OrderData } from '@/types/order';
-import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 import useToast from '@/hooks/useToast';
+import useGlobalOverlay from '@/hooks/useGlobalOverlay';
 import { apiClientGetOrder } from '@/api/client.order';
 import { apiClientPay } from '@/api/client.pay';
 import { formatDate } from '@/utils/date';
@@ -14,10 +14,10 @@ import { isOrderStatusDone } from '@/utils/orderStatus';
 import ShopStatusBanner from '@/components/ShopStatusBanner';
 import TrackOrderProgressPanel from '@/components/TrackOrderProgressPanel';
 import TrackOrderPanel from '@/components/TrackOrderPanel';
-import GlobalOverlay from '@/components/GlobalOverlay';
 
 function TrackOrderDetail() {
   const { toastSuccess, toastError } = useToast();
+  const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
 
   // url 參數
   const { orderId } = useParams();
@@ -38,13 +38,10 @@ function TrackOrderDetail() {
   // payment radio 選項選擇狀態
   const [payment, setPayment] = useState<string | null>(null);
 
-  // Overlay 顯示狀態 (fetch 狀態)
-  const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: true });
-
   // 取得 Order 資料
   const fetchOrderDetail = useCallback(
     async (orderId: string) => {
-      setOverlayState({ isOverlay: true });
+      showGlobalOverlay();
       const currentRequest: number = ++requestId.current;
       try {
         const data = await apiClientGetOrder(orderId);
@@ -60,11 +57,11 @@ function TrackOrderDetail() {
       } finally {
         if (currentRequest === requestId.current) {
           // 如果是最新的請求就關閉 loading
-          setOverlayState({ isOverlay: false, message: '' });
+          hideGlobalOverlay();
         }
       }
     },
-    [toastError],
+    [toastError, showGlobalOverlay, hideGlobalOverlay],
   );
 
   // 前往付款
@@ -84,7 +81,7 @@ function TrackOrderDetail() {
   // 處理付款
   const handlePayment = async (orderId: string) => {
     try {
-      setOverlayState({ isOverlay: true });
+      showGlobalOverlay();
       const data = await apiClientPay(orderId);
       toastSuccess(data.message);
       await fetchOrderDetail(orderId);
@@ -92,7 +89,7 @@ function TrackOrderDetail() {
       const err = error as ApiError;
       toastError(err.message);
     } finally {
-      setOverlayState({ isOverlay: false, message: '' });
+      hideGlobalOverlay();
     }
   };
 
@@ -115,8 +112,6 @@ function TrackOrderDetail() {
 
   return (
     <>
-      {/* 全域遮罩 */}
-      <GlobalOverlay overlayState={overlayState} />
       <section className="py-3">
         {order && (
           <div className="row">

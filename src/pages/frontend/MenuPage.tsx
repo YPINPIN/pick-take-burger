@@ -3,9 +3,9 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import type { ApiError } from '@/types/error';
 import type { Pagination } from '@/types/pagination';
 import type { ProductData } from '@/types/product';
-import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 import useToast from '@/hooks/useToast';
+import useGlobalOverlay from '@/hooks/useGlobalOverlay';
 import { apiClientGetAllProducts, apiClientGetProducts } from '@/api/client.product';
 import { apiClientAddCartItem } from '@/api/client.cart';
 
@@ -13,10 +13,10 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import PaginationUI from '@/components/PaginationUI';
 import MenuCategory from '@/components/MenuCategory';
 import MenuCard from '@/components/MenuCard';
-import GlobalOverlay from '@/components/GlobalOverlay';
 
 function MenuPage() {
   const { toastSuccess, toastError } = useToast();
+  const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
 
   // 用來判斷是否為最新請求
   const requestId = useRef<number>(0);
@@ -38,9 +38,6 @@ function MenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   // fetch 狀態
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // Overlay 顯示狀態
-  const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
 
   // 產品排序 (num 高到低)
   const sortedProducts = useMemo(() => {
@@ -107,53 +104,49 @@ function MenuPage() {
   // 加入購物車
   const handleAddToCart = async (productId: string) => {
     try {
-      setOverlayState({ isOverlay: true, message: '加入購物車中...' });
+      showGlobalOverlay('加入購物車中...');
       const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
       toastSuccess(data.message);
     } catch (error) {
       const err = error as ApiError;
       toastError(err.message);
     } finally {
-      setOverlayState({ isOverlay: false, message: '' });
+      hideGlobalOverlay();
     }
   };
 
   return (
-    <>
-      {/* 全域遮罩 */}
-      <GlobalOverlay overlayState={overlayState} />
-      <div className="container-lg py-5">
-        <div className="row g-lg-5">
-          <div className="col-sm-4 col-md-3">
-            <MenuCategory categories={categories} selectedCategory={selectedCategory} handleCategoryClick={handleCategoryClick} />
-          </div>
-          <div className="col-sm-8 col-md-9">
-            {isLoading ? (
-              <div className="p-4 d-flex justify-content-center align-items-center">
-                <LoadingSpinner />
+    <div className="container-lg py-5">
+      <div className="row g-lg-5">
+        <div className="col-sm-4 col-md-3">
+          <MenuCategory categories={categories} selectedCategory={selectedCategory} handleCategoryClick={handleCategoryClick} />
+        </div>
+        <div className="col-sm-8 col-md-9">
+          {isLoading ? (
+            <div className="p-4 d-flex justify-content-center align-items-center">
+              <LoadingSpinner />
+            </div>
+          ) : sortedProducts.length > 0 ? (
+            <>
+              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {sortedProducts.map((product) => (
+                  <div className="col" key={product.id}>
+                    <MenuCard product={product} isOverlay={overlayState.isOverlay} onAddToCart={handleAddToCart} />
+                  </div>
+                ))}
               </div>
-            ) : sortedProducts.length > 0 ? (
-              <>
-                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                  {sortedProducts.map((product) => (
-                    <div className="col" key={product.id}>
-                      <MenuCard product={product} isOverlay={overlayState.isOverlay} onAddToCart={handleAddToCart} />
-                    </div>
-                  ))}
-                </div>
 
-                {/* 分頁 小於等於 1 不顯示 */}
-                {pagination.total_pages > 1 && <PaginationUI total_pages={pagination.total_pages} has_pre={pagination.has_pre} has_next={pagination.has_next} currentPage={currentPage} setCurrentPage={setCurrentPage} />}
-              </>
-            ) : (
-              <div className="text-center px-4 pb-4">
-                <p className="fs-3 text-primary">目前沒有任何餐點</p>
-              </div>
-            )}
-          </div>
+              {/* 分頁 小於等於 1 不顯示 */}
+              {pagination.total_pages > 1 && <PaginationUI total_pages={pagination.total_pages} has_pre={pagination.has_pre} has_next={pagination.has_next} currentPage={currentPage} setCurrentPage={setCurrentPage} />}
+            </>
+          ) : (
+            <div className="text-center px-4 pb-4">
+              <p className="fs-3 text-primary">目前沒有任何餐點</p>
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

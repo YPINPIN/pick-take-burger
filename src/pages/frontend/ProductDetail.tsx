@@ -3,9 +3,9 @@ import { useParams, useNavigate } from 'react-router';
 
 import type { ApiError } from '@/types/error';
 import type { ProductData } from '@/types/product';
-import type { GlobalOverlayState } from '@/types/globalOverlay';
 
 import useToast from '@/hooks/useToast';
+import useGlobalOverlay from '@/hooks/useGlobalOverlay';
 import { apiClientGetProductDetail, apiClientGetProducts } from '@/api/client.product';
 import { apiClientAddCartItem } from '@/api/client.cart';
 
@@ -14,7 +14,6 @@ import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ShopStatusBanner from '@/components/ShopStatusBanner';
 import ProductDetailImages from '@/components/ProductDetailImages';
-import GlobalOverlay from '@/components/GlobalOverlay';
 import EntityCarousel from '@/components/EntityCarousel';
 import ProductCarouselCard from '@/components/ProductCarouselCard';
 
@@ -25,6 +24,7 @@ const MAX_QTY = 10;
 function ProductDetail() {
   const navigate = useNavigate();
   const { toastSuccess, toastError } = useToast();
+  const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
 
   // url 參數
   const { productId } = useParams();
@@ -46,9 +46,6 @@ function ProductDetail() {
   const [productQty, setProductQty] = useState<number>(1);
   // 加入購物車
   const [isAddToCart, setIsAddToCart] = useState<boolean>(false);
-
-  // Overlay 顯示狀態
-  const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
 
   useEffect(() => {
     const currentRequest: number = ++requestId.current;
@@ -110,7 +107,7 @@ function ProductDetail() {
   const handleAddToCart = useCallback(
     async (productId: string, qty: number = 1) => {
       try {
-        setOverlayState({ isOverlay: true, message: '加入購物車中...' });
+        showGlobalOverlay('加入購物車中...');
         if (myId === productId) {
           // 為自己時顯示 loading
           setIsAddToCart(true);
@@ -124,146 +121,142 @@ function ProductDetail() {
         if (myId === productId) {
           setIsAddToCart(false);
         }
-        setOverlayState({ isOverlay: false, message: '' });
+        hideGlobalOverlay();
       }
     },
-    [myId, toastError, toastSuccess],
+    [myId, toastError, toastSuccess, showGlobalOverlay, hideGlobalOverlay],
   );
 
   // 輪播項目 render
   const renderCarouselItem = useCallback((product: ProductData) => <ProductCarouselCard product={product} onAddToCart={handleAddToCart} />, [handleAddToCart]);
 
   return (
-    <>
-      {/* 全域遮罩 */}
-      <GlobalOverlay overlayState={overlayState} />
-      <div className="container py-5">
-        {isLoading ? (
-          <div className="d-flex justify-content-center py-3">
-            <LoadingSpinner />
+    <div className="container py-5">
+      {isLoading ? (
+        <div className="d-flex justify-content-center py-3">
+          <LoadingSpinner />
+        </div>
+      ) : product ? (
+        <div className="row g-3 g-sm-4">
+          <div className="col-sm-10 col-md-12 mx-auto">
+            <ShopStatusBanner type="banner" />
           </div>
-        ) : product ? (
-          <div className="row g-3 g-sm-4">
-            <div className="col-sm-10 col-md-12 mx-auto">
-              <ShopStatusBanner type="banner" />
-            </div>
-            {/* 左側 - 圖片 */}
-            <div className="col-sm-10 col-md-5 mx-auto">
-              <ProductDetailImages imagesUrl={[product.imageUrl, ...product.imagesUrl]} />
-            </div>
+          {/* 左側 - 圖片 */}
+          <div className="col-sm-10 col-md-5 mx-auto">
+            <ProductDetailImages imagesUrl={[product.imageUrl, ...product.imagesUrl]} />
+          </div>
 
-            {/* 右側 - 白色資訊卡 */}
-            <div className="col-sm-10 col-md-7 mx-auto">
-              <div className="bg-white rounded-4 shadow-sm p-4 p-lg-5">
-                {/* 標籤區 */}
-                {(product.is_recommend === 1 || product.tag !== 'normal') && (
-                  <div className="d-flex flex-wrap gap-2 mb-3">
-                    {product.is_recommend === 1 && (
-                      <span className={`badge ${PRODUCT_RECOMMEND_META.badgeClass} py-2 px-3`}>
-                        <i className={`${PRODUCT_RECOMMEND_META.iconClass} me-1`}></i>
-                        {PRODUCT_RECOMMEND_META.label}
-                      </span>
-                    )}
-                    {product.tag !== 'normal' && PRODUCT_TAG_META[product.tag] && (
-                      <span className={`badge ${PRODUCT_TAG_META[product.tag].badgeClass} py-2 px-3`}>
-                        <i className={`${PRODUCT_TAG_META[product.tag].iconClass} me-1`}></i>
-                        {PRODUCT_TAG_META[product.tag].label}
-                      </span>
-                    )}
+          {/* 右側 - 白色資訊卡 */}
+          <div className="col-sm-10 col-md-7 mx-auto">
+            <div className="bg-white rounded-4 shadow-sm p-4 p-lg-5">
+              {/* 標籤區 */}
+              {(product.is_recommend === 1 || product.tag !== 'normal') && (
+                <div className="d-flex flex-wrap gap-2 mb-3">
+                  {product.is_recommend === 1 && (
+                    <span className={`badge ${PRODUCT_RECOMMEND_META.badgeClass} py-2 px-3`}>
+                      <i className={`${PRODUCT_RECOMMEND_META.iconClass} me-1`}></i>
+                      {PRODUCT_RECOMMEND_META.label}
+                    </span>
+                  )}
+                  {product.tag !== 'normal' && PRODUCT_TAG_META[product.tag] && (
+                    <span className={`badge ${PRODUCT_TAG_META[product.tag].badgeClass} py-2 px-3`}>
+                      <i className={`${PRODUCT_TAG_META[product.tag].iconClass} me-1`}></i>
+                      {PRODUCT_TAG_META[product.tag].label}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* 商品名稱 */}
+              <h1 className="fw-bold text-dark mb-2">{product.title}</h1>
+
+              {/* 價格區 */}
+              <div className="d-flex flex-wrap align-items-baseline gap-2 mb-4">
+                <span className="text-gray-500 text-decoration-line-through">NT${product.origin_price}</span>
+                <span className="text-danger fs-2 fw-bold">NT${product.price}</span>
+                <span className="text-gray-600">/ {product.unit}</span>
+              </div>
+
+              {/* 商品描述 */}
+              {product.description && (
+                <div className="bg-light rounded-3 p-3 mb-4">
+                  <p className="fw-semibold text-gray-900 ">{product.description}</p>
+                </div>
+              )}
+
+              {/* 商品說明區 */}
+              {product.content && (
+                <div>
+                  <h2 className="fs-5 fw-bold text-primary mb-3">
+                    <i className="bi bi-info-circle me-2"></i>
+                    商品說明
+                  </h2>
+                  <p className="text-gray-600 lh-lg" style={{ whiteSpace: 'pre-line' }}>
+                    {product.content}
+                  </p>
+                </div>
+              )}
+
+              <hr className="my-4" />
+
+              {/* 購買區 */}
+              <div className="d-flex flex-column gap-4">
+                {/* 數量控制 */}
+                <div>
+                  <div className="d-flex flex-wrap align-items-center justify-content-center gap-2">
+                    <button type="button" className="btn btn-primary rounded-circle" style={{ width: '40px', height: '40px' }} disabled={productQty <= MIN_QTY} onClick={() => setProductQty((prev) => clamp(prev - 1))}>
+                      <i className="bi bi-dash-lg"></i>
+                    </button>
+
+                    <input type="text" readOnly className="form-control text-center fw-bold fs-5 border-0" style={{ width: '80px' }} value={productQty} />
+
+                    <button type="button" className="btn btn-primary rounded-circle" style={{ width: '40px', height: '40px' }} disabled={productQty >= MAX_QTY} onClick={() => setProductQty((prev) => clamp(prev + 1))}>
+                      <i className="bi bi-plus-lg"></i>
+                    </button>
                   </div>
-                )}
-
-                {/* 商品名稱 */}
-                <h1 className="fw-bold text-dark mb-2">{product.title}</h1>
-
-                {/* 價格區 */}
-                <div className="d-flex flex-wrap align-items-baseline gap-2 mb-4">
-                  <span className="text-gray-500 text-decoration-line-through">NT${product.origin_price}</span>
-                  <span className="text-danger fs-2 fw-bold">NT${product.price}</span>
-                  <span className="text-gray-600">/ {product.unit}</span>
+                  {/* 提示 */}
+                  {productQty >= MAX_QTY && (
+                    <small className="text-secondary d-block text-center mt-2">
+                      已達單次加入上限（{MAX_QTY} {product.unit}）
+                    </small>
+                  )}
                 </div>
 
-                {/* 商品描述 */}
-                {product.description && (
-                  <div className="bg-light rounded-3 p-3 mb-4">
-                    <p className="fw-semibold text-gray-900 ">{product.description}</p>
-                  </div>
-                )}
-
-                {/* 商品說明區 */}
-                {product.content && (
-                  <div>
-                    <h2 className="fs-5 fw-bold text-primary mb-3">
-                      <i className="bi bi-info-circle me-2"></i>
-                      商品說明
-                    </h2>
-                    <p className="text-gray-600 lh-lg" style={{ whiteSpace: 'pre-line' }}>
-                      {product.content}
-                    </p>
-                  </div>
-                )}
-
-                <hr className="my-4" />
-
-                {/* 購買區 */}
-                <div className="d-flex flex-column gap-4">
-                  {/* 數量控制 */}
-                  <div>
-                    <div className="d-flex flex-wrap align-items-center justify-content-center gap-2">
-                      <button type="button" className="btn btn-primary rounded-circle" style={{ width: '40px', height: '40px' }} disabled={productQty <= MIN_QTY} onClick={() => setProductQty((prev) => clamp(prev - 1))}>
-                        <i className="bi bi-dash-lg"></i>
-                      </button>
-
-                      <input type="text" readOnly className="form-control text-center fw-bold fs-5 border-0" style={{ width: '80px' }} value={productQty} />
-
-                      <button type="button" className="btn btn-primary rounded-circle" style={{ width: '40px', height: '40px' }} disabled={productQty >= MAX_QTY} onClick={() => setProductQty((prev) => clamp(prev + 1))}>
-                        <i className="bi bi-plus-lg"></i>
-                      </button>
-                    </div>
-                    {/* 提示 */}
-                    {productQty >= MAX_QTY && (
-                      <small className="text-secondary d-block text-center mt-2">
-                        已達單次加入上限（{MAX_QTY} {product.unit}）
-                      </small>
-                    )}
-                  </div>
-
-                  {/* 加入購物車 */}
-                  <button type="button" className="btn btn-accent text-dark fs-5 fw-bold shadow-sm w-100 py-2" onClick={() => handleAddToCart(product.id, productQty)} disabled={overlayState.isOverlay || isAddToCart}>
-                    {isAddToCart ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-cart-plus-fill me-2"></i>}
-                    {isAddToCart ? '加入中...' : `加入購物車 (NT$${(product.price * productQty).toLocaleString()})`}
-                  </button>
-                </div>
+                {/* 加入購物車 */}
+                <button type="button" className="btn btn-accent text-dark fs-5 fw-bold shadow-sm w-100 py-2" onClick={() => handleAddToCart(product.id, productQty)} disabled={overlayState.isOverlay || isAddToCart}>
+                  {isAddToCart ? <span className="spinner-border spinner-border-sm me-2" role="status"></span> : <i className="bi bi-cart-plus-fill me-2"></i>}
+                  {isAddToCart ? '加入中...' : `加入購物車 (NT$${(product.price * productQty).toLocaleString()})`}
+                </button>
               </div>
             </div>
+          </div>
 
-            {/* 相關推薦列表 */}
-            <div className="col-sm-10 col-md-12 mx-auto">
-              <EntityCarousel
-                items={list}
-                itemKey="id"
-                renderItem={renderCarouselItem}
-                isLoading={isListLoading}
-                title="您可能也會喜歡"
-                autoplay={true}
-                loop={true}
-                breakpoints={{
-                  0: { slidesPerView: 1 },
-                  576: { slidesPerView: 1 },
-                  768: { slidesPerView: 3 },
-                  992: { slidesPerView: 4 },
-                }}
-                navigation={true}
-              />
-            </div>
+          {/* 相關推薦列表 */}
+          <div className="col-sm-10 col-md-12 mx-auto">
+            <EntityCarousel
+              items={list}
+              itemKey="id"
+              renderItem={renderCarouselItem}
+              isLoading={isListLoading}
+              title="您可能也會喜歡"
+              autoplay={true}
+              loop={true}
+              breakpoints={{
+                0: { slidesPerView: 1 },
+                576: { slidesPerView: 1 },
+                768: { slidesPerView: 3 },
+                992: { slidesPerView: 4 },
+              }}
+              navigation={true}
+            />
           </div>
-        ) : (
-          <div className="text-center py-5">
-            <p className="fs-4 text-primary">產品不存在</p>
-          </div>
-        )}
-      </div>
-    </>
+        </div>
+      ) : (
+        <div className="text-center py-5">
+          <p className="fs-4 text-primary">產品不存在</p>
+        </div>
+      )}
+    </div>
   );
 }
 

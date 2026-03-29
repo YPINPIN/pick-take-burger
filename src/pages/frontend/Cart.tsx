@@ -5,23 +5,23 @@ import type { ApiError } from '@/types/error';
 import { EDIT_QTY_TYPE } from '@/types/cart';
 import type { CartInfo, CartData, EditCartParams, EditQtyType } from '@/types/cart';
 import type { ProductData } from '@/types/product';
-import type { GlobalOverlayState } from '@/types/globalOverlay';
 import type { ConfirmModalHandle, ConfirmModalData } from '@/types/modal';
 
 import useToast from '@/hooks/useToast';
+import useGlobalOverlay from '@/hooks/useGlobalOverlay';
 import { apiClientGetCartInfo, apiClientAddCartItem, apiClientEditCartItem, apiClientDeleteCartItem, apiClientClearCart } from '@/api/client.cart';
 import { apiClientGetAllProducts } from '@/api/client.product';
 
 import ShopStatusBanner from '@/components/ShopStatusBanner';
 import CartItem from '@/components/CartItem';
 import OrderSummary from '@/components/OrderSummary';
-import GlobalOverlay from '@/components/GlobalOverlay';
 import EntityCarousel from '@/components/EntityCarousel';
 import ProductCarouselCard from '@/components/ProductCarouselCard';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 
 function Cart() {
   const { toastSuccess, toastError } = useToast();
+  const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
 
   // 購物車資料
   const [cart, setCart] = useState<CartInfo | null>();
@@ -35,12 +35,9 @@ function Cart() {
   // 確認 Modal
   const confirmModalRef = useRef<ConfirmModalHandle>(null);
 
-  // Overlay 顯示狀態 (fetch 狀態)
-  const [overlayState, setOverlayState] = useState<GlobalOverlayState>({ isOverlay: false, message: '' });
-
   // 取得購物車資料
   const fetchCartInfo = useCallback(async () => {
-    setOverlayState({ isOverlay: true, message: '取得購物車中...' });
+    showGlobalOverlay('取得購物車中...');
     const currentRequest: number = ++requestId.current;
     try {
       const data = await apiClientGetCartInfo();
@@ -56,10 +53,10 @@ function Cart() {
     } finally {
       if (currentRequest === requestId.current) {
         // 如果是最新的請求就關閉 loading
-        setOverlayState({ isOverlay: false, message: '' });
+        hideGlobalOverlay();
       }
     }
-  }, [toastError]);
+  }, [toastError, showGlobalOverlay, hideGlobalOverlay]);
 
   // 初始化資料
   useEffect(() => {
@@ -93,7 +90,7 @@ function Cart() {
     }
 
     try {
-      setOverlayState({ isOverlay: true, message: '更新購物車中...' });
+      showGlobalOverlay('更新購物車中...');
       const params: EditCartParams = {
         id: cartItem.id,
         data: {
@@ -109,14 +106,14 @@ function Cart() {
       const err = error as ApiError;
       toastError(err.message);
     } finally {
-      setOverlayState({ isOverlay: false, message: '' });
+      hideGlobalOverlay();
     }
   };
 
   // 刪除指定購物車項目
   const handleDeleteCartItem = async (cartItemId: string) => {
     try {
-      setOverlayState({ isOverlay: true, message: '更新購物車中...' });
+      showGlobalOverlay('更新購物車中...');
       const data = await apiClientDeleteCartItem(cartItemId);
       toastSuccess(data.message);
       // 更新購物車
@@ -125,14 +122,14 @@ function Cart() {
       const err = error as ApiError;
       toastError(err.message);
     } finally {
-      setOverlayState({ isOverlay: false, message: '' });
+      hideGlobalOverlay();
     }
   };
 
   // 清空購物車
   const handleClearCart = async () => {
     try {
-      setOverlayState({ isOverlay: true, message: '清空購物車中...' });
+      showGlobalOverlay('清空購物車中...');
       const data = await apiClientClearCart();
       toastSuccess(data.message);
       // 更新購物車
@@ -141,7 +138,7 @@ function Cart() {
       const err = error as ApiError;
       toastError(err.message);
     } finally {
-      setOverlayState({ isOverlay: false, message: '' });
+      hideGlobalOverlay();
     }
   };
 
@@ -172,7 +169,7 @@ function Cart() {
   const handleAddToCart = useCallback(
     async (productId: string) => {
       try {
-        setOverlayState({ isOverlay: true, message: '加入購物車中...' });
+        showGlobalOverlay('加入購物車中...');
         const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
         toastSuccess(data.message);
         // 更新購物車
@@ -181,10 +178,10 @@ function Cart() {
         const err = error as ApiError;
         toastError(err.message);
       } finally {
-        setOverlayState({ isOverlay: false, message: '' });
+        hideGlobalOverlay();
       }
     },
-    [fetchCartInfo, toastError, toastSuccess],
+    [fetchCartInfo, toastError, toastSuccess, showGlobalOverlay, hideGlobalOverlay],
   );
 
   // 輪播項目 render
@@ -192,8 +189,6 @@ function Cart() {
 
   return (
     <>
-      {/* 全域遮罩 */}
-      <GlobalOverlay overlayState={overlayState} />
       {/* Confirm Modal */}
       <ConfirmModal ref={confirmModalRef} />
       <div className="container-lg py-5">

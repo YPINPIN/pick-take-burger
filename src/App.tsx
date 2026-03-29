@@ -1,4 +1,5 @@
 import ToastContainer from '@/components/ToastContainer';
+import GlobalOverlay from '@/components/GlobalOverlay';
 // router
 import { createHashRouter, RouterProvider } from 'react-router';
 import routes from './routes';
@@ -10,6 +11,8 @@ function App() {
       <RouterProvider router={router} />
       {/* Toast container */}
       <ToastContainer />
+      {/* 全域遮罩 */}
+      <GlobalOverlay />
     </>
   );
 }
