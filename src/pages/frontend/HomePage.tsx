@@ -102,7 +102,7 @@ function HomePage() {
   }, [toastError]);
 
   return (
-    <div>
+    <div className="overflow-hidden">
       {/* 全域遮罩 */}
       <GlobalOverlay overlayState={overlayState} />
       <VideoBanner />

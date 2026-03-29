@@ -34,7 +34,7 @@ function AboutPage() {
   };
 
   return (
-    <div>
+    <div className="overflow-hidden">
       {/* Hero */}
       <section
         className="py-5 py-md-7 position-relative text-white text-center d-flex align-items-center"

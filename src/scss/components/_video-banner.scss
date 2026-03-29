@@ -3,7 +3,7 @@
   height: calc(60vh - 70px);
   object-position: 70% center;
 
-  @include media-breakpoint-up(lg) {
+  @include media-breakpoint-up(sm) {
     height: calc(100vh - 70px);
     object-position: center center;
   }
