@@ -1,0 +1,19 @@
+:root {
+  --motion-x-start: 0;
+  --motion-y-start: 40px;
+}
+
+/* md 以上才用左右動畫 */
+@include media-breakpoint-up(md) {
+  :root {
+    --motion-y-start: 0;
+  }
+
+  .motion-left {
+    --motion-x-start: -50px;
+  }
+
+  .motion-right {
+    --motion-x-start: 50px;
+  }
+}

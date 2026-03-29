@@ -71,11 +71,39 @@ function AboutPage() {
           <section key={index} className="py-4 py-md-6 text-center text-md-start">
             <div className="container-lg">
               <div className={`row align-items-center g-4 ${isReverse ? 'flex-md-row-reverse' : ''}`}>
-                <motion.div className="col-md-6" initial={{ opacity: 0, x: isReverse ? 50 : -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+                <motion.div
+                  className={`col-md-6 ${isReverse ? 'motion-right' : 'motion-left'}`}
+                  initial={{
+                    opacity: 0,
+                    x: 'var(--motion-x-start)',
+                    y: 'var(--motion-y-start)',
+                  }}
+                  whileInView={{
+                    opacity: 1,
+                    x: 0,
+                    y: 0,
+                  }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                >
                   <img src={section.image} alt={section.title} className="img-fluid w-100 object-fit-cover rounded shadow-sm" style={{ height: '300px' }} />
                 </motion.div>
 
-                <motion.div className="col-md-6" initial={{ opacity: 0, x: isReverse ? -50 : 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+                <motion.div
+                  className={`col-md-6 ${isReverse ? 'motion-left' : 'motion-right'}`}
+                  initial={{
+                    opacity: 0,
+                    x: 'var(--motion-x-start)',
+                    y: 'var(--motion-y-start)',
+                  }}
+                  whileInView={{
+                    opacity: 1,
+                    x: 0,
+                    y: 0,
+                  }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                >
                   <h2 className="h1 fw-bold mb-3 mb-md-4">{section.title}</h2>
                   <p className="fs-5 lh-lg text-muted">{section.text}</p>
                 </motion.div>
