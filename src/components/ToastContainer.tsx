@@ -1,10 +1,8 @@
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/store';
 import { motion, AnimatePresence } from 'motion/react';
 
-import type { RootState } from '@/store';
-
 function ToastContainer() {
-  const toastMessages = useSelector((state: RootState) => state.toast);
+  const toastMessages = useAppSelector((state) => state.toast);
 
   return (
     <div className="toast-container position-fixed top-0 end-0 p-3">

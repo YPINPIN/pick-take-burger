@@ -1,10 +1,9 @@
 import { ColorRing } from 'react-loader-spinner';
-import { useSelector } from 'react-redux';
 
-import type { RootState } from '@/store';
+import { useAppSelector } from '@/store';
 
 function GlobalOverlay() {
-  const { isOverlay, message } = useSelector((state: RootState) => state.globalOverlay);
+  const { isOverlay, message } = useAppSelector((state) => state.globalOverlay);
 
   return (
     isOverlay && (

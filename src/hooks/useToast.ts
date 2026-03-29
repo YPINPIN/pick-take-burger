@@ -1,12 +1,11 @@
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 
-import type { AppDispatch } from '@/store';
+import { useAppDispatch } from '@/store';
 
 import { createAsyncToast } from '@/slices/toastSlice';
 
 function useToast() {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
   const toastSuccess = useCallback(
     (message: string) => {
