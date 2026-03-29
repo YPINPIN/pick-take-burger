@@ -104,7 +104,7 @@ const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSucc
               </p>
             </div>
             <div className="d-flex justify-content-center">
-              <button type="button" className="btn btn-accent btn-lg fw-bold px-5 py-2 w-50" onClick={handlePayment}>
+              <button type="button" className="btn btn-accent btn-lg fw-bold px-5 py-2 min-w-50" onClick={handlePayment}>
                 前往付款
                 <i className="bi bi-arrow-right ms-2"></i>
               </button>
