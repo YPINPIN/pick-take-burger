@@ -89,9 +89,11 @@ export type ConfirmModalProps = Record<never, never>;
 // 定義 CheckoutSuccess Modal 資料結構
 // orderId: 訂單編號
 // total: 總金額
+// onClose: Modal關閉後觸發事件（可選，預計處理更新購物車）
 export type CheckoutSuccessModalData = {
   orderId: string;
   total: number;
+  onClose?: () => Promise<void>;
 };
 
 // 定義 CheckoutSuccess Modal 對外暴露的 API

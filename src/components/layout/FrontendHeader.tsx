@@ -1,10 +1,19 @@
+import { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router';
 
+import useCart from '@/hooks/useCart';
+
 import BurgerIcon from '@/components/BurgerIcon';
-import { useEffect } from 'react';
+import CartTip from '@/components/CartTip';
 
 function FrontendHeader() {
   const location = useLocation();
+  const { cartState, getCartInfo } = useCart();
+
+  // 取得購物車資訊（用於顯示購物車數量）
+  useEffect(() => {
+    getCartInfo({ silent: true });
+  }, [getCartInfo]);
 
   useEffect(() => {
     // 每次路由變化，清掉 activeElement，以避免 focus 錯誤
@@ -21,7 +30,9 @@ function FrontendHeader() {
           Pick <span>&</span> Take Burger
         </NavLink>
         <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
+          <span className="navbar-toggler-icon position-relative">
+            <CartTip cartNum={cartState.carts.length} />
+          </span>
         </button>
         <div className="offcanvas offcanvas-end" tabIndex={-1} id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
           <div className="offcanvas-header pb-0">
@@ -54,7 +65,10 @@ function FrontendHeader() {
               <li className="nav-item ms-md-auto">
                 <NavLink className="nav-link" to="/cart">
                   <i className="bi bi-cart"></i>
-                  購物車
+                  <span className="position-relative">
+                    購物車
+                    <CartTip cartNum={cartState.carts.length} />
+                  </span>
                 </NavLink>
               </li>
             </ul>

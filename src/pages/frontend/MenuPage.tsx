@@ -6,8 +6,9 @@ import type { ProductData } from '@/types/product';
 
 import useToast from '@/hooks/useToast';
 import useGlobalOverlay from '@/hooks/useGlobalOverlay';
+import useCart from '@/hooks/useCart';
+
 import { apiClientGetAllProducts, apiClientGetProducts } from '@/api/client.product';
-import { apiClientAddCartItem } from '@/api/client.cart';
 
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PaginationUI from '@/components/PaginationUI';
@@ -15,8 +16,9 @@ import MenuCategory from '@/components/MenuCategory';
 import MenuCard from '@/components/MenuCard';
 
 function MenuPage() {
-  const { toastSuccess, toastError } = useToast();
-  const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
+  const { toastError } = useToast();
+  const { overlayState } = useGlobalOverlay();
+  const { addCartItem } = useCart();
 
   // 用來判斷是否為最新請求
   const requestId = useRef<number>(0);
@@ -101,20 +103,6 @@ function MenuPage() {
     setSelectedCategory(category);
   };
 
-  // 加入購物車
-  const handleAddToCart = async (productId: string) => {
-    try {
-      showGlobalOverlay('加入購物車中...');
-      const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
-      toastSuccess(data.message);
-    } catch (error) {
-      const err = error as ApiError;
-      toastError(err.message);
-    } finally {
-      hideGlobalOverlay();
-    }
-  };
-
   return (
     <div className="container-lg py-5">
       <div className="row g-lg-5">
@@ -131,7 +119,7 @@ function MenuPage() {
               <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 {sortedProducts.map((product) => (
                   <div className="col" key={product.id}>
-                    <MenuCard product={product} isOverlay={overlayState.isOverlay} onAddToCart={handleAddToCart} />
+                    <MenuCard product={product} isOverlay={overlayState.isOverlay} onAddToCart={addCartItem} />
                   </div>
                 ))}
               </div>

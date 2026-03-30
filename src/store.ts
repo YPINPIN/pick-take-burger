@@ -3,11 +3,13 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import toastReducer from './slices/toastSlice';
 import globalOverlayReducer from './slices/globalOverlaySlice';
+import cartReducer from './slices/cartSlice';
 
 export const store = configureStore({
   reducer: {
     toast: toastReducer,
     globalOverlay: globalOverlayReducer,
+    cart: cartReducer,
   },
 });
 

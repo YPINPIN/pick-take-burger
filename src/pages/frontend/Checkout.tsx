@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 
 import type { ApiError } from '@/types/error';
-import type { CartInfo } from '@/types/cart';
 import type { CheckoutFormData, CreateOrderParams } from '@/types/order';
 import type { SubmitHandler } from 'react-hook-form';
 import type { CheckoutSuccessModalHandle, CheckoutSuccessModalData } from '@/types/modal';
 
 import useToast from '@/hooks/useToast';
 import useGlobalOverlay from '@/hooks/useGlobalOverlay';
-import { apiClientGetCartInfo } from '@/api/client.cart';
+import useCart from '@/hooks/useCart';
+
 import { apiClientCreateOrder } from '@/api/client.order';
 
 import ShopStatusBanner from '@/components/ShopStatusBanner';
@@ -21,11 +21,7 @@ function Checkout() {
   const navigate = useNavigate();
   const { toastSuccess, toastError } = useToast();
   const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
-
-  // 購物車資料
-  const [cart, setCart] = useState<CartInfo | null>();
-  // 用來判斷是否為最新請求
-  const requestId = useRef<number>(0);
+  const { cartState, getCartInfo } = useCart();
 
   const formRef = useRef<HTMLFormElement | null>(null);
   // 表單資料
@@ -40,29 +36,6 @@ function Checkout() {
   // Checkout Success Modal
   const checkoutSuccessModalRef = useRef<CheckoutSuccessModalHandle>(null);
 
-  // 取得購物車資料
-  const fetchCartInfo = useCallback(async () => {
-    showGlobalOverlay();
-    const currentRequest: number = ++requestId.current;
-    try {
-      const data = await apiClientGetCartInfo();
-      // 如果不是最新的請求就不更新
-      if (currentRequest !== requestId.current) {
-        // console.log('不是最新的請求', currentRequest, requestId.current);
-        return;
-      }
-      setCart(data.data);
-    } catch (error) {
-      const err = error as ApiError;
-      toastError(err.message);
-    } finally {
-      if (currentRequest === requestId.current) {
-        // 如果是最新的請求就關閉 loading
-        hideGlobalOverlay();
-      }
-    }
-  }, [toastError, showGlobalOverlay, hideGlobalOverlay]);
-
   // 送出訂單
   const handleCheckout: SubmitHandler<CheckoutFormData> = async (formData) => {
     try {
@@ -75,7 +48,13 @@ function Checkout() {
       const data = await apiClientCreateOrder(apiParams);
       toastSuccess(data.message);
       // 開啟 Checkout Success Modal
-      openCheckoutSuccessModal({ orderId: data.orderId, total: data.total });
+      openCheckoutSuccessModal({
+        orderId: data.orderId,
+        total: data.total,
+        onClose: async () => {
+          await getCartInfo({ silent: true }); // modal 關閉後才更新購物車
+        },
+      });
     } catch (error) {
       const err = error as ApiError;
       toastError(err.message);
@@ -87,15 +66,18 @@ function Checkout() {
   // 初始化資料
   useEffect(() => {
     // 取得購物車
-    fetchCartInfo();
-  }, [fetchCartInfo]);
+    getCartInfo();
+  }, [getCartInfo]);
 
   useEffect(() => {
+    // 還沒初始化就不判斷
+    if (!cartState.isInitialized) return;
+
     // 當購物車為空時回到購物車頁面
-    if (cart && cart.carts.length === 0) {
+    if (cartState.carts.length === 0) {
       navigate('/cart', { replace: true });
     }
-  }, [cart, navigate]);
+  }, [cartState.isInitialized, cartState.carts.length, navigate]);
 
   // 送出訂單
   const onCheckoutClick = useCallback(() => {
@@ -118,7 +100,7 @@ function Checkout() {
           <ShopStatusBanner type="banner" />
         </div>
         <h1 className="fs-2 fw-bold text-dark mb-2">準備完成訂單</h1>
-        {cart && cart.carts.length > 0 && (
+        {cartState.carts.length > 0 && (
           <>
             <p className="fs-6 text-gray-600 mb-3">請正確輸入結帳資訊。</p>
             <div className="row g-4 mb-4">
@@ -265,7 +247,7 @@ function Checkout() {
 
               {/* 訂單摘要 */}
               <div className="col-md-5">
-                <OrderSummary cart={cart}>
+                <OrderSummary cart={cartState}>
                   {/* 送出訂單 */}
                   <button type="button" className="btn btn-accent btn-lg fw-bold w-100" onClick={onCheckoutClick}>
                     送出訂單

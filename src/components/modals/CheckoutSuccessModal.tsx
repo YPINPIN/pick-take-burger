@@ -65,6 +65,8 @@ const CheckoutSuccessModal = forwardRef<CheckoutSuccessModalHandle, CheckoutSucc
   const handlePayment = async () => {
     // 等 Modal 完全關閉
     await close();
+    // 執行 Modal 關閉後的額外邏輯（如更新購物車）
+    modalData.onClose?.();
     // 跳轉到訂單追蹤頁面 (付款步驟)
     navigate(`/track-order/${modalData.orderId}?stepPay=true`, { replace: true });
   };

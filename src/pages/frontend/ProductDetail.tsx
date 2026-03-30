@@ -6,8 +6,9 @@ import type { ProductData } from '@/types/product';
 
 import useToast from '@/hooks/useToast';
 import useGlobalOverlay from '@/hooks/useGlobalOverlay';
+import useCart from '@/hooks/useCart';
+
 import { apiClientGetProductDetail, apiClientGetProducts } from '@/api/client.product';
-import { apiClientAddCartItem } from '@/api/client.cart';
 
 import { PRODUCT_TAG_META, PRODUCT_RECOMMEND_META } from '@/utils/product';
 
@@ -23,8 +24,9 @@ const MAX_QTY = 10;
 
 function ProductDetail() {
   const navigate = useNavigate();
-  const { toastSuccess, toastError } = useToast();
-  const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
+  const { toastError } = useToast();
+  const { overlayState } = useGlobalOverlay();
+  const { addCartItem } = useCart();
 
   // url 參數
   const { productId } = useParams();
@@ -106,25 +108,16 @@ function ProductDetail() {
   // 加入購物車 (與推薦列表共用)
   const handleAddToCart = useCallback(
     async (productId: string, qty: number = 1) => {
-      try {
-        showGlobalOverlay('加入購物車中...');
-        if (myId === productId) {
-          // 為自己時顯示 loading
-          setIsAddToCart(true);
-        }
-        const data = await apiClientAddCartItem({ product_id: productId, qty });
-        toastSuccess(data.message);
-      } catch (error) {
-        const err = error as ApiError;
-        toastError(err.message);
-      } finally {
-        if (myId === productId) {
-          setIsAddToCart(false);
-        }
-        hideGlobalOverlay();
+      if (myId === productId) {
+        // 為自己時顯示 loading
+        setIsAddToCart(true);
+      }
+      await addCartItem(productId, qty);
+      if (myId === productId) {
+        setIsAddToCart(false);
       }
     },
-    [myId, toastError, toastSuccess, showGlobalOverlay, hideGlobalOverlay],
+    [myId, addCartItem],
   );
 
   // 輪播項目 render

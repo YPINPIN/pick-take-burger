@@ -3,13 +3,14 @@ import { Link } from 'react-router';
 
 import type { ApiError } from '@/types/error';
 import { EDIT_QTY_TYPE } from '@/types/cart';
-import type { CartInfo, CartData, EditCartParams, EditQtyType } from '@/types/cart';
+import type { CartData, EditQtyType } from '@/types/cart';
 import type { ProductData } from '@/types/product';
 import type { ConfirmModalHandle, ConfirmModalData } from '@/types/modal';
 
 import useToast from '@/hooks/useToast';
 import useGlobalOverlay from '@/hooks/useGlobalOverlay';
-import { apiClientGetCartInfo, apiClientAddCartItem, apiClientEditCartItem, apiClientDeleteCartItem, apiClientClearCart } from '@/api/client.cart';
+import useCart from '@/hooks/useCart';
+
 import { apiClientGetAllProducts } from '@/api/client.product';
 
 import ShopStatusBanner from '@/components/ShopStatusBanner';
@@ -20,13 +21,9 @@ import ProductCarouselCard from '@/components/ProductCarouselCard';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 
 function Cart() {
-  const { toastSuccess, toastError } = useToast();
-  const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
-
-  // 購物車資料
-  const [cart, setCart] = useState<CartInfo | null>();
-  // 用來判斷是否為最新請求
-  const requestId = useRef<number>(0);
+  const { toastError } = useToast();
+  const { overlayState } = useGlobalOverlay();
+  const { cartState, getCartInfo, addCartItem, editCartItem, deleteCartItem, clearCart } = useCart();
 
   // 主廚推薦產品
   const [list, setList] = useState<ProductData[]>([]);
@@ -34,29 +31,6 @@ function Cart() {
 
   // 確認 Modal
   const confirmModalRef = useRef<ConfirmModalHandle>(null);
-
-  // 取得購物車資料
-  const fetchCartInfo = useCallback(async () => {
-    showGlobalOverlay('取得購物車中...');
-    const currentRequest: number = ++requestId.current;
-    try {
-      const data = await apiClientGetCartInfo();
-      // 如果不是最新的請求就不更新
-      if (currentRequest !== requestId.current) {
-        // console.log('不是最新的請求', currentRequest, requestId.current);
-        return;
-      }
-      setCart(data.data);
-    } catch (error) {
-      const err = error as ApiError;
-      toastError(err.message);
-    } finally {
-      if (currentRequest === requestId.current) {
-        // 如果是最新的請求就關閉 loading
-        hideGlobalOverlay();
-      }
-    }
-  }, [toastError, showGlobalOverlay, hideGlobalOverlay]);
 
   // 初始化資料
   useEffect(() => {
@@ -76,10 +50,10 @@ function Cart() {
     };
 
     // 取得購物車
-    fetchCartInfo();
+    getCartInfo();
     // 取得所有產品（for list 推薦列表）
     fetchAllProducts();
-  }, [fetchCartInfo, toastError]);
+  }, [getCartInfo, toastError]);
 
   // 編輯購物車
   const handleEditCartItem = async (type: EditQtyType, cartItem: CartData) => {
@@ -89,57 +63,8 @@ function Cart() {
       return;
     }
 
-    try {
-      showGlobalOverlay('更新購物車中...');
-      const params: EditCartParams = {
-        id: cartItem.id,
-        data: {
-          product_id: cartItem.product_id,
-          qty: type === EDIT_QTY_TYPE.PLUS ? cartItem.qty + 1 : cartItem.qty - 1,
-        },
-      };
-      const data = await apiClientEditCartItem(params);
-      toastSuccess(data.message);
-      // 更新購物車
-      await fetchCartInfo();
-    } catch (error) {
-      const err = error as ApiError;
-      toastError(err.message);
-    } finally {
-      hideGlobalOverlay();
-    }
-  };
-
-  // 刪除指定購物車項目
-  const handleDeleteCartItem = async (cartItemId: string) => {
-    try {
-      showGlobalOverlay('更新購物車中...');
-      const data = await apiClientDeleteCartItem(cartItemId);
-      toastSuccess(data.message);
-      // 更新購物車
-      await fetchCartInfo();
-    } catch (error) {
-      const err = error as ApiError;
-      toastError(err.message);
-    } finally {
-      hideGlobalOverlay();
-    }
-  };
-
-  // 清空購物車
-  const handleClearCart = async () => {
-    try {
-      showGlobalOverlay('清空購物車中...');
-      const data = await apiClientClearCart();
-      toastSuccess(data.message);
-      // 更新購物車
-      await fetchCartInfo();
-    } catch (error) {
-      const err = error as ApiError;
-      toastError(err.message);
-    } finally {
-      hideGlobalOverlay();
-    }
+    // 呼叫編輯購物車
+    editCartItem(type, cartItem);
   };
 
   // 開啟確認 Modal
@@ -152,7 +77,7 @@ function Cart() {
     openConfirmModal({
       title: `刪除「 ${cartItem.product.title} 」`,
       message: '刪除後將無法恢復，請再次確認。',
-      onConfirm: () => handleDeleteCartItem(cartItem.id),
+      onConfirm: () => deleteCartItem(cartItem.id),
     });
   };
 
@@ -161,31 +86,12 @@ function Cart() {
     openConfirmModal({
       title: '清空購物車',
       message: '清空後將無法恢復，請再次確認。',
-      onConfirm: () => handleClearCart(),
+      onConfirm: () => clearCart(),
     });
   };
 
-  // 推薦列表加入購物車
-  const handleAddToCart = useCallback(
-    async (productId: string) => {
-      try {
-        showGlobalOverlay('加入購物車中...');
-        const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
-        toastSuccess(data.message);
-        // 更新購物車
-        await fetchCartInfo();
-      } catch (error) {
-        const err = error as ApiError;
-        toastError(err.message);
-      } finally {
-        hideGlobalOverlay();
-      }
-    },
-    [fetchCartInfo, toastError, toastSuccess, showGlobalOverlay, hideGlobalOverlay],
-  );
-
   // 輪播項目 render
-  const renderCarouselItem = useCallback((product: ProductData) => <ProductCarouselCard product={product} onAddToCart={handleAddToCart} />, [handleAddToCart]);
+  const renderCarouselItem = useCallback((product: ProductData) => <ProductCarouselCard product={product} onAddToCart={addCartItem} />, [addCartItem]);
 
   return (
     <>
@@ -198,17 +104,17 @@ function Cart() {
         </div>
         <div className="mb-4">
           <h1 className="fs-2 fw-bold text-dark mb-2">您的購物車</h1>
-          {cart && cart.carts.length > 0 ? (
+          {cartState.carts.length > 0 ? (
             <>
               <p className="fs-6 text-gray-600 mb-3">
-                準備結帳？目前已選購了 <span className="text-primary fw-bold">{cart.carts.length}</span> 項美味餐點。
+                準備結帳？目前已選購了 <span className="text-primary fw-bold">{cartState.carts.length}</span> 項美味餐點。
               </p>
               <div className="row g-4 mb-4">
                 {/* 購物車內容 */}
                 <div className="col-md-7 col-lg-8">
                   <div className="bg-white rounded-4 shadow-sm px-4 py-2">
                     {/* 購物車列表 */}
-                    {cart.carts.map((item) => (
+                    {cartState.carts.map((item) => (
                       <CartItem key={`cartItem-${item.id}`} item={item} onEditItemClick={handleEditCartItem} onDeleteItemClick={onDeleteCartItemClick} />
                     ))}
 
@@ -228,7 +134,7 @@ function Cart() {
 
                 {/* 訂單摘要 */}
                 <div className="col-md-5 col-lg-4">
-                  <OrderSummary cart={cart}>
+                  <OrderSummary cart={cartState}>
                     {/* 結帳 */}
                     <Link to="/checkout" className="btn btn-accent btn-lg fw-bold w-100">
                       前往結帳

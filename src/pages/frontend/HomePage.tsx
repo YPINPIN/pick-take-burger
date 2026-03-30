@@ -6,9 +6,9 @@ import type { ApiError } from '@/types/error';
 import type { ProductData } from '@/types/product';
 
 import useToast from '@/hooks/useToast';
-import useGlobalOverlay from '@/hooks/useGlobalOverlay';
+import useCart from '@/hooks/useCart';
+
 import { apiClientGetAllProducts } from '@/api/client.product';
-import { apiClientAddCartItem } from '@/api/client.cart';
 
 import VideoBanner from '@/components/VideoBanner';
 import CtaBgText from '@/components/CtaBgText';
@@ -45,8 +45,8 @@ function HomePage() {
     },
   ];
 
-  const { toastSuccess, toastError } = useToast();
-  const { showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
+  const { toastError } = useToast();
+  const { addCartItem } = useCart();
   const navigate = useNavigate();
 
   // 主廚推薦產品
@@ -57,25 +57,8 @@ function HomePage() {
     navigate('/menu');
   };
 
-  // 推薦列表加入購物車
-  const handleAddToCart = useCallback(
-    async (productId: string) => {
-      try {
-        showGlobalOverlay('加入購物車中...');
-        const data = await apiClientAddCartItem({ product_id: productId, qty: 1 });
-        toastSuccess(data.message);
-      } catch (error) {
-        const err = error as ApiError;
-        toastError(err.message);
-      } finally {
-        hideGlobalOverlay();
-      }
-    },
-    [toastError, toastSuccess, showGlobalOverlay, hideGlobalOverlay],
-  );
-
   // 輪播項目 render
-  const renderCarouselItem = useCallback((product: ProductData) => <ProductCarouselCard product={product} onAddToCart={handleAddToCart} />, [handleAddToCart]);
+  const renderCarouselItem = useCallback((product: ProductData) => <ProductCarouselCard product={product} onAddToCart={addCartItem} />, [addCartItem]);
 
   // 初始化資料
   useEffect(() => {
