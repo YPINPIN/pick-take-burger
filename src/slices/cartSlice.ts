@@ -21,6 +21,17 @@ const initialState: CartState = {
   isInitialized: false,
 };
 
+// 取得購物車資料
+export const getCartAsync = createAsyncThunk<CartInfo, void, { rejectValue: string }>('cart/getCartAsync', async (_, { rejectWithValue }) => {
+  try {
+    const data = await apiClientGetCartInfo();
+    return data.data;
+  } catch (error) {
+    const err = error as ApiError;
+    return rejectWithValue(err.message);
+  }
+});
+
 export const cartSlice = createSlice({
   name: 'cart',
   initialState,
@@ -44,17 +55,6 @@ export const cartSlice = createSlice({
         state.isInitialized = true;
       });
   },
-});
-
-// 取得購物車資料
-export const getCartAsync = createAsyncThunk<CartInfo, void, { rejectValue: string }>('cart/getCartAsync', async (_, { rejectWithValue }) => {
-  try {
-    const data = await apiClientGetCartInfo();
-    return data.data;
-  } catch (error) {
-    const err = error as ApiError;
-    return rejectWithValue(err.message);
-  }
 });
 
 export const cartSelector = (state: RootState) => state.cart;
