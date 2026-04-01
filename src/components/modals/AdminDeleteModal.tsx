@@ -7,15 +7,18 @@ import type { ApiError } from '@/types/error';
 import useToast from '@/hooks/useToast';
 import { apiAdminDeleteProduct } from '@/api/admin.product';
 import { apiAdminDeleteOrder } from '@/api/admin.order';
+import { apiAdminDeleteCoupon } from '@/api/admin.coupon';
 
 const typeLabelMap: Record<AdminDeleteModalType, string> = {
   product: '產品',
   order: '訂單',
+  coupon: '優惠券',
 };
 
 const deleteApiMap: Record<AdminDeleteModalType, (id: string) => Promise<{ success: boolean; message: string }>> = {
   product: apiAdminDeleteProduct,
   order: apiAdminDeleteOrder,
+  coupon: apiAdminDeleteCoupon,
 };
 
 const AdminDeleteModal = forwardRef<AdminDeleteModalHandle, AdminDeleteModalProps>(function AdminDeleteModal({ onSuccess }, ref) {

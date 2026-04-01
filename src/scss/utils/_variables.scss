@@ -330,6 +330,12 @@ $canceled: #d23e3e;
 $toast-success: #07bc0c;
 $toast-error: #e74d3c;
 $toast-info: #3498db;
+// custom for coupon
+$coupon-green: #49920e;
+$coupon-blue: #3b7dc0;
+$coupon-orange: #f08a24;
+$coupon-brick: #b5451b;
+$coupon-gray: $gray-600;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start theme-colors-map
@@ -359,6 +365,12 @@ $theme-colors: (
   'toast-success': $toast-success,
   'toast-error': $toast-error,
   'toast-info': $toast-info,
+  // custom for coupon
+  'coupon-green': $coupon-green,
+  'coupon-blue': $coupon-blue,
+  'coupon-orange': $coupon-orange,
+  'coupon-brick': $coupon-brick,
+  'coupon-gray': $coupon-gray,
 ) !default;
 // scss-docs-end theme-colors-map
 

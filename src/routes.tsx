@@ -6,6 +6,7 @@ import AdminGuard from './pages/admin/AdminGuard';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import ProductManagement from '@/pages/admin/ProductManagement';
 import OrderManagement from '@/pages/admin/OrderManagement';
+import CouponManagement from '@/pages/admin/CouponManagement';
 
 // Frontend
 import FrontendLayout from '@/pages/frontend/FrontendLayout';
@@ -70,6 +71,10 @@ const routes = [
           {
             path: 'orders',
             element: <OrderManagement />,
+          },
+          {
+            path: 'coupons',
+            element: <CouponManagement />,
           },
         ],
       },

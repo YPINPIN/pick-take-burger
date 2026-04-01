@@ -6,9 +6,10 @@ import OrderSummaryItem from '@/components/OrderSummaryItem';
 type OrderSummaryProps = {
   cart: CartInfo;
   children?: ReactNode;
+  couponSlot?: ReactNode; // 購物車頁傳輸入框，結帳頁不傳
 };
 
-function OrderSummary({ cart, children }: OrderSummaryProps) {
+function OrderSummary({ cart, children, couponSlot }: OrderSummaryProps) {
   return (
     <div className="custom-sticky-top bg-white p-4 rounded-4 shadow-sm overflow-hidden">
       <h2 className="text-dark fs-5 fw-semibold mb-4">
@@ -23,6 +24,10 @@ function OrderSummary({ cart, children }: OrderSummaryProps) {
         <span>小計({cart.carts.length} 項)</span>
         <span>NT${cart.total.toLocaleString()}</span>
       </div>
+
+      {/* 優惠券區塊：購物車頁顯示輸入框，結帳頁不顯示 */}
+      {couponSlot}
+
       {/* 折扣 */}
       <div className="d-flex flex-wrap justify-content-between text-dark fw-semibold">
         <span>折扣</span>

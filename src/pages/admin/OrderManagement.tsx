@@ -5,9 +5,12 @@ import type { ApiError } from '@/types/error';
 import type { Pagination } from '@/types/pagination';
 import type { OrderData } from '@/types/order';
 import type { AdminOrderModalHandle, AdminDeleteModalHandle } from '@/types/modal';
+import type { ConfirmModalHandle, ConfirmModalData } from '@/types/modal';
 
 import useToast from '@/hooks/useToast';
-import { apiAdminGetOrders } from '@/api/admin.order';
+import useGlobalOverlay from '@/hooks/useGlobalOverlay';
+
+import { apiAdminGetOrders, apiAdminDeleteAllOrders } from '@/api/admin.order';
 import { apiClientGetOrder } from '@/api/client.order';
 
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -15,9 +18,11 @@ import PaginationUI from '@/components/PaginationUI';
 import AdminOrderTable from '@/components/AdminOrderTable';
 import AdminOrderModal from '@/components/modals/AdminOrderModal';
 import AdminDeleteModal from '@/components/modals/AdminDeleteModal';
+import ConfirmModal from '@/components/modals/ConfirmModal';
 
 function OrderManagement() {
-  const { toastError } = useToast();
+  const { toastSuccess, toastError } = useToast();
+  const { overlayState, showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
 
   // 用來判斷是否為最新請求
   const requestId = useRef<number>(0);
@@ -47,6 +52,8 @@ function OrderManagement() {
   const orderModalRef = useRef<AdminOrderModalHandle>(null);
   // 刪除 Modal
   const deleteModalRef = useRef<AdminDeleteModalHandle>(null);
+  // 確認 Modal
+  const confirmModalRef = useRef<ConfirmModalHandle>(null);
 
   // 取得產品列表（根據 page + category）
   const fetchOrders = useCallback(async () => {
@@ -107,6 +114,36 @@ function OrderManagement() {
       id: order.id,
       title: order.id,
       type: 'order',
+    });
+  };
+
+  // 開啟確認 Modal
+  const openConfirmModal = async (modalData: ConfirmModalData) => {
+    confirmModalRef.current?.open(modalData);
+  };
+
+  // 清空購物車
+  const deleteAllOrders = async () => {
+    showGlobalOverlay('清空訂單中...');
+    try {
+      const data = await apiAdminDeleteAllOrders();
+      toastSuccess(data.message);
+      // 重新取得購物車資料
+      await fetchOrders();
+    } catch (error) {
+      const err = error as ApiError;
+      toastError(err.message);
+    } finally {
+      hideGlobalOverlay();
+    }
+  };
+
+  // 刪除全部訂單
+  const handleDeleteAllOrdersClick = () => {
+    openConfirmModal({
+      title: '刪除全部訂單',
+      message: '刪除後將無法恢復，請再次確認。',
+      onConfirm: () => deleteAllOrders(),
     });
   };
 
@@ -199,6 +236,13 @@ function OrderManagement() {
               <AdminOrderTable orders={orders} handleViewOrderClick={handleViewOrderClick} handleDeleteOrderClick={handleDeleteOrderClick} />
               {/* 分頁 */}
               <PaginationUI total_pages={pagination.total_pages} has_pre={pagination.has_pre} has_next={pagination.has_next} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+              {/* 刪除所有訂單 */}
+              <div className="p-3 pt-0 text-end">
+                <button className="btn btn-danger fw-bold" onClick={handleDeleteAllOrdersClick} disabled={overlayState.isOverlay}>
+                  <i className="bi bi-trash3-fill me-2"></i>
+                  刪除所有訂單
+                </button>
+              </div>
             </>
           ) : (
             // 訂單列表為空
@@ -212,6 +256,8 @@ function OrderManagement() {
       <AdminOrderModal ref={orderModalRef} onSuccess={handleUpdateOrderSuccess} />
       {/* Delete Modal */}
       <AdminDeleteModal ref={deleteModalRef} onSuccess={handleDeleteOrderSuccess} />
+      {/* Confirm Modal */}
+      <ConfirmModal ref={confirmModalRef} />
     </>
   );
 }

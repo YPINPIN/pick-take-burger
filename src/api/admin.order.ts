@@ -21,3 +21,9 @@ export const apiAdminUpdateOrder = async (params: UpdateOrderParams): Promise<Up
   const res = await adminApi.put<UpdateOrderResponse>(`api/${API_PATH}/admin/order/${id}`, { data });
   return res.data;
 };
+
+// 刪除所有訂單
+export const apiAdminDeleteAllOrders = async (): Promise<DeleteOrderResponse> => {
+  const res = await adminApi.delete<DeleteOrderResponse>(`api/${API_PATH}/admin/orders/all`);
+  return res.data;
+};

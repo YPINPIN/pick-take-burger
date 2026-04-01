@@ -15,10 +15,14 @@ import { apiClientGetAllProducts } from '@/api/client.product';
 
 import ShopStatusBanner from '@/components/ShopStatusBanner';
 import CartItem from '@/components/CartItem';
+import CouponInput from '@/components/CouponInput';
 import OrderSummary from '@/components/OrderSummary';
 import EntityCarousel from '@/components/EntityCarousel';
 import ProductCarouselCard from '@/components/ProductCarouselCard';
 import ConfirmModal from '@/components/modals/ConfirmModal';
+import CouponSection from '@/components/CouponSection';
+
+import { FEATURED_COUPONS } from '@/utils/coupon';
 
 function Cart() {
   const { toastError } = useToast();
@@ -134,7 +138,7 @@ function Cart() {
 
                 {/* 訂單摘要 */}
                 <div className="col-md-5 col-lg-4">
-                  <OrderSummary cart={cartState}>
+                  <OrderSummary cart={cartState} couponSlot={<CouponInput />}>
                     {/* 結帳 */}
                     <Link to="/checkout" className="btn btn-accent btn-lg fw-bold w-100">
                       前往結帳
@@ -151,6 +155,8 @@ function Cart() {
             </div>
           )}
         </div>
+
+        <CouponSection coupons={FEATURED_COUPONS} type="inline" />
 
         {/* 推薦列表 */}
         <EntityCarousel items={list} itemKey="id" renderItem={renderCarouselItem} isLoading={isListLoading} title="主廚推薦" autoplay={true} loop={true} navigation={true} />

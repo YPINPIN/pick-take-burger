@@ -1,5 +1,6 @@
 import type { ProductData } from '@/types/product';
 import type { OrderData } from '@/types/order';
+import type { CouponData } from '@/types/coupon';
 
 // ----------------------------------------
 // Product Modal 相關類型
@@ -35,11 +36,29 @@ export type AdminOrderModalProps = {
 };
 
 // ----------------------------------------
+// Coupon Modal 相關類型
+// ----------------------------------------
+
+// 定義 Coupon Modal 的類型 (新增或編輯)
+export type AdminCouponModalType = 'create' | 'edit';
+
+// 定義 Coupon Modal 對外暴露的 API
+export type AdminCouponModalHandle = {
+  open: (data: CouponData | null) => void;
+  close: () => void;
+};
+
+// 定義 Coupon Modal props
+export type AdminCouponModalProps = {
+  onSuccess: () => void;
+};
+
+// ----------------------------------------
 // Delete Modal 相關類型
 // ----------------------------------------
 
 // 定義可刪除的類型
-export type AdminDeleteModalType = 'product' | 'order';
+export type AdminDeleteModalType = 'product' | 'order' | 'coupon';
 
 // 定義 Delete Modal 資料結構
 export type AdminDeleteModalData = {

@@ -350,6 +350,12 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
                         <input type="number" min={0} id="price" name="price" value={tempProduct.price} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入售價..." />
                       </div>
                       <div className="col-12">
+                        <div className="small text-secondary mb-2">
+                          <i className="bi bi-info-circle me-1"></i>
+                          售價需為 20 的倍數（避免折扣後出現小數）
+                        </div>
+                      </div>
+                      <div className="col-12">
                         <label htmlFor="tag" className="fw-medium mb-2">
                           產品標籤
                         </label>

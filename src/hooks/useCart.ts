@@ -9,6 +9,7 @@ import { EDIT_QTY_TYPE } from '@/types/cart';
 import { cartSelector, getCartAsync } from '@/slices/cartSlice';
 
 import { apiClientAddCartItem, apiClientEditCartItem, apiClientDeleteCartItem, apiClientClearCart } from '@/api/client.cart';
+import { apiClientApplyCoupon } from '@/api/client.coupon';
 
 import useToast from '@/hooks/useToast';
 import useGlobalOverlay from '@/hooks/useGlobalOverlay';
@@ -21,7 +22,7 @@ function useCart() {
   const dispatch = useAppDispatch();
   const cartState = useAppSelector(cartSelector);
 
-  const { toastError, toastSuccess } = useToast();
+  const { toastError, toastSuccess, toastInfo } = useToast();
   const { showGlobalOverlay, hideGlobalOverlay } = useGlobalOverlay();
 
   const latestRequestId = useRef<string>('');
@@ -130,7 +131,31 @@ function useCart() {
     }
   }, [showGlobalOverlay, hideGlobalOverlay, toastSuccess, toastError, getCartInfo]);
 
-  return { cartState, getCartInfo, addCartItem, editCartItem, deleteCartItem, clearCart };
+  // 套用優惠券
+  const applyCoupon = useCallback(
+    async (code: string) => {
+      if (!code) {
+        toastInfo('請輸入優惠券代碼');
+        return;
+      }
+
+      showGlobalOverlay('套用優惠券中...');
+      try {
+        const data = await apiClientApplyCoupon({ code });
+        toastSuccess(data.message);
+        // 重新取得購物車資料
+        await getCartInfo({ silent: true });
+      } catch (error) {
+        const err = error as ApiError;
+        toastError(err.message);
+      } finally {
+        hideGlobalOverlay();
+      }
+    },
+    [showGlobalOverlay, hideGlobalOverlay, toastSuccess, toastError, toastInfo, getCartInfo],
+  );
+
+  return { cartState, getCartInfo, addCartItem, editCartItem, deleteCartItem, clearCart, applyCoupon };
 }
 
 export default useCart;

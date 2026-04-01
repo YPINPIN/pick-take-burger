@@ -16,6 +16,7 @@ export const validateProduct = (data: ProductData): string | null => {
   if (!data.category) return '請輸入分類';
   if (!data.unit) return '請輸入單位';
   if (data.price <= 0) return '售價必須大於 0';
+  if (data.price % 20 !== 0) return '售價需為 20 的倍數';
   if (data.origin_price < data.price) return '原價不可低於售價';
 
   return null;

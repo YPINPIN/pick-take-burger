@@ -14,6 +14,9 @@ import VideoBanner from '@/components/VideoBanner';
 import CtaBgText from '@/components/CtaBgText';
 import EntityCarousel from '@/components/EntityCarousel';
 import ProductCarouselCard from '@/components/ProductCarouselCard';
+import CouponSection from '@/components/CouponSection';
+
+import { FEATURED_COUPONS } from '@/utils/coupon';
 
 function HomePage() {
   const features = [
@@ -146,6 +149,9 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* 優惠券 */}
+      <CouponSection coupons={FEATURED_COUPONS} type="section" />
 
       {/* 訂購流程 */}
       <section
