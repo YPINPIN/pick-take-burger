@@ -38,7 +38,7 @@ function AdminOrderTable({ orders, handleViewOrderClick, handleDeleteOrderClick 
                 </td>
                 <td className="text-primary fw-bold">{order.id}</td>
                 <td className="text-secondary">{formatDate(order.create_at)}</td>
-                <td className="text-danger fw-bold">NT${order.total}</td>
+                <td className="text-danger fw-bold">NT${order.total.toLocaleString()}</td>
                 <td className="text-center">
                   <button onClick={() => handleViewOrderClick(order)} type="button" className="btn btn-sm btn-secondary rounded-2 me-2">
                     <i className="bi bi-eye me-1"></i>
