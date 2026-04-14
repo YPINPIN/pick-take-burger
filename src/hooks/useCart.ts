@@ -58,6 +58,13 @@ function useCart() {
       try {
         const data = await apiClientAddCartItem({ product_id: productId, qty });
         toastSuccess(data.message);
+
+        // 如果有 coupon 就重新套用
+        if (cartState.couponCode) {
+          // console.log('套用優惠券:', cartState.couponCode);
+          await apiClientApplyCoupon({ code: cartState.couponCode });
+        }
+
         // 重新取得購物車資料
         await getCartInfo({ silent: true });
       } catch (error) {
@@ -67,7 +74,7 @@ function useCart() {
         hideGlobalOverlay();
       }
     },
-    [showGlobalOverlay, hideGlobalOverlay, toastSuccess, toastError, getCartInfo],
+    [showGlobalOverlay, hideGlobalOverlay, toastSuccess, toastError, getCartInfo, cartState.couponCode],
   );
 
   // 更新購物車品項

@@ -9,6 +9,7 @@ import { apiClientGetCartInfo } from '@/api/client.cart';
 type CartState = CartInfo & {
   currentRequestId?: string;
   isInitialized: boolean;
+  couponCode?: string;
 };
 
 const initialState: CartState = {
@@ -19,6 +20,8 @@ const initialState: CartState = {
   currentRequestId: undefined,
   // 購物車是否已經初始化 (避免 checkout 頁面在購物車資料尚未載入前就顯示空購物車)
   isInitialized: false,
+  // 當前使用的優惠券 (用於判斷 addCartItem 是否需要自動重新套用 coupon)
+  couponCode: undefined,
 };
 
 // 取得購物車資料
@@ -53,6 +56,11 @@ export const cartSlice = createSlice({
         state.total = action.payload.total;
         state.final_total = action.payload.final_total;
         state.isInitialized = true;
+
+        // 根據最新購物車資料來記錄 couponCode
+        const couponCode = action.payload.carts[0]?.coupon?.code;
+        // console.log('記錄 couponCode', couponCode);
+        state.couponCode = couponCode ?? undefined;
       });
   },
 });
