@@ -325,25 +325,25 @@ const AdminProductModal = forwardRef<AdminProductModalHandle, AdminProductModalP
                         </label>
                         <input type="text" id="title" name="title" value={tempProduct.title} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入產品名稱..." />
                       </div>
-                      <div className="col-12 col-sm-6">
+                      <div className="col-sm-6">
                         <label htmlFor="category" className="fw-medium mb-2">
                           分類
                         </label>
                         <input type="text" id="category" name="category" value={tempProduct.category} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入分類..." />
                       </div>
-                      <div className="col-12 col-sm-6">
+                      <div className="col-sm-6">
                         <label htmlFor="unit" className="fw-medium mb-2">
                           單位
                         </label>
                         <input type="text" id="unit" name="unit" value={tempProduct.unit} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入單位..." />
                       </div>
-                      <div className="col-12 col-sm-6">
+                      <div className="col-sm-6">
                         <label htmlFor="origin_price" className="fw-medium mb-2">
                           原價
                         </label>
                         <input type="number" min={0} id="origin_price" name="origin_price" value={tempProduct.origin_price} onChange={handleInputChange} className="form-control mb-2" placeholder="請輸入原價..." />
                       </div>
-                      <div className="col-12 col-sm-6">
+                      <div className="col-sm-6">
                         <label htmlFor="price" className="fw-medium mb-2">
                           售價
                         </label>
